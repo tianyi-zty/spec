@@ -1,0 +1,34 @@
+{
+    "models": [
+        
+        {"_comment": "Stretching C-O ribose",
+        "type": "GaussianModel", 
+        "params": {
+                "center": {"value": 1060, "min": 1060, "max": 1065, "vary": true},
+                "height": {"value": 0.1, "min": 0, "max": 1.0, "vary": true},  
+                "sigma": {"value": 5, "min": 0, "max": 10, "vary": true}
+                } },
+        {"_comment": "Amide III Band",
+        "type": "GaussianModel", 
+        "params": {
+                "center": {"value": 1186, "min": 1180, "max": 1300, "vary": true},
+                "height": {"value": 0.1, "min": 0, "max": 0.5, "vary": true}, 
+                "sigma": {"value": 10, "min": 0, "max": 50, "vary": true} 
+                } },
+        {"_comment": "Amide III (C-N stretching and N-H in plane bending, often with significant contributions from CH2 wagging vibrations)",
+        "type": "GaussianModel", 
+        "params": {
+                "center": {"value": 1224, "min": 1220, "max": 1350, "vary": true},
+                "height": {"value": 0.1, "min": 0, "max": 0.5, "vary": true}, 
+                "sigma": {"value": 10, "min": 0, "max": 50, "vary": true} 
+                } },
+        {"_comment": "Amide III band components of proteins",
+        "type": "GaussianModel", 
+        "params": {
+                "center": {"value": 1312, "min": 1307, "max": 1317, "vary": true},
+                "height": {"value": 0.1, "min": 0, "max": 0.5, "vary": true}, 
+                "sigma": {"value": 10, "min": 0, "max": 50, "vary": true} 
+                } }
+        
+    ]
+}
