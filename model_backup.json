@@ -10,10 +10,25 @@
         {"_comment": "Amide II Band",
         "type": "VoigtModel", 
         "params": {
-                "center": {"value": 1540, "min": 1517, "max": 1570, "vary": true},
+                "center": {"value": 1486, "min": 1480, "max": 1543, "vary": true},
                 "height": {"value": 1, "min": 0.1, "max": 1.0, "vary": true},  
                 "sigma": {"value": 10, "min": 0, "max": 50, "vary": true},
                 "gamma": {"value": 0.1, "min": 0.05, "max": 1.0, "vary": true}
+                } },
+        {"_comment": "Amide II  of proteins",
+        "type": "VoigtModel", 
+        "params": {
+                "center": {"value": 1550, "min": 1540, "max": 1570, "vary": true},
+                "height": {"value": 1, "min": 0.1, "max": 1.0, "vary": true},  
+                "sigma": {"value": 10, "min": 0, "max": 50, "vary": true},
+                "gamma": {"value": 0.1, "min": 0.05, "max": 1.0, "vary": true}
+                } },
+        {"_comment": "Amide I (disordered structure-non-hydrogen bonded)",
+        "type": "GaussianModel", 
+        "params": {
+                "center": {"value": 1685, "min": 1670, "max": 1700},
+                "height": {"value": 0.1, "min": 0.01, "max": 0.2}, 
+                "sigma": {"value": 5, "min": 0, "max": 50}  
                 } },
         {"_comment": "Amide III Band",
         "type": "GaussianModel", 
@@ -111,9 +126,29 @@
                 "center": {"value": 1700, "min": 1650, "max": 1800, "vary": true},
                 "height": {"value": 1, "min": 0.1, "max": 1.0, "vary": true},  
                 "sigma": {"value": 10, "min": 5, "max": 40, "vary": true} 
-                } }
+                } },
         
-        
-        
+        {"_comment": "Stretching C-N, deformation N-H, deformation C-H",
+        "type": "GaussianModel", 
+        "params": {
+                "center": {"value": 1408, "min": 1404, "max": 1416, "vary": true},
+                "height": {"value": 1, "min": 0, "max": 0.5, "vary": true},  
+                "sigma": {"value": 10, "min": 0.1, "max": 5, "vary": true}  
+                } },
+                
+                {"_comment": "Amide I b-sheet",
+                "type": "GaussianModel", 
+                "params": {
+                        "center": {"value": 1618, "min": 1616, "max": 1620},
+                        "height": {"value": 0.05, "min": 0.01, "max": 0.1}, 
+                        "sigma": {"value": 5, "min": 0, "max": 30}  
+                        } },
+                {"_comment": "Amide I anti-parallel b-sheet",
+                "type": "GaussianModel", 
+                "params": {
+                        "center": {"value": 1679, "min": 1678, "max": 1680},
+                        "height": {"value": 0.05, "min": 0.01, "max": 0.1}, 
+                        "sigma": {"value": 5, "min": 0, "max": 30}  
+                        } }
     ]
 }
