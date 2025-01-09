@@ -154,20 +154,20 @@ def print_best_values(spec, output):
 
 
 def main():
-
-    spectrum_path = '../res/AuPillars_Al2O3_12102024/ALS/1/new_way/95-5/95-5ROI Spectrum1499-1800.mat'
+    filename = '99-1'
+    spectrum_path = '../res/AuPillars_Al2O3_12102024/ALS/3/new_way/'+f'{filename}'+'/' +f'{filename}'+'ROI Spectrum1199-1600.mat'
     # spectrum_path = '../res/AuPillars_Al2O3_12102024/ALS/2/new_way/99-1/99-1ROI Spectrum1299-1600.mat'
    
-    save_path = '../res/AuPillars_Al2O3_12102024/ALS/1/new_way'
+    save_path = '../res/AuPillars_Al2O3_12102024/ALS/3/new_way'
     # Wavelength range (cm⁻¹)
-    wavelength_start = 1500
-    wavelength_end = 1700
+    wavelength_start = 1200
+    wavelength_end = 1600
 
     # Load the .mat file
     data = loadmat(spectrum_path)
     spectra = data['corrected_spectrum'].flatten()
     # st()
-    spectra = spectra[:100]
+    # spectra = spectra[:100]
     # st()
     # # Find the indices corresponding to the desired wavelength range
     # z_indices = np.where((wavelengths >= wavelength_start) & (wavelengths <= wavelength_end))[0]
@@ -190,15 +190,13 @@ def main():
     print_best_values(spec, output)
 
     # Define the component names
-    component_names = ["Amide II b-sheet",
-                       'Amide II',
-                       "DNA",
-                       "Amide I b-sheet",
-                       "Amide I a-helix",
-                       'Amide I'
+    component_names = ['Amide III',
+                       "weak peaks of DNA",
+                       'CH3 of collagen',
+                       "Amide II "
                        ]
-    component_colors = ['#FF9999', '#66B3FF', '#99FF99', '#FFCC99', '#FFD700', '#C71585']    
-    # '#99FF99', '#7FFF00', '#FFA500', '#20B2AA', '#8A2BE2', '#FFB3E6', '#B0E0E6'
+    component_colors = ['#FF9999', '#66B3FF', '#99FF99', '#FFCC99']    
+    # '#99FF99', '#7FFF00', '#FFA500', '#20B2AA', '#8A2BE2', '#FFB3E6', '#C71585', '#B0E0E6', '#FFD700'
 
     # Plot the results
     fig, ax = plt.subplots(figsize=(16, 10))
@@ -247,7 +245,7 @@ def main():
     # plt.show()
     # st()
 
-    plt.savefig(os.path.join(save_path, f'subspectrum_fit_integration_ALS_corrected_flipped_spectrum_95-5.png'))
+    plt.savefig(os.path.join(save_path, f'subspectrum_fit_integration_ALS_corrected_flipped_spectrum_'+f'{filename}''.png'))
 
 
 if __name__ == '__main__':

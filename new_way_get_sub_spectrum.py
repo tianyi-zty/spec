@@ -200,18 +200,18 @@ def save_spectrum_to_mat(spectrum, filename, save_path):
 
 def main():
 
-    filename = '99-1'
-    before_collagen = r'W:/3. Students/Tianyi/AuPillars_10nmAl2O3_12102024/reference/LMR_1.mat'
-    after_collagen = r'W:/3. Students/Tianyi/AuPillars_10nmAl2O3_12102024/'+f"{filename}"+'/after/LMR_1.mat'
+    filename = '95-5'
+    before_collagen = r'W:/3. Students/Tianyi/AuPillars_10nmAl2O3_12102024/reference/LMR_2.mat'
+    after_collagen = r'W:/3. Students/Tianyi/AuPillars_10nmAl2O3_12102024/'+f"{filename}"+'/after/LMR_2.mat'
     # collagen_ref = r'W:/3. Students/TianYi/AuPillars_11042024/afterCollagen/LMT_2.mat'
-    save_path = '../res/AuPillars_Al2O3_12102024/ALS/1/new_way/'+f"{filename}"
+    save_path = '../res/AuPillars_Al2O3_12102024/ALS/4/new_way/'+f"{filename}"
     os.makedirs(save_path, exist_ok=True)
 
     # Wavelength range (cm⁻¹)
     wavelength_start = 950
     wavelength_end = 1800
-    wavelength_start_plot = 1500-1
-    wavelength_end_plot = 1800
+    wavelength_start_plot = 1200-1
+    wavelength_end_plot = 1500
     wavelength_start_index = int((wavelength_start_plot-950)/2)
     wavelength_end_index = int((wavelength_end_plot-950)/2)
     # Assume the wavelength step size (426 points between 950 and 1800)
@@ -226,9 +226,9 @@ def main():
     # spectra_ref = np.reshape(data_ref['r'], (480, 480, 426))
     # st()
     # Define the region of interest on the x and y axes
-    x1_start, x1_end = 110, 230 #280, 400 # # #270, 420   #250, 350 # 30, 230 # # Replace with your desired y range
+    x1_start, x1_end = 280, 400 #110, 230 #280, 400 # # #270, 420   #250, 350 # 30, 230 # # Replace with your desired y range
     y1_start, y1_end = 90, 210 #150, 300  # Replace with your desired x range
-    x2_start, x2_end = 300,420
+    x2_start, x2_end = 80, 200 #300,420
     y2_start, y2_end = 90, 210
 
     # Find the indices corresponding to the desired wavelength range
@@ -293,7 +293,7 @@ def main():
     print(f"The shift between the two spectra is approximately {x_shift:.2f} x-axis units.")
     # st()
 
-    shift_value = -14
+    shift_value = -204
     plt.figure(figsize=(12, 8))
     plt.plot(wavelengths[z_indices], corrected_spectrum_before, label='Baseline Corrected Spectrum - before collagen', color='b', linewidth=2)
     plt.plot(wavelengths, corrected_spectrum_after, label='Flipped Spectrum', color='g', linewidth=2)
@@ -312,7 +312,7 @@ def main():
     plt.figure(figsize=(8, 12))
     plt.plot(wavelengths[z_indices_plot], corrected_spectrum_before[wavelength_start_index: wavelength_end_index], label='before', color='r')
     plt.plot(wavelengths[z_indices_plot], corrected_spectrum_after[wavelength_start_index-int((x_shift + shift_value)/2) : wavelength_end_index-int((x_shift + shift_value)/2)], label='after', color='purple')
-    plt.plot(wavelengths[z_indices_plot], new_way_sub, label='ROI Spectrum', color='r')
+    plt.plot(wavelengths[z_indices_plot], new_way_sub, label='ROI Spectrum', color='green')
     plt.xlabel('Wavelength (cm⁻¹)')
     plt.ylabel('Intensity')
     plt.legend()

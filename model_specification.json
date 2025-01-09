@@ -1,46 +1,32 @@
 {
     "models": [
-        {"_comment": "Amide II b-sheet",
+        {"_comment": "Amide III",
         "type": "GaussianModel", 
         "params": {
-                "center": {"value": 1542, "min": 1541, "max": 1545},
-                "height": {"value": 0.1, "min": 0.01, "max": 0.2},  
-                "sigma": {"value": 1, "min": 0, "max": 8}
+                "center": {"value": 1268, "min": 1266, "max": 1268},
+                "height": {"value": 0.02, "min": 0.0, "max": 0.1},  
+                "sigma": {"value": 5, "min": 5, "max": 8}
+                } },
+        {"_comment": "weak peaks of DNA",
+        "type": "GaussianModel", 
+        "params": {
+                "center": {"value": 1398, "min": 1397, "max": 1400},
+                "height": {"value": 0.01, "min": 0.0, "max": 0.1},  
+                "sigma": {"value": 5, "min": 0, "max": 10}
+                } },
+        {"_comment": "CH3 of collagen",
+        "type": "GaussianModel", 
+        "params": {
+                "center": {"value": 1458, "min": 1456, "max": 1460},
+                "height": {"value": 0.35, "min": 0.0, "max": 0.4},  
+                "sigma": {"value": 20, "min": 0, "max": 50}
                 } },
         {"_comment": "Amide II",
         "type": "GaussianModel", 
         "params": {
-                "center": {"value": 1560, "min": 1558, "max": 1562},
-                "height": {"value": 0.1, "min": 0.01, "max": 0.25},  
-                "sigma": {"value": 1, "min": 0, "max": 8}
-                } },
-        {"_comment": "DNA",
-        "type": "GaussianModel", 
-        "params": {
-                "center": {"value": 1604, "min": 1600, "max": 1605},
-                "height": {"value": 0.1, "min": 0.01, "max": 0.2},  
-                "sigma": {"value": 5, "min": 0, "max": 15}
-                } },
-        {"_comment": "Amide I b-sheet",
-        "type": "GaussianModel", 
-        "params": {
-                "center": {"value": 1618, "min": 1616, "max": 1622},
-                "height": {"value": 0.1, "min": 0.01, "max": 0.2},  
-                "sigma": {"value": 10, "min": 0, "max": 20}
-                } },
-                {"_comment": "Amide I a-helix",
-        "type": "GaussianModel", 
-        "params": {
-                "center": {"value": 1654, "min": 1650, "max": 1656},
-                "height": {"value": 0.1, "min": 0.01, "max": 0.3},  
-                "sigma": {"value": 1, "min": 0, "max": 5}
-                } },
-        {"_comment": "Amide I",
-        "type": "GaussianModel", 
-        "params": {
-                "center": {"value": 1674, "min": 1670, "max": 1676},
-                "height": {"value": 0.1, "min": 0.01, "max": 0.3},  
-                "sigma": {"value": 10, "min": 0, "max": 25}
+                "center": {"value": 1504, "min": 1502, "max": 1506},
+                "height": {"value": 0.01, "min": 0.01, "max": 0.1},  
+                "sigma": {"value": 1, "min": 0, "max": 10}
                 } }
     ]
 }

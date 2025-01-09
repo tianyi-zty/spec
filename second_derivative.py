@@ -12,12 +12,12 @@ from scipy.signal import find_peaks, savgol_filter
 
 def main():
 
-    spectrum_path = '../res/AuPillars_Al2O3_12102024/ALS/1/new_way/99-1/99-1ROI Spectrum1499-1800.mat'
-    spectrum_path_1 = '../res/AuPillars_Al2O3_12102024/ALS/1/new_way/95-5/95-5ROI Spectrum1499-1800.mat'
-    save_path = '../res/AuPillars_Al2O3_12102024/ALS/1/new_way/'
+    spectrum_path = '../res/AuPillars_Al2O3_12102024/ALS/3/new_way/99-1/99-1ROI Spectrum1199-1600.mat'
+    spectrum_path_1 = '../res/AuPillars_Al2O3_12102024/ALS/3/new_way/95-5/95-5ROI Spectrum1199-1600.mat'
+    save_path = '../res/AuPillars_Al2O3_12102024/ALS/3/new_way/'
     # Wavelength range (cm⁻¹)
-    wavelength_start = 1500
-    wavelength_end = 1800
+    wavelength_start = 1200
+    wavelength_end = 1600
     # Assume the wavelength step size (426 points between 950 and 1800)
     wavelengths = np.linspace(950, 1800, 426)
 
