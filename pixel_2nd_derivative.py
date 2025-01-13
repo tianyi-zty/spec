@@ -9,8 +9,8 @@ from pdb import set_trace as st
 
 def main():
     # Paths
-    input_folder = r"C:/pyws/SPEC/res/AuPillars_Al2O3_12102024/ALS/1/pixel/95-5/subspectra"
-    output_folder = r"C:/pyws/SPEC/res/AuPillars_Al2O3_12102024/ALS/1/pixel/95-5/2ndplot"
+    input_folder = r"../res/AuPillars_Al2O3_12102024/1/pixel/95-5/subspectra"
+    output_folder = r"../res/AuPillars_Al2O3_12102024/1/pixel/95-5/2ndplot"
     csv_file = os.path.join(output_folder, "detected_peaks.csv")
 
     # Ensure the output directory exists
@@ -52,24 +52,24 @@ def main():
                 # Save detected peaks to CSV data
                 csv_data.append([file, *minima_x])
                 # st()
-                # Plot the second derivative with detected peaks
-                plt.figure(figsize=(10, 6))
-                plt.plot(wavelengths, second_derivative, label="Second Derivative", color="k", linewidth=2)
-                plt.scatter(minima_x, minima_y, color="red", label="Local Minima")
-                for x, y in zip(minima_x, minima_y):
-                    plt.annotate(f'({x:.0f}, {y:.4f})', xy=(x, y), xytext=(x, y + 0.0001),
-                                fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', color='blue', lw=0.5))
-                plt.xlabel("Wavenumber (cm⁻¹)")
-                plt.ylabel("Intensity")
-                plt.legend(loc="upper right")
-                plt.title(f"Second Derivative of {file}")
+                # # Plot the second derivative with detected peaks
+                # plt.figure(figsize=(10, 6))
+                # plt.plot(wavelengths, second_derivative, label="Second Derivative", color="k", linewidth=2)
+                # plt.scatter(minima_x, minima_y, color="red", label="Local Minima")
+                # for x, y in zip(minima_x, minima_y):
+                #     plt.annotate(f'({x:.0f}, {y:.4f})', xy=(x, y), xytext=(x, y + 0.0001),
+                #                 fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', color='blue', lw=0.5))
+                # plt.xlabel("Wavenumber (cm⁻¹)")
+                # plt.ylabel("Intensity")
+                # plt.legend(loc="upper right")
+                # plt.title(f"Second Derivative of {file}")
                 
-                # Save the plot
-                plot_filename = f"Second_Derivative_with_coordinates_{file.replace('.mat', '')}.png"
+                # # Save the plot
+                # plot_filename = f"Second_Derivative_with_coordinates_{file.replace('.mat', '')}.png"
                 # plt.show()
                 # st()
-                plt.savefig(os.path.join(output_folder, plot_filename))
-                plt.close()
+                # plt.savefig(os.path.join(output_folder, plot_filename))
+                # plt.close()
                 print(f"Done processing {file}.")
             
             except Exception as e:
@@ -77,7 +77,7 @@ def main():
 
     # Save detected peaks to CSV
     df = pd.DataFrame(csv_data)
-    df.to_csv(csv_file, index=False, header=["File Name", "Detected Peaks"])
+    df.to_csv(csv_file, index=False)
     print(f"Processed all spectra. Results saved to {csv_file}")
 
 

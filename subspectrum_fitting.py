@@ -9,48 +9,6 @@ from lmfit import models
 from scipy.integrate import simpson
 import json
 
-# Function to generate model and parameters without fitting
-# def generate_model(spec):
-#     composite_model = None
-#     params = None
-#     x = spec['x']
-#     y = spec['y']
-#     x_min = np.min(x)
-#     x_max = np.max(x)
-#     x_range = x_max - x_min
-#     y_max = np.max(y)
-    
-#     for i, basis_func in enumerate(spec['model']):
-#         prefix = f'm{i}_'
-#         model = getattr(models, basis_func['type'])(prefix=prefix)
-        
-#         if basis_func['type'] in ['GaussianModel', 'LorentzianModel', 'VoigtModel']:
-#             model.set_param_hint('sigma', min=1e-6, max=x_range)
-#             model.set_param_hint('center', min=x_min, max=x_max)
-#             model.set_param_hint('height', min=1e-6, max=1.1*y_max)
-#             model.set_param_hint('amplitude', min=1e-6)
-            
-#             default_params = {
-#                 prefix+'center': x_min + x_range * np.random.random(),
-#                 prefix+'height': y_max * np.random.random(),
-#                 prefix+'sigma': x_range * np.random.random()
-#             }
-#         else:
-#             raise NotImplemented(f'Model {basis_func["type"]} not implemented yet')
-        
-#         if 'help' in basis_func:
-#             for param, options in basis_func['help'].items():
-#                 model.set_param_hint(param, **options)
-#         model_params = model.make_params(**default_params, **basis_func.get('params', {}))
-#         if params is None:
-#             params = model_params
-#         else:
-#             params.update(model_params)           
-#         if composite_model is None:
-#             composite_model = model
-#         else:
-#             composite_model = composite_model + model
-#     return composite_model, params
 
 def generate_model_from_specification(json_file, spec, threshold=10):
     """
@@ -149,8 +107,6 @@ def print_best_values(spec, output):
             print(f"Warning: Key {prefix+'center'} not found in best_values.")
             continue  # Skip this model if the key is missing
         print(f'[{center_value:3.3f}] {model["type"]:16}: {values}')
-
-
 
 
 def main():

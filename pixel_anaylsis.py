@@ -36,10 +36,10 @@ def save_spectrum_to_mat(spectrum, filename, save_path):
 def main():
 
     filename = '95-5'
-    before_collagen = r'W:/3. Students/Tianyi/AuPillars_10nmAl2O3_12102024/reference/LMR_1.mat'
-    after_collagen = r'W:/3. Students/Tianyi/AuPillars_10nmAl2O3_12102024/'+f"{filename}"+'/after/LMR_1.mat'
+    before_collagen = r'../data/AuPillars_10nmAl2O3_12102024/reference/LMR_1.mat'
+    after_collagen = r'../data/AuPillars_10nmAl2O3_12102024/'+f"{filename}"+'/after/LMR_1.mat'
     # collagen_ref = r'W:/3. Students/TianYi/AuPillars_11042024/afterCollagen/LMT_2.mat'
-    save_path = '../res/AuPillars_Al2O3_12102024/ALS/1/pixel/'+f"{filename}"
+    save_path = '../res/AuPillars_Al2O3_12102024/1/pixel/'+f"{filename}"
     os.makedirs(save_path, exist_ok=True)
     # Create directories to save individual pixel spectra
     # os.makedirs(save_path+"/spectra_before", exist_ok=True)
@@ -96,7 +96,7 @@ def main():
     plt.savefig(os.path.join(save_path, 'cropped image example.png'))
 
     
-    shift_value = 16
+    shift_value = 18
     # Loop through each pixel in the region of interest
     for i in range(extracted_region_after.shape[0]):
         for j in range(extracted_region_after.shape[1]):
@@ -128,27 +128,27 @@ def main():
             print(f'subspectrum at pixel_{i}_{j} saved!')
             # st()
 
-            # #####uncomment to see the spectrum#####
-            # plt.figure(figsize=(12, 8))
-            # plt.plot(wavelengths[z_indices], transformed_spectrum_before, label='Baseline Corrected Spectrum - before collagen', color='b', linewidth=2)
-            # plt.plot(wavelengths, transformed_spectrum_after, label='Flipped Spectrum', color='g', linewidth=2)
-            # plt.plot(wavelengths + x_shift + shift_value, transformed_spectrum_after, label=f'Flipped Spectrum shift back {x_shift+shift_value} units', color='g', linestyle='--', linewidth=2)
-            # plt.xlabel('Wavenumber (cm⁻¹)')
-            # plt.ylabel('Intensity')
-            # plt.legend(loc="upper left")
-            # # plt.show()
-            # # st()
-            # plt.savefig(os.path.join(save_path, f"{filename}"+'Spectrum Shifted' f"{x_shift}" '+' f"{shift_value}"+ f'at pixel_{i}_{j}'+'.png'))
-
-            # plt.figure(figsize=(12, 8))
-            # plt.plot(wavelengths[z_indices_plot], subspectrum, label='ROI Spectrum', color='r')
-            # plt.xlabel('Wavenumber (cm⁻¹)')
-            # plt.ylabel('Intensity')
-            # plt.legend(loc="upper left")
-            # plt.title('ROI Spectrum (before - after)')
-            # # plt.show()
+            #####uncomment to see the spectrum#####
+            plt.figure(figsize=(12, 8))
+            plt.plot(wavelengths[z_indices], transformed_spectrum_before, label='Baseline Corrected Spectrum - before collagen', color='b', linewidth=2)
+            plt.plot(wavelengths, transformed_spectrum_after, label='Flipped Spectrum', color='g', linewidth=2)
+            plt.plot(wavelengths + x_shift + shift_value, transformed_spectrum_after, label=f'Flipped Spectrum shift back {x_shift+shift_value} units', color='g', linestyle='--', linewidth=2)
+            plt.xlabel('Wavenumber (cm⁻¹)')
+            plt.ylabel('Intensity')
+            plt.legend(loc="upper left")
+            # plt.show()
             # st()
-            # plt.savefig(os.path.join(save_path, f"{filename}"+'ROI Spectrum (before - after)'f"{x_shift}" '+' f"{shift_value}"+ f'at pixel_{i}_{j}'+'.png'))
+            plt.savefig(os.path.join(save_path, f"{filename}"+'Spectrum Shifted' f"{x_shift}" '+' f"{shift_value}"+ f'at pixel_{i}_{j}'+'.png'))
+
+            plt.figure(figsize=(12, 8))
+            plt.plot(wavelengths[z_indices_plot], subspectrum, label='ROI Spectrum', color='r')
+            plt.xlabel('Wavenumber (cm⁻¹)')
+            plt.ylabel('Intensity')
+            plt.legend(loc="upper left")
+            plt.title('ROI Spectrum (before - after)')
+            # plt.show()
+            # st()
+            plt.savefig(os.path.join(save_path, f"{filename}"+'ROI Spectrum (before - after)'f"{x_shift}" '+' f"{shift_value}"+ f'at pixel_{i}_{j}'+'.png'))
 
 if __name__ == '__main__':
     main()
