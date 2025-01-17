@@ -6,8 +6,9 @@ import os
 
 
 # File path to your CSV file
-path = '../res/AuPillars_Al2O3_12102024/1/pixel/95-5/2ndplot/'
+path = '../res/AuPillars_Al2O3_12102024/3/10by10/99-1/result/'
 file_path = path + 'detected_peaks.csv'
+os.makedirs(path, exist_ok=True)
 
 # Initialize a Counter to count the occurrences of each value
 value_counts = Counter()
@@ -53,21 +54,23 @@ if value_counts:
 else:
     print("No values found or file was empty.")
 
-
+############################## change here wavelength range#####################################
+wavelength_start = 1400
+wavelength_end = 1600
 ###histogram visualization###
 # Create a list of all values in the desired range
-all_values_in_range = [value for value, count in value_counts.items() for _ in range(count) if 1400 <= value <= 1700]
+all_values_in_range = [value for value, count in value_counts.items() for _ in range(count) if wavelength_start <= value <= wavelength_end]
 
 plt.figure(figsize=(10, 6))
 plt.hist(all_values_in_range, bins=10, color='coral', edgecolor='black')
 plt.xlabel('Values')
 plt.ylabel('Frequency')
-plt.title('Value Distribution in Range [1400, 1700]')
+plt.title(f'Value Distribution in Range [{wavelength_start}, {wavelength_end}]')
 plt.grid(axis='y', linestyle='--', alpha=0.7)
 
 # Add annotations for the top 10 most common values
 for i, (value, count) in enumerate(top_10):
-    plt.annotate(f'{value}: {count}', 
+    plt.annotate(f'{value:.0f}: {count:.0f}', 
                  xy=(value, count), 
                  xytext=(value + 10, count + 5),  # Position the text
                  arrowprops=dict(arrowstyle="->", lw=1.5),

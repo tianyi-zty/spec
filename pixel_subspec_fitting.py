@@ -6,6 +6,7 @@ from scipy.integrate import simpson
 from lmfit import models
 import json
 import matplotlib.pyplot as plt
+from pdb import set_trace as st
 
 
 def generate_model_from_specification(json_file, spec, threshold=10):
@@ -93,11 +94,12 @@ def plot_results(spec, components, component_names, component_colors, output, fi
     # Save the plot
     plt.tight_layout()
     plot_file = os.path.join(save_path, f"{file_name}_fitting.png")
+    # st()
     plt.savefig(plot_file)
     plt.close(fig)
 
-
-def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_folder, wavelength_start=1400, wavelength_end=1700):
+############################## change here wavelength range#####################################
+def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_folder, wavelength_start=1300, wavelength_end=1500):
     """
     Process all .mat files in a folder, perform subspectrum fitting,
     plot results, and save statistics to a CSV.
@@ -112,7 +114,7 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
         for root, _, files in os.walk(input_folder):
             for file_name in files:
-                if file_name.endswith('_1.mat'):
+                if file_name.endswith(f'.mat'):
                     file_path = os.path.join(root, file_name)
 
                     # Load the .mat file
@@ -150,10 +152,11 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                             integrals_for_file.append(integral_value)
                             print(f'Done processing: {file_name}.')
 
-                        # # Plot and save the results
+                        # # # Plot and save the results
                         # component_names = [f"Component {i+1}" for i in range(len(components))]
                         # component_colors = plt.cm.tab10.colors[:len(components)]
-                        # # plot_results(spec, components, component_names, component_colors, output, file_name, save_plots_folder)
+                        # plot_results(spec, components, component_names, component_colors, output, file_name, save_plots_folder)
+                        # st()
 
                     except Exception as e:
                         print(f"Error processing file {file_name}: {e}")
@@ -174,11 +177,15 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
 if __name__ == '__main__':
     # Define paths
-    input_folder = '../res/AuPillars_Al2O3_12102024/1/pixel/95-5/subspectra'
-    output_csv = '../res/AuPillars_Al2O3_12102024/1/pixel/95-5/subspectrum_fitting_results_1.csv'
-    summary_csv = '../res/AuPillars_Al2O3_12102024/1/pixel/95-5/summary_statistics_1.csv'
-    save_plots_folder = '../res/AuPillars_Al2O3_12102024/1/pixel/95-5/plots'
-    json_file = 'model_specification.json'
+    path = '../res/AuPillars_Al2O3_12102024/4/10by10/95-5'
+    input_folder = path + '/subspectrum'
+    output_csv = path + '/result/subspectrum_fitting_results.csv'
+    summary_csv = path + '/result/summary_statistics.csv'
+    save_plots_folder = path + '/plots'
+    json_file = 'model_specification1300-1500.json'
+    os.makedirs(input_folder, exist_ok=True)
+    os.makedirs(path+'/result', exist_ok=True)
+    os.makedirs(save_plots_folder, exist_ok=True)
 
     # Run the processing
     process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_folder)

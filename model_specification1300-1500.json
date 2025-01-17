@@ -1,0 +1,36 @@
+{
+    "models": [
+        {"_comment": "collagen",
+            "type": "GaussianModel", 
+            "params": {
+                    "center": {"value": 1340, "min": 1338, "max": 1344},
+                    "height": {"value": 0.001, "min": 0.0, "max": 0.002},  
+                    "sigma": {"value": 1, "min": 0, "max": 20}
+                    } },
+        
+        {"_comment": "Carbon particle",
+            "type": "GaussianModel", 
+            "params": {
+                    "center": {"value": 1390, "min": 1390, "max": 1392},
+                    "height": {"value": 0.001, "min": 0.0, "max": 0.005},  
+                    "sigma": {"value": 5, "min": 0, "max": 15}
+                    } },
+            
+            {"_comment": "Deformation C-H",
+            "type": "GaussianModel", 
+            "params": {
+                    "center": {"value": 1418, "min": 1416, "max": 1420},
+                    "height": {"value": 0.001, "min": 0.0, "max": 0.005},  
+                    "sigma": {"value": 1, "min": 0, "max": 10}
+                    } },
+            {"_comment": "weak peaks of DNA & RNA",
+            "type": "GaussianModel", 
+            "params": {
+                    "center": {"value": 1458, "min": 1454, "max": 1460},
+                    "height": {"value": 0.0001, "min": 0.0, "max": 0.005},  
+                    "sigma": {"value": 1, "min": 0, "max": 10}
+                    } }
+    
+                ]
+            }
+            

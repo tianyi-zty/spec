@@ -1,5 +1,19 @@
 {
     "models": [
+        {"_comment": "Stretching C-O, deformation C-H, deformation N-H",
+            "type": "GaussianModel", 
+            "params": {
+                    "center": {"value": 1362, "min": 1360, "max": 1368},
+                    "height": {"value": 0.001, "min": 0.0, "max": 0.005},  
+                    "sigma": {"value": 1, "min": 0, "max": 20}
+                    } },
+        {"_comment": "Amide I b-sheet",
+            "type": "GaussianModel", 
+            "params": {
+                    "center": {"value": 1620, "min": 1616, "max": 1622},
+                    "height": {"value": 0.1, "min": 0.01, "max": 0.2},  
+                    "sigma": {"value": 10, "min": 0, "max": 20}
+                    } },
         {"_comment": "Amide I Band",
         "type": "GaussianModel", 
         "params": {

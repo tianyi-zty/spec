@@ -9,16 +9,18 @@ from pdb import set_trace as st
 
 def main():
     # Paths
-    input_folder = r"../res/AuPillars_Al2O3_12102024/1/pixel/95-5/subspectra"
-    output_folder = r"../res/AuPillars_Al2O3_12102024/1/pixel/95-5/2ndplot"
+    filename = '99-1'
+    input_folder = r"../res/AuPillars_Al2O3_12102024/3/10by10/"+filename+"/subspectrum"
+    output_folder = r"../res/AuPillars_Al2O3_12102024/3/10by10/"+filename+"/result"
     csv_file = os.path.join(output_folder, "detected_peaks.csv")
 
     # Ensure the output directory exists
     os.makedirs(output_folder, exist_ok=True)
 
+    ############################## change here wavelength range#####################################
     # Wavelength range (cm⁻¹)
     wavelength_start = 1400
-    wavelength_end = 1700
+    wavelength_end = 1600
     wavelengths = np.linspace(950, 1800, 426)  # Assuming this range for all subspectra
     # Initialize CSV data
     csv_data = []
@@ -41,9 +43,9 @@ def main():
                 # st()
                 spectra = data['spectrum'].flatten()
                 # st()
-                ############## need to ynamically adjust the wavelengths array based on the spectrum size################
+                ############## need to dnamically adjust the wavelengths array based on the spectrum size################
                 spectrum_size = len(spectra)
-                wavelengths = np.linspace(1400, 1700, spectrum_size)
+                wavelengths = np.linspace(wavelength_start, wavelength_end, spectrum_size)
                 # Process the spectrum
                 second_derivative, minima_x, minima_y = process_spectrum(
                     spectra, wavelengths, wavelength_start, wavelength_end
@@ -52,7 +54,7 @@ def main():
                 # Save detected peaks to CSV data
                 csv_data.append([file, *minima_x])
                 # st()
-                # # Plot the second derivative with detected peaks
+                # Plot the second derivative with detected peaks
                 # plt.figure(figsize=(10, 6))
                 # plt.plot(wavelengths, second_derivative, label="Second Derivative", color="k", linewidth=2)
                 # plt.scatter(minima_x, minima_y, color="red", label="Local Minima")
