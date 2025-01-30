@@ -7,6 +7,7 @@ from lmfit import models
 import json
 import matplotlib.pyplot as plt
 from pdb import set_trace as st
+from scipy.signal import savgol_filter
 
 
 def generate_model_from_specification(json_file, spec, threshold=10):
@@ -46,8 +47,8 @@ def generate_model_from_specification(json_file, spec, threshold=10):
 
         result = model.fit(y, init_params, x=x)
         reduced_chi_squared = result.chisqr / result.nfree
-        print(reduced_chi_squared)
-
+        # print(reduced_chi_squared)
+        
         if reduced_chi_squared < threshold:
             if composite_model is None:
                 composite_model = model
@@ -100,20 +101,18 @@ def plot_results(spec, components, component_names, component_colors, output, fi
     plt.close(fig)
 
 ############################## change here wavelength range#####################################
-def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_folder, wv1):
+def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_folder, wavelength_start=950, wavelength_end=1800):
     """
     Process all .mat files in a folder, perform subspectrum fitting,
     plot results, and save statistics to a CSV.
     """
     os.makedirs(save_plots_folder, exist_ok=True)
-    wavelength_start=wv1
-    wavelength_end=wv1+200
 
     component_integrals = []
 
     with open(output_csv, mode='w', newline='') as file:
         writer = csv.writer(file)
-        writer.writerow(['File Name', 'Center Value', 'Amplitude', 'Sigma', 'Integral Value'])
+        writer.writerow(['File Name', 'Amplitude', 'Center Value', 'Sigma', 'Integral Value'])
 
         for root, _, files in os.walk(input_folder):
             for file_name in files:
@@ -124,20 +123,27 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                     data = loadmat(file_path)
                     spectra = data['spectrum'].flatten()
 
+                    # smoothing spectrum
+                    spectra = savgol_filter(spectra, window_length=11, polyorder=3)
+
                     # Define the spectrum
                     spec = {
                         'x': np.linspace(wavelength_start, wavelength_end, spectra.shape[0]),
                         'y': spectra
                     }
-
+                    
                     try:
                         # Perform model fitting
                         model, params = generate_model_from_specification(json_file, spec, threshold=0.2)
+                        # st()
                         output = model.fit(spec['y'] - min(spec['y']), params, x=spec['x'])
+                        # st()
                         components = output.eval_components(x=spec['x'])
 
                         # Extract and save results
                         best_values = output.best_values
+                        # st()
+                        # print(best_values)
                         integrals_for_file = []
                         for i, basis_func in enumerate(json.load(open(json_file))['models']):
                             prefix = f'm{i}_'
@@ -156,8 +162,8 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                         print(f'Done processing: {file_name}.')
 
                         # # Plot and save the results
-                        component_names = ["Amide III"]
-                        # "Amide III", "Collagen Amide III","Amide III"
+                        component_names = ['nucleic acid', 'Amide III', 'amino acid residues', 'methyl bending',
+                                           'amide II band', 'amide I band','lipids']
                         component_colors = plt.cm.tab10.colors[:len(components)]
                         plot_results(spec, components, component_names, component_colors, output, file_name, save_plots_folder)
                         # st()
@@ -181,17 +187,15 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
 if __name__ == '__main__':
     # Define paths
-    wv1=1200
-    filename = f'{wv1}-{wv1+200}'
-    path = r'../res/AuPillars_10nmAl2O3_01162025/2ndafter/'+filename
+    path = '../res/CaF2_01162025/caf2'
     input_folder = path + '/subspectrum'
     output_csv = path + '/result/subspectrum_fitting_results.csv'
     summary_csv = path + '/result/summary_statistics.csv'
     save_plots_folder = path + '/plots'
-    json_file = 'model_specification_tissue'+filename+'.json'
+    json_file = 'model_specification_caf2.json'
     os.makedirs(input_folder, exist_ok=True)
     os.makedirs(path+'/result', exist_ok=True)
     os.makedirs(save_plots_folder, exist_ok=True)
 
     # Run the processing
-    process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_folder,wv1)
+    process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_folder)

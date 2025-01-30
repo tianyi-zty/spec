@@ -1,0 +1,43 @@
+{
+    "models": [
+        {
+            "_comment": "nucleic acids",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 20, "min": 1, "max": 25}, 
+                "center": {"value": 1620, "min": 1618, "max": 1622}, 
+                "sigma": {"value": 10, "min": 0, "max": 20}
+            }
+        },
+        {
+            "_comment": "amide I band",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 20, "min": 1, "max": 25}, 
+                "center": {"value": 1648, "min": 1630, "max": 1652}, 
+                "sigma": {"value": 10, "min": 0, "max": 25}
+            }
+        },
+        {
+            "_comment": "amide I random coils",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 20, "min": 1, "max": 25}, 
+                "center": {"value": 1682, "min": 1676, "max": 1682}, 
+                "sigma": {"value": 10, "min": 0, "max": 20}
+            }
+        },
+        {
+            "_comment": "Fatty acid ester band",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 5, "min": 1, "max": 15}, 
+                "center": {"value": 1730, "min": 1728, "max": 1730}, 
+                "sigma": {"value": 10, "min": 0, "max": 20}
+            }
+        }
+    
+    ]
+}
+
+

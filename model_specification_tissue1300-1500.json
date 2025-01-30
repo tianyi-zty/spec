@@ -1,0 +1,44 @@
+{
+    "models": [
+        {
+            "_comment": "nucleic acids",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 2, "min": 0, "max": 5}, 
+                "center": {"value": 1372, "min": 1370, "max": 1374}, 
+                "sigma": {"value": 10, "min": 0, "max": 20}
+            }
+        },
+        
+        {
+            "_comment": "amino acid residues ",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 10, "min": 1, "max": 15}, 
+                "center": {"value": 1394, "min": 1394, "max": 1396}, 
+                "sigma": {"value": 10, "min": 0, "max": 15}
+            }
+        },
+        {
+            "_comment": "polysaccharides, cellulose",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 5, "min": 1, "max": 20}, 
+                "center": {"value": 1432, "min": 1430, "max": 1434}, 
+                "sigma": {"value": 5, "min": 0, "max": 10}
+            }
+        },
+        {
+            "_comment": "Paraffin",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 3, "min": 1, "max": 15}, 
+                "center": {"value": 1462, "min": 1460, "max": 1464}, 
+                "sigma": {"value": 10, "min": 0, "max": 20}
+            }
+        }
+    
+    ]
+}
+
+

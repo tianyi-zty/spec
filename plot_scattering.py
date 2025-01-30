@@ -4,7 +4,9 @@ import numpy as np
 import os
 
 # Load your CSV data
-save_path = '../res/AuPillars_Al2O3_12102024/4/10by10/95-5/result/'
+wv1=1200
+filename = f'{wv1}-{wv1+200}'
+save_path = r'../res/AuPillars_10nmAl2O3_01162025/2ndafter/'+filename+'/result/'
 file_name = 'subspectrum_fitting_results'
 data = pd.read_csv(save_path + file_name + '.csv')  # Update with the correct file path
 
@@ -16,10 +18,10 @@ print(f"Number of unique files: {num_unique_files}")
 data.columns = data.columns.str.strip()
 
 # Define a colormap with 8 colors for the 8 rows
-colornm = 4
+colornm = 1
 colors = plt.cm.viridis(np.linspace(0, 1, colornm))
-labels = ['Carbon particle', 'collagen', 'Deformation C-H', 'weak peaks of DNA & RNA'
-          ] #'Amide I b-sheet','Amide II a-sheet'
+labels = ["Amide III"]
+# "Amide III", "Collagen Amide III","Amide III"
 
 # Scatter Plot
 plt.figure(figsize=(10, 6))
@@ -60,7 +62,7 @@ for row_index in range(colornm):
     means.append(values.mean())  # Compute the mean for the current group
 
 # Plot the box plot
-boxplot = plt.boxplot(box_plot_data, tick_labels=labels, patch_artist=True, 
+boxplot = plt.boxplot(box_plot_data, labels=labels, patch_artist=True, 
                       boxprops=dict(facecolor='skyblue', color='black'),
                       medianprops=dict(color='red'), whiskerprops=dict(color='black'))
 

@@ -24,7 +24,7 @@ def save_spectrum_to_mat(spectrum, filename, save_path):
     print(f"Spectrum saved to {full_path}")
 
 ############################## change here manully shift#####################################
-def process_block(block_before, block_after, wavelengths, save_path, filename, block_id, shift_value=40):
+def process_block(block_before, block_after, wavelengths, save_path, block_id, wv1, shift_value=0):
     """
     Process a 10x10 block of spectra, calculate the shift, and save the results.
     """
@@ -32,7 +32,8 @@ def process_block(block_before, block_after, wavelengths, save_path, filename, b
     mean_spectrum_before = np.mean(block_before, axis=(0, 1))
     mean_spectrum_after = np.mean(block_after, axis=(0, 1))
     
-    transformed_spectrum_before = 10 ** (-mean_spectrum_before)
+    ##T=10^-A
+    transformed_spectrum_before = 10 ** (-mean_spectrum_before)+0.04
     transformed_spectrum_after = 10 ** (-mean_spectrum_after)
 
     # Cross-correlation
@@ -40,13 +41,13 @@ def process_block(block_before, block_after, wavelengths, save_path, filename, b
     lag = np.argmax(correlation) - (len(transformed_spectrum_after) - 1)
     x_step = wavelengths[1] - wavelengths[0]
     x_shift = lag * x_step
-    print(f"Block {block_id}: Shift = {x_shift:.2f} units")
+    print(f"Block {block_id}: Shift = {x_shift:.0f}+{shift_value} units")
 
     # Subtract shifted spectra ############################## change here wavelength range#####################################
-    wavelength_start_index = int((1400 - 1 - 950) / 2)
-    wavelength_end_index = int((1600 - 950) / 2)
-    subspectrum = transformed_spectrum_before[wavelength_start_index:wavelength_end_index] - \
-                  transformed_spectrum_after[wavelength_start_index-int((x_shift + shift_value)/2):
+    wavelength_start_index = int((wv1 - 1 - 950) / 2)
+    wavelength_end_index = int((wv1+200 - 950) / 2)
+    # subspectrum = transformed_spectrum_before[wavelength_start_index:wavelength_end_index] - \
+    subspectrum =   transformed_spectrum_after[wavelength_start_index-int((x_shift + shift_value)/2):
                                               wavelength_end_index-int((x_shift + shift_value)/2)]
 
     # Save the subspectrum
@@ -62,24 +63,26 @@ def process_block(block_before, block_after, wavelengths, save_path, filename, b
     plt.xlabel('Wavenumber (cm⁻¹)')
     plt.ylabel('Intensity')
     plt.legend(loc='upper left')
-    plt.title(f"Spectra Comparison for Block {block_id}")
-    plt.savefig(os.path.join(save_path+'/figures/', f"{filename}_Block_{block_id}_Shifted.png"))
+    plt.title(f"Spectra Shift {x_shift:.0f}+{shift_value} for Block {block_id}")
+    plt.savefig(os.path.join(save_path+'/figures/', f"Block_{block_id}_Shifted.png"))
     plt.close()
 
-    plt.figure(figsize=(12, 8))
-    plt.plot(wavelengths[wavelength_start_index:wavelength_end_index], subspectrum, label='ROI Spectrum', color='r')
-    plt.xlabel('Wavenumber (cm⁻¹)')
-    plt.ylabel('Intensity')
-    plt.legend(loc='upper left')
-    plt.title(f"ROI Spectrum (Before - After) for Block {block_id}")
-    plt.savefig(os.path.join(save_path+'/figures/', f"{filename}_Block_{block_id}_ROI_Spectrum.png"))
-    plt.close()
+    # plt.figure(figsize=(12, 8))
+    # plt.plot(wavelengths[wavelength_start_index:wavelength_end_index], subspectrum, label='ROI Spectrum', color='r')
+    # plt.xlabel('Wavenumber (cm⁻¹)')
+    # plt.ylabel('Intensity')
+    # plt.legend(loc='upper left')
+    # plt.title(f"ROI Spectrum (Before - After) for Block {block_id}")
+    # plt.savefig(os.path.join(save_path+'/figures/', f"Block_{block_id}_ROI_Spectrum.png"))
+    # plt.close()
+    # st()
 
 def main():
-    filename = '99-1'
-    before_collagen = r'W:/3. Students/Tianyi/AuPillars_10nmAl2O3_12102024/reference/LMR_2.mat'
-    after_collagen = r'W:/3. Students/Tianyi/AuPillars_10nmAl2O3_12102024/' + filename + '/after/LMR_2.mat'
-    save_path = f'../res/AuPillars_Al2O3_12102024/3/10by10/{filename}'
+    wv1=1600
+    filename = f'{wv1}-{wv1+200}'
+    before_collagen = r'/Volumes/TIANYI/Sperodata/AuPillars_10nmAl2O3_01162025/before_sample/LMR_2.mat'
+    after_collagen = r'/Volumes/TIANYI/Sperodata/AuPillars_10nmAl2O3_01162025/after_sample/LMR_2.mat'
+    save_path = f'../res/AuPillars_10nmAl2O3_01162025/2ndafter/{filename}'
     os.makedirs(save_path, exist_ok=True)
     os.makedirs(save_path+'/subspectrum', exist_ok=True)
     os.makedirs(save_path+'/figures', exist_ok=True)
@@ -90,10 +93,10 @@ def main():
     data_after = loadmat(after_collagen)
     spectra_after = np.reshape(data_after['r'], (480, 480, 426))
 
-    x_start, x_end = 80, 200 
-    y_start, y_end = 100, 220 
-    x_start_1, x_end_1 = 250, 370
-    y_start_1, y_end_1 = 100, 220
+    x_start, x_end = 100, 220 #280, 400 #
+    y_start, y_end = 140, 260 #150, 270 #
+    x_start_1, x_end_1 = 280, 400 #100, 220 #
+    y_start_1, y_end_1 = 150, 270 #140, 260 #
     region_before = spectra_before[x_start_1:x_end_1, y_start_1:y_end_1, :]
     region_after = spectra_after[x_start:x_end, y_start:y_end, :]
 
@@ -112,7 +115,7 @@ def main():
     # plt.show()
     plt.savefig(os.path.join(save_path, 'cropped image example.png'))
     st()
-    block_size = 10
+    block_size = 20
     block_id = 0
 
     for i in range(0, region_before.shape[0], block_size):
@@ -121,7 +124,7 @@ def main():
             block_after = region_after[i:i+block_size, j:j+block_size, :]
             # st()
             if block_before.shape[0] == block_size and block_before.shape[1] == block_size:
-                process_block(block_before, block_after, wavelengths, save_path, filename, block_id)
+                process_block(block_before, block_after, wavelengths, save_path, block_id, wv1)
                 block_id += 1
 
 if __name__ == '__main__':
