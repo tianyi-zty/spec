@@ -6,9 +6,9 @@ import os
 
 
 # File path to your CSV file
-wv1=1600
-filename = f'{wv1}-{wv1+200}'
-path = r'../res/AuPillars_10nmAl2O3_01162025/2ndafter/'+filename+'/result/'
+wv1=950
+# filename = f'{wv1}-{wv1+200}'
+path = r'../res/Caf2_03072025_rat/kidney_oct/HMT_4/result/'
 file_path = path + 'detected_peaks.csv'
 os.makedirs(path, exist_ok=True)
 
@@ -57,8 +57,8 @@ else:
     print("No values found or file was empty.")
 
 ############################## change here wavelength range#####################################
-wavelength_start = wv1
-wavelength_end = wv1+200
+wavelength_start = 950
+wavelength_end = 1800
 ###histogram visualization###
 # Create a list of all values in the desired range
 all_values_in_range = [value for value, count in value_counts.items() for _ in range(count) if wavelength_start <= value <= wavelength_end]

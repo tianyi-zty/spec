@@ -162,8 +162,8 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                         print(f'Done processing: {file_name}.')
 
                         # # Plot and save the results
-                        component_names = ['nucleic acid', 'Amide III', 'amino acid residues', 'methyl bending',
-                                           'amide II band', 'amide I band','lipids']
+                        component_names = ['Phosphate band;Collagen','Amide III', 'amino acid', 'lipid',
+                                           'Amide II',"Ring C-C stretch of phenyl", 'Amide I',"lipids"]
                         component_colors = plt.cm.tab10.colors[:len(components)]
                         plot_results(spec, components, component_names, component_colors, output, file_name, save_plots_folder)
                         # st()
@@ -187,7 +187,7 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
 if __name__ == '__main__':
     # Define paths
-    path = '../res/CaF2_01162025/caf2'
+    path = '../res/Caf2_03072025_rat/kidney_oct/HMT_4'
     input_folder = path + '/subspectrum'
     output_csv = path + '/result/subspectrum_fitting_results.csv'
     summary_csv = path + '/result/summary_statistics.csv'

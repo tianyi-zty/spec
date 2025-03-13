@@ -8,8 +8,8 @@ from pdb import set_trace as st
 
 
 def main():
-    input_folder = r"../res/CaF2_01162025/caf2/subspectrum"
-    output_folder = r"../res/CaF2_01162025/caf2/result"
+    input_folder = r"../res/Caf2_03072025_rat/kidney_oct/HMT_4/subspectrum"
+    output_folder = r"../res/Caf2_03072025_rat/kidney_oct/HMT_4/result"
     os.makedirs(output_folder, exist_ok=True)
     csv_file = os.path.join(output_folder, "detected_peaks.csv")
 
@@ -49,23 +49,23 @@ def main():
                 # Save detected peaks to CSV data
                 csv_data.append([file, *minima_x])
                 # st()
-                # # Plot the second derivative with detected peaks
-                # plt.figure(figsize=(10, 6))
-                # plt.plot(wavelengths, second_derivative, label="Second Derivative", color="k", linewidth=2)
-                # plt.scatter(minima_x, minima_y, color="red", label="Local Minima")
-                # for x, y in zip(minima_x, minima_y):
-                #     plt.annotate(f'({x:.0f}, {y:.4f})', xy=(x, y), xytext=(x, y + 0.0001),
-                #                 fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', color='blue', lw=0.5))
-                # plt.xlabel("Wavenumber (cm⁻¹)")
-                # plt.ylabel("Intensity")
-                # plt.legend(loc="upper right")
-                # plt.title(f"Second Derivative of {file}")
-                # # Save the plot
-                # plot_filename = f"Second_Derivative_with_coordinates_{file.replace('.mat', '')}.png"
-                # # plt.show()
+                # Plot the second derivative with detected peaks
+                plt.figure(figsize=(10, 6))
+                plt.plot(wavelengths, second_derivative, label="Second Derivative", color="k", linewidth=2)
+                plt.scatter(minima_x, minima_y, color="red", label="Local Minima")
+                for x, y in zip(minima_x, minima_y):
+                    plt.annotate(f'({x:.0f}, {y:.4f})', xy=(x, y), xytext=(x, y + 0.0001),
+                                fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', color='blue', lw=0.5))
+                plt.xlabel("Wavenumber (cm⁻¹)")
+                plt.ylabel("Intensity")
+                plt.legend(loc="upper right")
+                plt.title(f"Second Derivative of {file}")
+                # Save the plot
+                plot_filename = f"Second_Derivative_with_coordinates_{file.replace('.mat', '')}.png"
+                # plt.show()
                 # st()
-                # plt.savefig(os.path.join(output_folder, plot_filename))
-                # plt.close()
+                plt.savefig(os.path.join(output_folder, plot_filename))
+                plt.close()
                 print(f"Done processing {file}.")
             
             except Exception as e:

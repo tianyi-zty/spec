@@ -1,11 +1,11 @@
 {
     "models": [
         {
-            "_comment": "nucleic acid",
+            "_comment": "Phosphate band ; Collagen",
             "type": "GaussianModel", 
             "params": {
                 "amplitude":{"value": 10, "min": 1, "max": 22},
-                "center": {"value": 1086, "min": 1080, "max": 1090},
+                "center": {"value": 1082, "min": 1080, "max": 1084},
                 "sigma": {"value": 20, "min": 0, "max": 45}
             }
         },
@@ -14,30 +14,30 @@
             "type": "GaussianModel", 
             "params": {
                 "amplitude":{"value": 10, "min": 1, "max": 22},
-                "center": {"value": 1240, "min": 1230, "max": 1245},
+                "center": {"value": 1308, "min": 1306, "max": 1310},
                 "sigma": {"value": 10, "min": 0, "max": 50}
             }
         },
         {
-            "_comment": "amino acid residues",
+            "_comment": "amino acid",
             "type": "GaussianModel", 
             "params": {
                 "amplitude":{"value": 5, "min": 1, "max": 18},
-                "center": {"value": 1394, "min": 1394, "max": 1396},
+                "center": {"value": 1400, "min": 1398, "max": 1402},
                 "sigma": {"value": 15, "min": 0, "max": 40}
             }
         },
         {
-            "_comment": "methyl bending",
+            "_comment": "lipid",
             "type": "GaussianModel", 
             "params": {
                 "amplitude": {"value": 4, "min": 1, "max": 10},  
-                "center": {"value": 1454, "min": 1450, "max": 1456},
+                "center": {"value": 1464, "min": 1462, "max": 1466},
                 "sigma": {"value": 10, "min": 0, "max": 30}
             }
         },
         {
-            "_comment": "amide II band",
+            "_comment": "Amide II",
             "type": "GaussianModel", 
             "params": {
                 "amplitude": {"value": 25, "min": 1, "max": 40}, 
@@ -46,11 +46,20 @@
             }
         },
         {
-            "_comment": "amide I band",
+            "_comment": "Ring C-C stretch of phenyl",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 25, "min": 1, "max": 40}, 
+                "center": {"value": 1586, "min": 1580, "max": 1590}, 
+                "sigma": {"value": 15, "min": 0, "max": 30}
+            }
+        },
+        {
+            "_comment": "Amide I",
             "type": "GaussianModel", 
             "params": {
                 "amplitude": {"value": 60, "min": 0.1, "max": 80}, 
-                "center": {"value": 1656, "min": 1600, "max": 1700}, 
+                "center": {"value": 1658, "min": 1600, "max": 1700}, 
                 "sigma": {"value": 10, "min": 0, "max": 30}
             }
         },
@@ -59,7 +68,7 @@
             "type": "GaussianModel", 
             "params": {
                 "amplitude": {"value": 0.5, "min": 0.1, "max": 2},  
-                "center": {"value": 1740, "min": 1735, "max": 1750},
+                "center": {"value": 1744, "min": 1735, "max": 1750},
                 "sigma": {"value": 5, "min": 1, "max": 12}
             }
         }
