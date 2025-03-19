@@ -54,10 +54,14 @@ def process_block(block_after, wavelengths, save_path, block_id):
     plt.close()
 
 def main():
-    filename = 'HMT_4'
+
+
+    filename = 'HMT_6'
     # before_collagen = r'/Volumes/TIANYI/Sperodata/CaF2_01162025/after_sample/LMT_1.mat'
-    after_collagen = r'D:/Caf2_03072025_rat/kidney_oct/HMT_4.mat'
-    save_path = f'../res/Caf2_03072025_rat/kidney_oct/{filename}'
+    after_collagen = r'W:/3. Students/Tianyi/Caf2_03132025_rat_ffpe/liver_ffpe/'+f'{filename}'+'.mat'
+    save_path = f'../res/Caf2_03072025_rat/liver_ffpe/{filename}'
+    save_path_avg = f'../res/Caf2_03072025_rat/liver_ffpe/average'
+    os.makedirs(save_path_avg, exist_ok=True)
     os.makedirs(save_path, exist_ok=True)
     os.makedirs(save_path+'/subspectrum', exist_ok=True)
     os.makedirs(save_path+'/figures', exist_ok=True)
@@ -76,7 +80,32 @@ def main():
     plt.tight_layout()
     # plt.show()
     plt.savefig(os.path.join(save_path, 'spectra image visualization.png'))
-    st()
+    # st()
+
+    mean_spectrum = np.mean(spectra_after, axis=(0, 1))
+    std_spectrum = np.std(spectra_after, axis=(0, 1))
+
+    # Plot the average spectrum with standard deviation
+    plt.figure(figsize=(12, 8))
+    # Plot the mean spectrum as a solid line
+    plt.plot(wavelengths, mean_spectrum, label='Average Spectrum', color='b', linewidth=2) 
+    # Fill the area representing standard deviation
+    plt.fill_between(wavelengths, 
+                    mean_spectrum - std_spectrum, 
+                    mean_spectrum + std_spectrum, 
+                    color='b', alpha=0.3, label='Standard Deviation')
+    # Labeling the plot
+    plt.xlabel('Wavenumber (cm⁻¹)')
+    plt.ylabel('Intensity')
+    plt.title(f'Average Spectrum and Standard Deviation)')
+    plt.legend()
+    plt.grid(True)
+    # plt.show()
+    # Save
+    plt.savefig(os.path.join(save_path_avg, f'average_spectrum_{filename}.png'))
+    print(f"Spectrum saved.")
+    # st()
+
 
     block_size = 100
     block_id = 0
@@ -89,6 +118,7 @@ def main():
                 process_block(block_after, wavelengths, save_path, block_id)
                 block_id += 1
             # st()
+
 
 if __name__ == '__main__':
     main()
