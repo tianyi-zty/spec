@@ -1,0 +1,139 @@
+{
+    "models": [
+        {
+            "_comment": "Collagen & phosphodiester groups of nucleic acids",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 1, "min": 0.1, "max": 8},
+                "center": {"value": 1030, "min": 1030, "max": 1032},
+                "sigma": {"value": 5, "min": 0, "max": 10}
+            }
+        },
+        {
+            "_comment": "nucleic acids and phospholipids",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 1, "min": 0.1, "max": 10},
+                "center": {"value": 1062, "min": 1062, "max": 1064},
+                "sigma": {"value": 5, "min": 0, "max": 10}
+            }
+        },
+        {
+            "_comment": "nucleic acids",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 1, "min": 0.1, "max": 10},
+                "center": {"value": 1084, "min": 1082, "max": 1084},
+                "sigma": {"value": 5, "min": 0, "max": 20}
+            }
+        },
+        {
+            "_comment": "C-O stretching band of collagen (type I)",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 1, "min": 0.1, "max": 10},
+                "center": {"value": 1164, "min": 1162, "max": 1164},
+                "sigma": {"value": 5, "min": 0, "max": 20}
+            }
+        },
+        {
+            "_comment": "Vibrational modes of collagen proteins-amide III",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 10, "min": 1, "max": 15},
+                "center": {"value": 1204, "min": 1202, "max": 1206},
+                "sigma": {"value": 5, "min": 0, "max": 15}
+            }
+        },
+        {
+            "_comment": "Relatively specific for collagen and nucleic acids",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 15, "min": 1, "max": 25},
+                "center": {"value": 1240, "min": 1236, "max": 1240},
+                "sigma": {"value": 10, "min": 0, "max": 20}
+            }
+        },
+        {
+            "_comment": "Amide III band components of proteins (41) Collagen",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 20, "min": 1, "max": 35},
+                "center": {"value": 1284, "min": 1284, "max": 1286},
+                "sigma": {"value": 10, "min": 0, "max": 30}
+            }
+        },
+        {
+            "_comment": "CH2 wagging",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 10, "min": 1, "max": 15},
+                "center": {"value": 1342, "min": 1338, "max": 1342},
+                "sigma": {"value": 5, "min": 0, "max": 20}
+            }
+        },
+        {
+            "_comment": "Stretching C-O, deformation C-H, deformation N-H",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 5, "min": 1, "max": 15},
+                "center": {"value": 1382, "min": 1380, "max": 1382},
+                "sigma": {"value": 5, "min": 0, "max": 20}
+            }
+        },
+        {
+            "_comment": "CH3 asymmetric deformationd",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 5, "min": 1, "max": 15},
+                "center": {"value": 1404, "min": 1402, "max": 1404},
+                "sigma": {"value": 5, "min": 0, "max":20}
+            }
+        },
+        {
+            "_comment": "dasCH3 of collagen",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 5, "min": 1, "max": 15},
+                "center": {"value": 1458, "min": 1456, "max": 1460},
+                "sigma": {"value": 5, "min": 0, "max":20}
+            }
+        },
+        {
+            "_comment": "Amide II",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 10, "min": 1, "max": 50}, 
+                "center": {"value": 1540, "min": 1524, "max": 1568}, 
+                "sigma": {"value": 15, "min": 0, "max": 30}
+            }
+        },
+        {
+            "_comment": "Amide I",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 10, "min": 1, "max": 80}, 
+                "center": {"value": 1640, "min": 1628, "max": 1680}, 
+                "sigma": {"value": 10, "min": 0, "max": 30}
+            }
+        },
+        {
+            "_comment": "b-sheet of amide I",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 10, "min": 1, "max": 80}, 
+                "center": {"value": 1692, "min": 1690, "max": 1698}, 
+                "sigma": {"value": 10, "min": 0, "max": 20}
+            }
+        },
+        {
+            "_comment": "lipids",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 5, "min": 1, "max": 10}, 
+                "center": {"value": 1782, "min": 1780, "max": 1784}, 
+                "sigma": {"value": 5, "min": 0, "max": 20}
+            }
+        }
+    ]
+}

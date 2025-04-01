@@ -1,7 +1,16 @@
 {
     "models": [
         {
-            "_comment": "Phosphate band ; Collagen",
+            "_comment": "Glycogen",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 3, "min": 0, "max": 10},
+                "center": {"value": 1028, "min": 1028, "max": 1030},
+                "sigma": {"value": 10, "min": 0, "max": 30}
+            }
+        },
+        {
+            "_comment": "nucleic acids",
             "type": "GaussianModel", 
             "params": {
                 "amplitude":{"value": 3, "min": 0, "max": 10},
@@ -10,29 +19,30 @@
             }
         },
         {
-            "_comment": "Phosphodiester",
+            "_comment": "Glycogen",
             "type": "GaussianModel", 
             "params": {
-                "amplitude":{"value": 3, "min": 0, "max": 10},
-                "center": {"value": 1152, "min": 1150, "max": 1154},
+                "amplitude":{"value": 5, "min": 0, "max": 10},
+                "center": {"value": 1152, "min": 1152, "max": 1154},
                 "sigma": {"value": 5, "min": 0, "max": 30}
             }
         },
         {
-            "_comment": "Amide III",
+            "_comment": "amide III and phosphate vibration of nucleic acids",
             "type": "GaussianModel", 
             "params": {
-                "amplitude":{"value": 5, "min": 0, "max": 10},
-                "center": {"value": 1308, "min": 1308, "max": 1310},
+                "amplitude":{"value": 3, "min": 0, "max": 10},
+                "center": {"value": 1232, "min": 1232, "max": 1240},
                 "sigma": {"value": 5, "min": 0, "max": 30}
             }
         },
+        
         {
             "_comment": "fatty acids and amino acids",
             "type": "GaussianModel", 
             "params": {
                 "amplitude":{"value": 1, "min": 0, "max": 2},
-                "center": {"value": 1400, "min": 1400, "max": 1402},
+                "center": {"value": 1400, "min": 1400, "max": 1404},
                 "sigma": {"value": 1, "min": 0, "max": 10}
             }
         },
@@ -41,7 +51,7 @@
             "type": "GaussianModel", 
             "params": {
                 "amplitude": {"value": 5, "min": 0, "max": 10},  
-                "center": {"value": 1464, "min": 1462, "max": 1466},
+                "center": {"value": 1464, "min": 1462, "max": 1464},
                 "sigma": {"value": 20, "min": 0, "max": 30}
             }
         },
@@ -50,17 +60,8 @@
             "type": "GaussianModel", 
             "params": {
                 "amplitude": {"value": 10, "min": 1, "max": 20}, 
-                "center": {"value": 1548, "min": 1546, "max": 1550}, 
+                "center": {"value": 1548, "min": 1546, "max": 1586}, 
                 "sigma": {"value": 10, "min": 0, "max": 30}
-            }
-        },
-        {
-            "_comment": "base vibrations",
-            "type": "GaussianModel", 
-            "params": {
-                "amplitude": {"value": 1, "min": 0, "max": 2}, 
-                "center": {"value": 1586, "min": 1584, "max": 1588}, 
-                "sigma": {"value": 5, "min": 0, "max": 10}
             }
         },
         {
@@ -77,7 +78,7 @@
             "type": "GaussianModel", 
             "params": {
                 "amplitude": {"value": 2, "min": 1, "max": 5},  
-                "center": {"value": 1744, "min": 1744, "max": 1746},
+                "center": {"value": 1744, "min": 1744, "max": 1748},
                 "sigma": {"value": 5, "min": 1, "max": 20}
             }
         }

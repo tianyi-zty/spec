@@ -2,57 +2,31 @@
     "models": [
         
         {
-            "_comment": "Phosphate band ; Collagen",
-            "type": "GaussianModel", 
-            "params": {
-                "amplitude":{"value": 5, "min": 0, "max": 20},
-                "center": {"value": 1084, "min": 1084, "max": 1086},
-                "sigma": {"value": 5, "min": 0, "max": 50}
-            }
-        },
-        {
-            "_comment": "Amide III",
-            "type": "GaussianModel", 
-            "params": {
-                "amplitude":{"value": 3, "min": 0, "max": 20},
-                "center": {"value": 1308, "min": 1308, "max": 1310},
-                "sigma": {"value": 5, "min": 0, "max": 30}
-            }
-        },
-        {
-            "_comment": "?",
-            "type": "GaussianModel", 
-            "params": {
-                "amplitude":{"value": 1, "min": 0, "max": 3},
-                "center": {"value": 1386, "min": 1384, "max": 1388},
-                "sigma": {"value": 1, "min": 0, "max": 10}
-            }
-        },
-        {
-            "_comment": "fatty acids and amino acids",
+            "_comment": "methyl groups of proteins",
             "type": "GaussianModel", 
             "params": {
                 "amplitude":{"value": 1, "min": 0, "max": 2},
-                "center": {"value": 1402, "min": 1402, "max": 1404},
+                "center": {"value": 1402, "min": 1400, "max": 1404},
                 "sigma": {"value": 1, "min": 0, "max": 10}
             }
         },
+        
         {
             "_comment": "lipids, fatty acids",
             "type": "GaussianModel", 
             "params": {
-                "amplitude":{"value": 1, "min": 0, "max": 5},
-                "center": {"value": 1446, "min": 1444, "max": 1446},
-                "sigma": {"value": 1, "min": 0, "max": 10}
+                "amplitude":{"value": 3, "min": 0, "max": 10},
+                "center": {"value": 1444, "min": 1444, "max": 1446},
+                "sigma": {"value": 5, "min": 0, "max": 30}
             }
         },
         {
             "_comment": "acyl chain of lipid",
             "type": "GaussianModel", 
             "params": {
-                "amplitude": {"value": 5, "min": 0, "max": 15},  
-                "center": {"value": 1464, "min": 1462, "max": 1466},
-                "sigma": {"value": 20, "min": 0, "max": 30}
+                "amplitude": {"value": 3, "min": 0, "max": 10},  
+                "center": {"value": 1464, "min": 1462, "max": 1464},
+                "sigma": {"value": 5, "min": 0, "max": 30}
             }
         },
         {
@@ -60,19 +34,11 @@
             "type": "GaussianModel", 
             "params": {
                 "amplitude": {"value": 10, "min": 1, "max": 25}, 
-                "center": {"value": 1546, "min": 1546, "max": 1550}, 
+                "center": {"value": 1546, "min": 1546, "max": 1586}, 
                 "sigma": {"value": 10, "min": 0, "max": 30}
             }
         },
-        {
-            "_comment": "base vibrations",
-            "type": "GaussianModel", 
-            "params": {
-                "amplitude": {"value": 1, "min": 0, "max": 2}, 
-                "center": {"value": 1586, "min": 1584, "max": 1588}, 
-                "sigma": {"value": 5, "min": 0, "max": 10}
-            }
-        },
+        
         {
             "_comment": "Amide I",
             "type": "GaussianModel", 
@@ -83,13 +49,14 @@
             }
         },
         {
-            "_comment": "lipids, fatty acids",
+            "_comment": "lipids",
             "type": "GaussianModel", 
             "params": {
                 "amplitude": {"value": 2, "min": 1, "max": 5},  
-                "center": {"value": 1746, "min": 1744, "max": 1746},
+                "center": {"value": 1744, "min": 1744, "max": 1748},
                 "sigma": {"value": 5, "min": 1, "max": 20}
             }
         }
+        
     ]
 }

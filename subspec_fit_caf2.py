@@ -88,7 +88,7 @@ def plot_results(spec, components, component_names, component_colors, output, fi
                         arrowprops=dict(arrowstyle='->', color='gray'), fontsize=12,
                         ha='left', va='center')
 
-    ax.legend(loc="upper right")
+    ax.legend(loc="upper left")
     ax.set_xlabel('Wavelength (cm⁻¹)', fontsize=16)
     ax.set_ylabel('Intensity', fontsize=16)
     ax.set_title(f'Spectrum Fitting Results - {file_name}', fontsize=18)
@@ -116,7 +116,7 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
         for root, _, files in os.walk(input_folder):
             for file_name in files:
-                if file_name.endswith(f'.mat'):
+                if file_name.endswith(f'pixel_0_(253,211).mat'):
                     file_path = os.path.join(root, file_name)
 
                     # Load the .mat file
@@ -134,7 +134,7 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                     
                     try:
                         # Perform model fitting
-                        model, params = generate_model_from_specification(json_file, spec, threshold=0.2)
+                        model, params = generate_model_from_specification(json_file, spec, threshold=0.5)
                         # st()
                         output = model.fit(spec['y'] - min(spec['y']), params, x=spec['x'])
                         # st()
@@ -160,11 +160,13 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                             writer.writerow([file_name, center_value, amplitude, sigma, integral_value])
                             integrals_for_file.append(integral_value)
                         print(f'Done processing: {file_name}.')
-
+                        st()
                         # # Plot and save the results
-                        component_names = ['Phosphate band ; Collagen','Amide III','?','fatty acids and amino acids', 'lipids, fatty acids', 'acyl chain of lipid',
-                                           'Amide II',"base vibrations?", 'Amide I',"lipids, fatty acids"]
-                        component_colors = plt.cm.tab10.colors[:len(components)]
+                        component_names = ['Collagen & phosphodiester groups of nucleic acids','nucleic acids and phospholipids','nucleic acids',
+                                           'C-O stretching band of collagen (type I)','amide III','Relatively specific for collagen and nucleic acids',
+                                           'Amide III','CH2 wagging','Stretching C-O, deformation C-H, deformation N-H','CH3 asymmetric deformation',
+                                           'dasCH3 of collagen', 'Amide II','Amide I','b-sheet of amide I','lipids']
+                        component_colors = plt.cm.tab20.colors[:len(components)]
                         plot_results(spec, components, component_names, component_colors, output, file_name, save_plots_folder)
                         # st()
 
@@ -187,12 +189,12 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
 if __name__ == '__main__':
     # Define paths
-    path = '../res/Caf2_03072025_rat/liver_ffpe/HMT_6'
+    path = '../res/Agcube/03182025_DriedCollagen_Agcubes/1_HMR'
     input_folder = path + '/subspectrum'
     output_csv = path + '/result/subspectrum_fitting_results.csv'
     summary_csv = path + '/result/summary_statistics.csv'
     save_plots_folder = path + '/plots'
-    json_file = 'model_specification_ffpe.json'
+    json_file = 'model_specification_particle_col1.json'
     os.makedirs(input_folder, exist_ok=True)
     os.makedirs(path+'/result', exist_ok=True)
     os.makedirs(save_plots_folder, exist_ok=True)

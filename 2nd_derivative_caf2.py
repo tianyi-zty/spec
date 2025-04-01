@@ -8,8 +8,8 @@ from pdb import set_trace as st
 
 
 def main():
-    input_folder = r"../res/Caf2_03072025_rat/liver_ffpe/HMT_6/subspectrum"
-    output_folder = r"../res/Caf2_03072025_rat/liver_ffpe/HMT_6/result"
+    input_folder = r"../res/Agcube/03182025_DriedCollagen_Agcubes/1_HMR/subspectrum"
+    output_folder = r"../res/Agcube/03182025_DriedCollagen_Agcubes/1_HMR/result"
     os.makedirs(output_folder, exist_ok=True)
     csv_file = os.path.join(output_folder, "detected_peaks.csv")
 

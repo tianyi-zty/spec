@@ -8,7 +8,7 @@ import os
 # File path to your CSV file
 wv1=950
 # filename = f'{wv1}-{wv1+200}'
-path = r'../res/Caf2_03072025_rat/liver_ffpe/HMT_6/result/'
+path = r'../res/Agcube/03182025_DriedCollagen_Agcubes/1_HMR/result/'
 file_path = path + 'detected_peaks.csv'
 os.makedirs(path, exist_ok=True)
 
@@ -49,8 +49,8 @@ with open(path + 'output_counts.txt', 'w') as output_file:
 
 # Print the top 10 most common values
 if value_counts:
-    print("Top 20 occurrences:")
-    top_10 = value_counts.most_common(20)
+    print("Top 40 occurrences:")
+    top_10 = value_counts.most_common(40)
     for value, count in top_10:
         print(f"{value}:{count}")
 else:
