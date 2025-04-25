@@ -1,85 +1,69 @@
 {
     "models": [
-        {
-            "_comment": "Glycogen",
-            "type": "GaussianModel", 
-            "params": {
-                "amplitude":{"value": 3, "min": 0, "max": 10},
-                "center": {"value": 1028, "min": 1028, "max": 1030},
-                "sigma": {"value": 10, "min": 0, "max": 30}
-            }
-        },
+        
         {
             "_comment": "nucleic acids",
             "type": "GaussianModel", 
             "params": {
-                "amplitude":{"value": 3, "min": 0, "max": 10},
+                "amplitude":{"value": 3, "min": 0, "max": 15},
                 "center": {"value": 1082, "min": 1080, "max": 1084},
                 "sigma": {"value": 10, "min": 0, "max": 30}
             }
         },
-        {
-            "_comment": "Glycogen",
-            "type": "GaussianModel", 
-            "params": {
-                "amplitude":{"value": 5, "min": 0, "max": 10},
-                "center": {"value": 1152, "min": 1152, "max": 1154},
-                "sigma": {"value": 5, "min": 0, "max": 30}
-            }
-        },
+        
         {
             "_comment": "amide III and phosphate vibration of nucleic acids",
             "type": "GaussianModel", 
             "params": {
-                "amplitude":{"value": 3, "min": 0, "max": 10},
+                "amplitude":{"value": 3, "min": 0, "max": 15},
                 "center": {"value": 1232, "min": 1232, "max": 1240},
-                "sigma": {"value": 5, "min": 0, "max": 30}
+                "sigma": {"value": 5, "min": 0, "max": 35}
             }
         },
         
         {
-            "_comment": "fatty acids and amino acids",
+            "_comment": "methyl groups of proteins",
             "type": "GaussianModel", 
             "params": {
-                "amplitude":{"value": 1, "min": 0, "max": 2},
+                "amplitude":{"value": 1, "min": 0, "max": 15},
                 "center": {"value": 1400, "min": 1400, "max": 1404},
-                "sigma": {"value": 1, "min": 0, "max": 10}
+                "sigma": {"value": 1, "min": 0, "max": 20}
             }
         },
         {
             "_comment": "acyl chain of lipid",
             "type": "GaussianModel", 
             "params": {
-                "amplitude": {"value": 5, "min": 0, "max": 10},  
+                "amplitude": {"value": 5, "min": 0, "max": 15},  
                 "center": {"value": 1464, "min": 1462, "max": 1464},
-                "sigma": {"value": 20, "min": 0, "max": 30}
+                "sigma": {"value": 10, "min": 0, "max": 20}
             }
         },
         {
             "_comment": "Amide II",
             "type": "GaussianModel", 
             "params": {
-                "amplitude": {"value": 10, "min": 1, "max": 20}, 
+                "amplitude": {"value": 10, "min": 1, "max": 50}, 
                 "center": {"value": 1548, "min": 1546, "max": 1586}, 
-                "sigma": {"value": 10, "min": 0, "max": 30}
+                "sigma": {"value": 10, "min": 0, "max": 20}
             }
         },
         {
             "_comment": "Amide I",
             "type": "GaussianModel", 
             "params": {
-                "amplitude": {"value":20, "min": 1, "max": 30}, 
+                "amplitude": {"value":20, "min": 1, "max": 80}, 
                 "center": {"value": 1658, "min": 1656, "max": 1660}, 
-                "sigma": {"value": 10, "min": 0, "max": 30}
+                "sigma": {"value": 10, "min": 0, "max": 20}
             }
         },
         {
             "_comment": "lipids",
             "type": "GaussianModel", 
             "params": {
-                "amplitude": {"value": 2, "min": 1, "max": 5},  
+                "amplitude": {"value": 2, "min": 1, "max": 3},  
                 "center": {"value": 1744, "min": 1744, "max": 1748},
-                "sigma": {"value": 5, "min": 1, "max": 20}
+                "sigma": {"value": 5, "min": 1, "max": 15}
             }
         }
     ]

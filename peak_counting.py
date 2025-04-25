@@ -8,7 +8,7 @@ import os
 # File path to your CSV file
 wv1=950
 # filename = f'{wv1}-{wv1+200}'
-path = r'../res/Agcube/03182025_DriedCollagen_Agcubes/1_HMR/result/'
+path = r'../res/Caf2_03072025_rat/kidney_oct/average/result/'
 file_path = path + 'detected_peaks.csv'
 os.makedirs(path, exist_ok=True)
 

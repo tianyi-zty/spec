@@ -13,8 +13,8 @@ def main():
         # Plot the average spectrum with standard deviation
         plt.figure(figsize=(12, 8))
 
-        path = r'../res/Agcube/03272025_spincoating/HMR_1_4D/subspectrum/'
-        filename = '03272025_spincoating/HMR_1_4D'
+        path = r'../res/Agcube/04192025_colgel1/HMR_11/visual/'
+        filename = '04192025_colgel1/HMR_11/9+10'
 
         for file in os.listdir(path):
             if file.endswith(".mat"):

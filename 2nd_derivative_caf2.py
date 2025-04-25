@@ -8,8 +8,8 @@ from pdb import set_trace as st
 
 
 def main():
-    input_folder = r"../res/Agcube/03182025_DriedCollagen_Agcubes/1_HMR/subspectrum"
-    output_folder = r"../res/Agcube/03182025_DriedCollagen_Agcubes/1_HMR/result"
+    input_folder = r"../res/Caf2_03072025_rat/kidney_ffpe/average/spectrum"
+    output_folder = r"../res/Caf2_03072025_rat/kidney_ffpe/average/result"
     os.makedirs(output_folder, exist_ok=True)
     csv_file = os.path.join(output_folder, "detected_peaks.csv")
 
@@ -50,16 +50,17 @@ def main():
                 csv_data.append([file, *minima_x])
                 # st()
                 # Plot the second derivative with detected peaks
-                plt.figure(figsize=(10, 6))
-                plt.plot(wavelengths, second_derivative, label="Second Derivative", color="k", linewidth=2)
+                plt.figure(figsize=(10, 2))
+                plt.plot(wavelengths, second_derivative,label="Second Derivative", color="k", linewidth=2)
                 plt.scatter(minima_x, minima_y, color="red", label="Local Minima")
                 for x, y in zip(minima_x, minima_y):
-                    plt.annotate(f'({x:.0f}, {y:.4f})', xy=(x, y), xytext=(x, y + 0.0001),
-                                fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', color='blue', lw=0.5))
-                plt.xlabel("Wavenumber (cm⁻¹)")
-                plt.ylabel("Intensity")
-                plt.legend(loc="upper right")
-                plt.title(f"Second Derivative of {file}")
+                    plt.annotate(f'{x:.0f}', xy=(x, y), xytext=(x, y - 0.0002),
+                                fontsize=12, ha='center', arrowprops=dict(arrowstyle='->', color='blue', lw=0.5))
+                # plt.xlabel("Wavenumber (cm⁻¹)")
+                # plt.ylabel("Second Derivative")
+                plt.legend(loc="upper left")
+                plt.axis('off')
+                # plt.title(f"Second Derivative of {file}")
                 # Save the plot
                 plot_filename = f"Second_Derivative_with_coordinates_{file.replace('.mat', '')}.png"
                 # plt.show()
