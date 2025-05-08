@@ -162,8 +162,8 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                         print(f'Done processing: {file_name}.')
 
                         # # Plot and save the results
-                        component_names = ['Phosphate band;Collagen','Amide III', 'amino acid', 'lipid',
-                                           'Amide II',"Ring C-C stretch of phenyl", 'Amide I',"lipids"]
+                        component_names = ['Phosphate band;Collagen','Amide III','Collagen','lipid',
+                                           'Amide II','Amide I','lipids']
                         component_colors = plt.cm.tab10.colors[:len(components)]
                         plot_results(spec, components, component_names, component_colors, output, file_name, save_plots_folder)
                         # st()
@@ -187,12 +187,12 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
 if __name__ == '__main__':
     # Define paths
-    path = '../res/Caf2_03072025_rat/kidney_oct/HMT_4'
+    path = '../res/Caf2_03132025_rat_ffpe/liver_ffpe/HMT_2/'
     input_folder = path + '/subspectrum'
     output_csv = path + '/result/subspectrum_fitting_results.csv'
     summary_csv = path + '/result/summary_statistics.csv'
     save_plots_folder = path + '/plots'
-    json_file = 'model_specification_caf2.json'
+    json_file = 'model_specification_ffpe.json'
     os.makedirs(input_folder, exist_ok=True)
     os.makedirs(path+'/result', exist_ok=True)
     os.makedirs(save_plots_folder, exist_ok=True)

@@ -54,10 +54,10 @@ def process_block(block_after, wavelengths, save_path, block_id):
     plt.close()
 
 def main():
-    filename = 'HMT_4'
+    filename = 'HMT_2'
     # before_collagen = r'/Volumes/TIANYI/Sperodata/CaF2_01162025/after_sample/LMT_1.mat'
-    after_collagen = r'D:/Caf2_03072025_rat/kidney_oct/HMT_4.mat'
-    save_path = f'../res/Caf2_03072025_rat/kidney_oct/{filename}'
+    after_collagen = r'/Volumes/TIANYI/Caf2_03132025_rat_ffpe/liver_ffpe/HMT_2.mat'
+    save_path = f'../res/Caf2_03132025_rat_ffpe/liver_ffpe/{filename}'
     os.makedirs(save_path, exist_ok=True)
     os.makedirs(save_path+'/subspectrum', exist_ok=True)
     os.makedirs(save_path+'/figures', exist_ok=True)

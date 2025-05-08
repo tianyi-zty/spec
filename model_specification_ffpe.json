@@ -1,0 +1,67 @@
+{
+    "models": [
+        {
+            "_comment": "Phosphate band;Collagen",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value":20, "min": 1, "max": 30}, 
+                "center": {"value": 1082, "min": 1082, "max": 1084}, 
+                "sigma": {"value": 10, "min": 0, "max": 50}
+            }
+        },
+        {
+            "_comment": "Amide III",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value":20, "min": 1, "max": 30}, 
+                "center": {"value": 1308, "min": 1308, "max": 1310}, 
+                "sigma": {"value": 10, "min": 0, "max": 30}
+            }
+        },
+        {
+            "_comment": "Collagen",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value":20, "min": 1, "max": 30}, 
+                "center": {"value": 1344, "min": 1344, "max": 1346}, 
+                "sigma": {"value": 10, "min": 0, "max": 30}
+            }
+        },
+        {
+            "_comment": "lipids",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value":20, "min": 1, "max": 30}, 
+                "center": {"value": 1460, "min": 1444, "max": 1466}, 
+                "sigma": {"value": 10, "min": 0, "max": 30}
+            }
+        },
+        {
+            "_comment": "Amide II",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value":20, "min": 1, "max": 30}, 
+                "center": {"value": 1548, "min": 1548, "max": 1550}, 
+                "sigma": {"value": 10, "min": 0, "max": 40}
+            }
+        },
+        {
+            "_comment": "Amide I",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 10, "min": 1, "max": 40},  
+                "center": {"value": 1660, "min": 1656, "max": 1662},
+                "sigma": {"value": 5, "min": 1, "max": 30}
+            }
+        },
+        {
+            "_comment": "lipids",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 10, "min": 1, "max": 40},  
+                "center": {"value": 1746, "min": 1746, "max": 1748},
+                "sigma": {"value": 5, "min": 1, "max": 30}
+            }
+        }
+    ]
+}
