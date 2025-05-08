@@ -8,7 +8,7 @@ import os
 # File path to your CSV file
 wv1=950
 # filename = f'{wv1}-{wv1+200}'
-path = r'../res/Caf2_03072025_rat/kidney_oct/average/result/'
+path = r'../res/Caf2_03072025_rat/morepeaks/liver_oct/average/result/'
 file_path = path + 'detected_peaks.csv'
 os.makedirs(path, exist_ok=True)
 
@@ -39,6 +39,7 @@ except Exception as e:
 # Generate simplified output
 if value_counts:
     result = ", ".join([f"{value}:{count}" for value, count in sorted(value_counts.items())])
+    # st()
     # print(f"Value counts (value:count):\n{result}")
 else:
     print("No values found or file was empty.")

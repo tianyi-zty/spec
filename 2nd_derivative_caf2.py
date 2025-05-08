@@ -8,8 +8,8 @@ from pdb import set_trace as st
 
 
 def main():
-    input_folder = r"../res/Caf2_03072025_rat/kidney_ffpe/average/spectrum"
-    output_folder = r"../res/Caf2_03072025_rat/kidney_ffpe/average/result"
+    input_folder = r"../res/Agcube/04292025_0.1mgml_colgel_ployonsubstrate/HMR_3B_1/correction"
+    output_folder = r"../res/Agcube/04292025_0.1mgml_colgel_ployonsubstrate/HMR_3B_1/correction"
     os.makedirs(output_folder, exist_ok=True)
     csv_file = os.path.join(output_folder, "detected_peaks.csv")
 
@@ -20,7 +20,7 @@ def main():
     # Initialize CSV data
     csv_data = []
 
-    def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0006):
+    def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0008):
         indices = np.where((wavelengths >= start) & (wavelengths <= end))[0]
         second_derivative = savgol_filter(spectrum, window_length=window, polyorder=polyorder, deriv=2)
         minima_indices, _ = find_peaks(-second_derivative, prominence=prominence)
@@ -36,7 +36,7 @@ def main():
                 # Load spectrum data
                 data = loadmat(mat_path)
                 # st()
-                spectra = data['spectrum'].flatten()
+                spectra = data['corrected_spectrum'].flatten()
                 # st()
                 ############## need to dnamically adjust the wavelengths array based on the spectrum size################
                 spectrum_size = len(spectra)
