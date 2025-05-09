@@ -36,9 +36,9 @@ def process_pixel(spectra, wavelengths, save_path, x, y, pixel_id):
     plt.close()
 
 def main():
-    filename = 'HMR_4B_1'
-    input_file = rf'W:/3. Students/Tianyi/Agcube/04292025_0.1mgml_colgel_ployonsubstrate/{filename}.mat'
-    save_path = f'../res/Agcube/04292025_0.1mgml_colgel_ployonsubstrate/{filename}'
+    filename = 'HMR_11'
+    input_file = rf'W:/3. Students/Tianyi/Agcube/04192025_colgel1/{filename}.mat'
+    save_path = f'../res/Agcube/04192025_colgel1/{filename}/non'
 
     os.makedirs(save_path, exist_ok=True)
 
@@ -53,12 +53,12 @@ def main():
         return
     # st()
     fig, ax = plt.subplots(1, 1, figsize=(8, 8))
-    ax.imshow(spectra[:,:,330].T)
+    ax.imshow(spectra[:,:,420].T)
     ax.set_title('spectra')
     plt.tight_layout()
-    # plt.show()
-    # st()
-    plt.savefig(os.path.join(save_path, 'spectra image visualization T.png'))
+    plt.show()
+    st()
+    # plt.savefig(os.path.join(save_path, 'spectra image visualization T.png'))
     # st()
 
 
@@ -76,8 +76,8 @@ def main():
 
 
     # Define the list of (x, y) coordinates to analyze
-    pixel_coordinates = [(130,302),(146,277),(165,231),(288,258),(297,250)]  # Update this list as needed (211,253),(222,258),(234,263),(254,276),(283,263)
-    # pixel_coordinates = [(181,285),(100,273)] #non-partical
+    # pixel_coordinates = [(328,153),(277,176),(253,184),(217,192),(329,218),(256,244),(332,293),(328,300),(237,295),(212,302)]  # Update this list as needed (211,253),(222,258),(234,263),(254,276),(283,263)
+    pixel_coordinates = [(263,164),(337,141),(331,228),(235,271),(272,273),(342,296)] #non-partical
     # Process each selected pixel
     for pixel_id, (x, y) in enumerate(pixel_coordinates):
         if 0 <= x < spectra.shape[0] and 0 <= y < spectra.shape[1]:  # Ensure valid indices

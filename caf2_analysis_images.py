@@ -33,8 +33,8 @@ def main():
 
     filename_list = ['HMT_1','HMT_2','HMT_3','HMT_4','HMT_5','HMT_6','HMT_7','HMT_8','HMT_9','HMT_10']
     for filename in filename_list:
-        after_collagen = r'W:/3. Students/Tianyi/Caf2_03132025_rat_ffpe/liver_ffpe/'+f'{filename}'+'.mat'
-        save_path = f'../res/Caf2_03072025_rat/morepeaks/liver_ffpe/average/'
+        after_collagen = r'W:/3. Students/Tianyi/Caf2_03132025_rat_ffpe/kidney_ffpe/'+f'{filename}'+'.mat'
+        save_path = f'../res/Caf2_03072025_rat/kidney_ffpe/average/'
         os.makedirs(save_path, exist_ok=True)
         os.makedirs(save_path+'/spectrum', exist_ok=True)
         os.makedirs(save_path+'/figures', exist_ok=True)
