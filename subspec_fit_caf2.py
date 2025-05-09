@@ -180,12 +180,6 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                         component_names = ["nucleic acids","amide III and phosphate vibration of nucleic acids","methyl groups of proteins","acyl chain of lipid","Amide II","Amide I","lipids"] #kidney oct
                         component_colors = plt.cm.tab20.colors[:len(components)]
 
-<<<<<<< HEAD
-                        # # Plot and save the results
-                        component_names = ['Phosphate band;Collagen','Amide III','Collagen','lipid',
-                                           'Amide II','Amide I','lipids']
-                        component_colors = plt.cm.tab10.colors[:len(components)]
-=======
                         # component_names = [ "Glycogen","nucleic acids","Glycogen","amide III and phosphate vibration of nucleic acids","methyl groups of proteins","acyl chain of lipid","Amide II", "Amide I", "lipids"] #liver oct
                         # component_colors = ((1.0, 0.596078431372549, 0.5882352941176471),(0.12156862745098039, 0.4666666666666667, 0.7058823529411765),(0.5803921568627451, 0.403921568627451, 0.7411764705882353),
                         #                     (0.6823529411764706, 0.7803921568627451, 0.9098039215686274),
@@ -204,7 +198,6 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                         #       (0.8392156862745098, 0.15294117647058825, 0.1568627450980392), 
                         #       (1.0, 0.596078431372549, 0.5882352941176471), 
                         #       (0.5803921568627451, 0.403921568627451, 0.7411764705882353))
->>>>>>> 9082f13a1562e3a793021b7d4696fa39f06dce59
                         plot_results(spec, components, component_names, component_colors, output, file_name, save_plots_folder)
                         # st()
 
@@ -227,21 +220,12 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
 if __name__ == '__main__':
     # Define paths
-<<<<<<< HEAD
-    path = '../res/Caf2_03132025_rat_ffpe/liver_ffpe/HMT_2/'
-    input_folder = path + '/subspectrum'
-    output_csv = path + '/result/subspectrum_fitting_results.csv'
-    summary_csv = path + '/result/summary_statistics.csv'
-    save_plots_folder = path + '/plots'
-    json_file = 'model_specification_ffpe.json'
-=======
     path = '../res/Caf2_03072025_rat/kidney_oct/average'
     input_folder = path + '/spectrum'
     output_csv = path + '/result/subspectrum_fitting_results.csv'
     summary_csv = path + '/result/summary_statistics.csv'
     save_plots_folder = path + '/plots'
     json_file = 'model_specification_kidneyoct.json'
->>>>>>> 9082f13a1562e3a793021b7d4696fa39f06dce59
     os.makedirs(input_folder, exist_ok=True)
     os.makedirs(path+'/result', exist_ok=True)
     os.makedirs(save_plots_folder, exist_ok=True)

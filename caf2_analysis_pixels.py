@@ -54,12 +54,6 @@ def process_block(block_after, wavelengths, save_path, block_id):
     plt.close()
 
 def main():
-<<<<<<< HEAD:caf2_analysis.py
-    filename = 'HMT_2'
-    # before_collagen = r'/Volumes/TIANYI/Sperodata/CaF2_01162025/after_sample/LMT_1.mat'
-    after_collagen = r'/Volumes/TIANYI/Caf2_03132025_rat_ffpe/liver_ffpe/HMT_2.mat'
-    save_path = f'../res/Caf2_03132025_rat_ffpe/liver_ffpe/{filename}'
-=======
 
 
     filename = 'HMT_6'
@@ -68,7 +62,6 @@ def main():
     save_path = f'../res/Caf2_03072025_rat/liver_ffpe/{filename}'
     save_path_avg = f'../res/Caf2_03072025_rat/liver_ffpe/average'
     os.makedirs(save_path_avg, exist_ok=True)
->>>>>>> 9082f13a1562e3a793021b7d4696fa39f06dce59:caf2_analysis_pixels.py
     os.makedirs(save_path, exist_ok=True)
     os.makedirs(save_path+'/subspectrum', exist_ok=True)
     os.makedirs(save_path+'/figures', exist_ok=True)
