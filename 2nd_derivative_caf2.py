@@ -8,8 +8,13 @@ from pdb import set_trace as st
 
 
 def main():
+<<<<<<< HEAD
     input_folder = r"../res/Caf2_03132025_rat_ffpe/kidney_ffpe/HMT_2/subspectrum"
     output_folder = r"../res/Caf2_03132025_rat_ffpe/kidney_ffpe/HMT_2/result"
+=======
+    input_folder = r"../res/Agcube/04292025_0.1mgml_colgel_ployonsubstrate/HMR_3B_1/correction"
+    output_folder = r"../res/Agcube/04292025_0.1mgml_colgel_ployonsubstrate/HMR_3B_1/correction"
+>>>>>>> 9082f13a1562e3a793021b7d4696fa39f06dce59
     os.makedirs(output_folder, exist_ok=True)
     csv_file = os.path.join(output_folder, "detected_peaks.csv")
 
@@ -20,7 +25,11 @@ def main():
     # Initialize CSV data
     csv_data = []
 
+<<<<<<< HEAD
     def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0005):
+=======
+    def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0008):
+>>>>>>> 9082f13a1562e3a793021b7d4696fa39f06dce59
         indices = np.where((wavelengths >= start) & (wavelengths <= end))[0]
         second_derivative = savgol_filter(spectrum, window_length=window, polyorder=polyorder, deriv=2)
         minima_indices, _ = find_peaks(-second_derivative, prominence=prominence)
@@ -36,7 +45,7 @@ def main():
                 # Load spectrum data
                 data = loadmat(mat_path)
                 # st()
-                spectra = data['spectrum'].flatten()
+                spectra = data['corrected_spectrum'].flatten()
                 # st()
                 ############## need to dnamically adjust the wavelengths array based on the spectrum size################
                 spectrum_size = len(spectra)
@@ -50,16 +59,17 @@ def main():
                 csv_data.append([file, *minima_x])
                 # st()
                 # Plot the second derivative with detected peaks
-                plt.figure(figsize=(10, 6))
-                plt.plot(wavelengths, second_derivative, label="Second Derivative", color="k", linewidth=2)
+                plt.figure(figsize=(10, 2))
+                plt.plot(wavelengths, second_derivative,label="Second Derivative", color="k", linewidth=2)
                 plt.scatter(minima_x, minima_y, color="red", label="Local Minima")
                 for x, y in zip(minima_x, minima_y):
-                    plt.annotate(f'({x:.0f}, {y:.4f})', xy=(x, y), xytext=(x, y + 0.0001),
-                                fontsize=9, ha='center', arrowprops=dict(arrowstyle='->', color='blue', lw=0.5))
-                plt.xlabel("Wavenumber (cm⁻¹)")
-                plt.ylabel("Intensity")
-                plt.legend(loc="upper right")
-                plt.title(f"Second Derivative of {file}")
+                    plt.annotate(f'{x:.0f}', xy=(x, y), xytext=(x, y - 0.0002),
+                                fontsize=12, ha='center', arrowprops=dict(arrowstyle='->', color='blue', lw=0.5))
+                # plt.xlabel("Wavenumber (cm⁻¹)")
+                # plt.ylabel("Second Derivative")
+                plt.legend(loc="upper left")
+                plt.axis('off')
+                # plt.title(f"Second Derivative of {file}")
                 # Save the plot
                 plot_filename = f"Second_Derivative_with_coordinates_{file.replace('.mat', '')}.png"
                 # plt.show()

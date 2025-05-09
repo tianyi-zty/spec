@@ -1,0 +1,52 @@
+{
+    "models": [
+        
+        {
+            "_comment": "methyl groups of proteins",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude":{"value": 1, "min": 0, "max": 2},
+                "center": {"value": 1402, "min": 1400, "max": 1404},
+                "sigma": {"value": 1, "min": 0, "max": 10}
+            }
+        },
+        {
+            "_comment": "acyl chain of lipid",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 3, "min": 0, "max": 10},  
+                "center": {"value": 1464, "min": 1462, "max": 1464},
+                "sigma": {"value": 5, "min": 0, "max": 30}
+            }
+        },
+        {
+            "_comment": "Amide II",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 10, "min": 1, "max": 25}, 
+                "center": {"value": 1530, "min": 1546, "max": 1586}, 
+                "sigma": {"value": 10, "min": 0, "max": 30}
+            }
+        },
+        
+        {
+            "_comment": "Amide I",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value":20, "min": 1, "max": 40}, 
+                "center": {"value": 1658, "min": 1658, "max": 1660}, 
+                "sigma": {"value": 10, "min": 0, "max": 30}
+            }
+        },
+        {
+            "_comment": "lipids",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 2, "min": 1, "max": 5},  
+                "center": {"value": 1744, "min": 1744, "max": 1748},
+                "sigma": {"value": 5, "min": 1, "max": 20}
+            }
+        }
+        
+    ]
+}

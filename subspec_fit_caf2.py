@@ -66,7 +66,7 @@ def plot_results(spec, components, component_names, component_colors, output, fi
     """
     Plot the spectrum fitting results and save the plot.
     """
-    fig, ax = plt.subplots(figsize=(16, 10))
+    fig, ax = plt.subplots(figsize=(10, 8))
     ax.plot(spec['x'], spec['y'] - min(spec['y']), 'o', label='Data', markersize=4)
     
     # Plot each component
@@ -74,7 +74,8 @@ def plot_results(spec, components, component_names, component_colors, output, fi
         component_y = components.get(f'm{i}_', None)
         if component_y is not None:
             integral_value = simpson(component_y, x=spec['x'])
-            ax.plot(spec['x'], component_y, label=f'{name} (∫={integral_value:.0f})', color=component_colors[i])
+            # ax.plot(spec['x'], component_y, label=f'{name} (∫={integral_value:.0f})', color=component_colors[i])
+            ax.plot(spec['x'], component_y, label=f'{name}', color=component_colors[i])
             ax.fill_between(spec['x'], component_y, color=component_colors[i], alpha=0.3)
     
     # Add dashed vertical lines for each model center
@@ -85,13 +86,15 @@ def plot_results(spec, components, component_names, component_colors, output, fi
             max_y = ax.get_ylim()[1]
             ax.annotate(f'{center:.0f}', xy=(center, max_y), 
                         xytext=(5, 5), textcoords='offset points',
-                        arrowprops=dict(arrowstyle='->', color='gray'), fontsize=12,
+                        arrowprops=dict(arrowstyle='->', color='gray'), fontsize=18,
                         ha='left', va='center')
 
-    ax.legend(loc="upper right")
-    ax.set_xlabel('Wavelength (cm⁻¹)', fontsize=16)
-    ax.set_ylabel('Intensity', fontsize=16)
-    ax.set_title(f'Spectrum Fitting Results - {file_name}', fontsize=18)
+    ax.legend(loc="upper left", fontsize=14)
+    ax.set_xlabel('Wavenumber (cm⁻¹)', fontsize=20)
+    ax.set_ylabel('Intensity', fontsize=20)
+    # ax.set_xticklabels([])
+    # ax.set_yticklabels([])
+    # ax.set_title(f'Spectrum Fitting Results - {file_name}', fontsize=18)
 
     # Save the plot
     plt.tight_layout()
@@ -134,7 +137,7 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                     
                     try:
                         # Perform model fitting
-                        model, params = generate_model_from_specification(json_file, spec, threshold=0.2)
+                        model, params = generate_model_from_specification(json_file, spec, threshold=0.5)
                         # st()
                         output = model.fit(spec['y'] - min(spec['y']), params, x=spec['x'])
                         # st()
@@ -160,11 +163,48 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                             writer.writerow([file_name, center_value, amplitude, sigma, integral_value])
                             integrals_for_file.append(integral_value)
                         print(f'Done processing: {file_name}.')
+                        # st()
+                        # # # Plot and save the results
+                        # component_names = ['methyl groups of proteins','acyl chain of lipid', 'Amide II','Amide I','lipids']#kidney ffpe
+                        # component_colors = ((1.0, 0.4980392156862745, 0.054901960784313725),
+                        #                     (1.0, 0.7333333333333333, 0.47058823529411764), 
+                        #                     (0.17254901960784313, 0.6274509803921569, 0.17254901960784313), 
+                        #                     (0.596078431372549, 0.8745098039215686, 0.5411764705882353), 
+                        #                     (0.8392156862745098, 0.15294117647058825, 0.1568627450980392))
+                        # component_names = ['amide III and phosphate vibration of nucleic acids', 'methyl groups of proteins','acyl chain of lipid', 'Amide II','Amide I']#liver ffpe
+                        # component_colors = ((0.6823529411764706, 0.7803921568627451, 0.9098039215686274),
+                        #                     (1.0, 0.4980392156862745, 0.054901960784313725),
+                        #                     (1.0, 0.7333333333333333, 0.47058823529411764), 
+                        #                     (0.17254901960784313, 0.6274509803921569, 0.17254901960784313), 
+                        #                     (0.596078431372549, 0.8745098039215686, 0.5411764705882353))
+                        component_names = ["nucleic acids","amide III and phosphate vibration of nucleic acids","methyl groups of proteins","acyl chain of lipid","Amide II","Amide I","lipids"] #kidney oct
+                        component_colors = plt.cm.tab20.colors[:len(components)]
 
+<<<<<<< HEAD
                         # # Plot and save the results
                         component_names = ['Phosphate band;Collagen','Amide III','Collagen','lipid',
                                            'Amide II','Amide I','lipids']
                         component_colors = plt.cm.tab10.colors[:len(components)]
+=======
+                        # component_names = [ "Glycogen","nucleic acids","Glycogen","amide III and phosphate vibration of nucleic acids","methyl groups of proteins","acyl chain of lipid","Amide II", "Amide I", "lipids"] #liver oct
+                        # component_colors = ((1.0, 0.596078431372549, 0.5882352941176471),(0.12156862745098039, 0.4666666666666667, 0.7058823529411765),(0.5803921568627451, 0.403921568627451, 0.7411764705882353),
+                        #                     (0.6823529411764706, 0.7803921568627451, 0.9098039215686274),
+                        #     (1.0, 0.4980392156862745, 0.054901960784313725),
+                        #       (1.0, 0.7333333333333333, 0.47058823529411764), 
+                        #       (0.17254901960784313, 0.6274509803921569, 0.17254901960784313), 
+                        #       (0.596078431372549, 0.8745098039215686, 0.5411764705882353), 
+                        #       (0.8392156862745098, 0.15294117647058825, 0.1568627450980392))
+                        # st()
+                        # ((0.12156862745098039, 0.4666666666666667, 0.7058823529411765),
+                        #   (0.6823529411764706, 0.7803921568627451, 0.9098039215686274),
+                        #     (1.0, 0.4980392156862745, 0.054901960784313725),
+                        #       (1.0, 0.7333333333333333, 0.47058823529411764), 
+                        #       (0.17254901960784313, 0.6274509803921569, 0.17254901960784313), 
+                        #       (0.596078431372549, 0.8745098039215686, 0.5411764705882353), 
+                        #       (0.8392156862745098, 0.15294117647058825, 0.1568627450980392), 
+                        #       (1.0, 0.596078431372549, 0.5882352941176471), 
+                        #       (0.5803921568627451, 0.403921568627451, 0.7411764705882353))
+>>>>>>> 9082f13a1562e3a793021b7d4696fa39f06dce59
                         plot_results(spec, components, component_names, component_colors, output, file_name, save_plots_folder)
                         # st()
 
@@ -187,12 +227,21 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
 if __name__ == '__main__':
     # Define paths
+<<<<<<< HEAD
     path = '../res/Caf2_03132025_rat_ffpe/liver_ffpe/HMT_2/'
     input_folder = path + '/subspectrum'
     output_csv = path + '/result/subspectrum_fitting_results.csv'
     summary_csv = path + '/result/summary_statistics.csv'
     save_plots_folder = path + '/plots'
     json_file = 'model_specification_ffpe.json'
+=======
+    path = '../res/Caf2_03072025_rat/kidney_oct/average'
+    input_folder = path + '/spectrum'
+    output_csv = path + '/result/subspectrum_fitting_results.csv'
+    summary_csv = path + '/result/summary_statistics.csv'
+    save_plots_folder = path + '/plots'
+    json_file = 'model_specification_kidneyoct.json'
+>>>>>>> 9082f13a1562e3a793021b7d4696fa39f06dce59
     os.makedirs(input_folder, exist_ok=True)
     os.makedirs(path+'/result', exist_ok=True)
     os.makedirs(save_plots_folder, exist_ok=True)

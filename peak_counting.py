@@ -8,7 +8,11 @@ import os
 # File path to your CSV file
 wv1=950
 # filename = f'{wv1}-{wv1+200}'
+<<<<<<< HEAD
 path = r'../res/Caf2_03132025_rat_ffpe/kidney_ffpe/HMT_2/result/'
+=======
+path = r'../res/Caf2_03072025_rat/morepeaks/liver_oct/average/result/'
+>>>>>>> 9082f13a1562e3a793021b7d4696fa39f06dce59
 file_path = path + 'detected_peaks.csv'
 os.makedirs(path, exist_ok=True)
 
@@ -39,6 +43,7 @@ except Exception as e:
 # Generate simplified output
 if value_counts:
     result = ", ".join([f"{value}:{count}" for value, count in sorted(value_counts.items())])
+    # st()
     # print(f"Value counts (value:count):\n{result}")
 else:
     print("No values found or file was empty.")
@@ -49,8 +54,8 @@ with open(path + 'output_counts.txt', 'w') as output_file:
 
 # Print the top 10 most common values
 if value_counts:
-    print("Top 10 occurrences:")
-    top_10 = value_counts.most_common(10)
+    print("Top 40 occurrences:")
+    top_10 = value_counts.most_common(40)
     for value, count in top_10:
         print(f"{value}:{count}")
 else:
