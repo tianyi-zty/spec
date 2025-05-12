@@ -8,7 +8,7 @@ import numpy as np
 from scipy.spatial import ConvexHull
 from scipy.signal import find_peaks, savgol_filter
 from scipy.signal import correlate
-
+from scipy.io import savemat
 
 
 def rubberband_baseline_correction(x, y):
@@ -44,106 +44,35 @@ def rubberband_baseline_correction(x, y):
     # st()
     return corrected_y, lower_baseline
 
-def local_max_baseline_with_x_ranges(x, y, x_ranges, min_x_distance=10):
+def save_spectrum_to_mat(spectrum, filename, save_path):
     """
-    Generate a baseline using local maxima within specified x-ranges by:
-    - Extracting vertices of local maxima within the specified ranges.
-    - Rotating to start from the lowest x-value.
-    - Keeping only the ascending part of the maxima.
-    - Interpolating a baseline using these vertices, stopping at the last local maximum.
-
+    Save the spectrum to a .mat file at the specified path.
+    
     Parameters:
-        x (array-like): The x-axis values (e.g., wavelength or wavenumber).
-        y (array-like): The y-axis values (e.g., intensity).
-        x_ranges (list of tuples): List of x-ranges (min_x, max_x) to restrict the search for local maxima.
-        min_x_distance (int): Minimum x distance between peaks.
-
-    Returns:
-        baseline (array-like): The estimated baseline, stopping at the last local maximum.
+        spectrum (array-like): The spectrum to save.
+        filename (str): The name of the output .mat file.
+        save_path (str): The directory path where the .mat file should be saved.
     """
-    # Calculate the minimum index distance based on min_x_distance
-    min_index_distance = np.searchsorted(x, x[0] + min_x_distance) - 1
-
-    # Initialize lists for x and y of local maxima within specified ranges
-    x_peaks_list = []
-    y_peaks_list = []
+    # Ensure the save path exists
+    if not os.path.exists(save_path):
+        os.makedirs(save_path)  # Create the directory if it doesn't exist
     
-    for x_min, x_max in x_ranges:
-        # Find indices within the current x-range
-        range_indices = np.where((x >= x_min) & (x <= x_max))[0]
-        if len(range_indices) == 0:
-            continue  # Skip empty ranges
-        
-        # Find local maxima within the range with minimum x-distance constraint
-        peaks, _ = find_peaks(y[range_indices], distance=min_index_distance)
-        x_peaks = x[range_indices][peaks]
-        y_peaks = y[range_indices][peaks]
-        
-        # Append these peaks to the lists
-        x_peaks_list.extend(x_peaks)
-        y_peaks_list.extend(y_peaks)
+    # Create the full path to save the file
+    full_path = os.path.join(save_path, filename)
     
-    # Sort the peaks by x value
-    x_peaks = np.array(x_peaks_list)
-    y_peaks = np.array(y_peaks_list)
-    sorted_indices = np.argsort(x_peaks)
-    x_peaks = x_peaks[sorted_indices]
-    y_peaks = y_peaks[sorted_indices]
-    # st()
+    # Prepare the dictionary to save in .mat format
+    data_dict = {'corrected_spectrum': spectrum}
     
-    # Rotate the peaks to start from the lowest x-value
-    min_index = np.argmin(x_peaks)
-    x_peaks = np.roll(x_peaks, -min_index)
-    y_peaks = np.roll(y_peaks, -min_index)
-    print('local maximum find at:', x_peaks)
-    # # Keep only the ascending part
-    # ascending_indices = np.where(np.diff(y_peaks) >= 0)[0] + 1
-    # x_peaks = x_peaks[:ascending_indices[-1] + 1]
-    # y_peaks = y_peaks[:ascending_indices[-1] + 1]
-    
-    # Stop the baseline at the last local maximum by setting the x limit
-    x_max_limit = x_peaks[-1]
-    # st()
-    
-    # Interpolate the baseline between these vertices, stopping at the last local maximum
-    # x_interp = x[x <= x_max_limit]
-    upper_baseline = np.interp(x, x_peaks, y_peaks)
-    
-    # Find the index where x exceeds the last maximum
-    beyond_max_index = np.where(x > x_max_limit)[0]
-    
-    # Replace baseline values beyond the last maximum with original y values
-    if beyond_max_index.size > 0:
-        upper_baseline[beyond_max_index] = y[beyond_max_index]
-    # st()
-    
-    return upper_baseline, x_peaks
-
-def flip_between_local_maxima(x, y, x_peaks, baseline):
-    """
-    Flip sections of the spectrum according to the baseline between each pair of local maxima.
-    """
-    y_flipped = np.copy(y)
-    final_flipped = np.copy(y)
-    for i in range(len(x_peaks) - 1):
-        x_min = x_peaks[i]
-        x_max = x_peaks[i + 1]
-        flip_indices = np.where((x >= x_min) & (x <= x_max))[0]
-        y_flipped[flip_indices] = 2 * baseline[flip_indices] - y[flip_indices]
-        final_flipped[flip_indices] = baseline[flip_indices] - y[flip_indices]
-    # st()
-    # Set `final_flipped` to 0 beyond the last maximum
-    if len(x_peaks) > 0:
-        last_max_index = np.where(x > x_peaks[-1])[0]
-        final_flipped[last_max_index] = 0
-
-    return y_flipped, final_flipped
+    # Save the dictionary as a .mat file
+    savemat(full_path, data_dict)
+    print(f"Spectrum saved to {full_path}")
 
 def main():
 
-    before_collagen = r'W:/3. Students/TianYi/AuPillars_11042024/beforeCollagen/LMR_4.mat'
-    after_collagen = r'W:/3. Students/TianYi/AuPillars_11042024/afterCollagen/LMR_4.mat'
-    save_path = '../res/AuPillars_11042024/1000-1100'
+    before_collagen = r'../data/cleaning/LMR_cleaning-1-1.mat'
+    after_collagen = r'../data/AuPillars_10nmAl2O3_gel1vs4_05082025/LMR_cleaning1_2.mat'
+    save_path = '../res/AuPillars_10nmAl2O3_gel1vs4_05082025/1/'
+    os.makedirs(save_path, exist_ok=True)
 
     # Wavelength range (cm⁻¹)
     wavelength_start = 950
@@ -157,16 +86,34 @@ def main():
     data_after = loadmat(after_collagen)
     spectra_after = np.reshape(data_after['r'], (480, 480, 426))
 
-    # Define the region of interest on the x and y axes
-    x_start, x_end = 250, 350 #30, 230 #250, 350 # Replace with your desired x range
-    y_start, y_end = 160, 360  # Replace with your desired y range
+    x_start, x_end =  150, 250 #280, 400 #
+    y_start, y_end = 100, 200 #150, 270 #
+    x_start_1, x_end_1 = 300, 400  #100, 220 #
+    y_start_1, y_end_1 = 200, 300 #140, 260 #
+    region_before = spectra_before[x_start:x_end, y_start:y_end, :]
+    region_after = spectra_after[x_start_1:x_end_1, y_start_1:y_end_1, :]
+
+    fig, axes = plt.subplots(2, 2, figsize=(10, 8))  # Create a 2x2 grid of subplots
+    (ax1, ax2), (ax3, ax4) = axes  # Unpack axes for easier reference
+    ax1.imshow(spectra_before[:,:,330].T)
+    ax1.set_title('spectra_before')
+    ax2.imshow(spectra_after[:,:,330].T)
+    ax2.set_title('spectra_after')
+    ax3.imshow(region_before[:,:,330].T)
+    ax3.set_title('extracted_region_before')
+    ax4.imshow(region_after[:,:,330].T)
+    ax4.set_title('extracted_region_after')
+    # plt.tight_layout()
+    # plt.show()
+    plt.savefig(os.path.join(save_path, 'cropped image example.png'))
+    # st()
 
     # Find the indices corresponding to the desired wavelength range
     z_indices = np.where((wavelengths >= wavelength_start) & (wavelengths <= wavelength_end))[0]
 
     # Extract the subregion and wavelength range
     extracted_region_before = spectra_before[x_start:x_end, y_start:y_end, z_indices]
-    extracted_region_after = spectra_after[x_start:x_end, y_start:y_end, z_indices]
+    extracted_region_after = spectra_after[x_start_1:x_end_1, y_start_1:y_end_1, z_indices]
 
     # Calculate the mean and standard deviation across all pixels
     mean_spectrum_before = np.mean(extracted_region_before, axis=(0, 1))
@@ -175,20 +122,39 @@ def main():
     # Calculate 10^(-mean_spectrum_after)
     transformed_spectrum_before = 10 ** (-mean_spectrum_before)
     transformed_spectrum = 10 ** (-mean_spectrum_after)
+    # transformed_spectrum_before = mean_spectrum_before
+    # transformed_spectrum = mean_spectrum_after
 
     # Apply rubberband baseline correction to the transformed spectrum
     corrected_spectrum_before, lower_baseline = rubberband_baseline_correction(wavelengths[z_indices], transformed_spectrum_before)
     corrected_spectrum, lower_baseline = rubberband_baseline_correction(wavelengths[z_indices], transformed_spectrum)
+    
+    plt.figure(figsize=(12, 8))
+    plt.plot(wavelengths[z_indices], transformed_spectrum_before, label='A_before', color='y', linewidth=2)
+    plt.plot(wavelengths[z_indices], transformed_spectrum, label='A_after', color='k', linewidth=2)
+    plt.plot(wavelengths[z_indices], corrected_spectrum_before, label='Baseline Corrected Spectrum before', color='r', linewidth=2)
+    plt.plot(wavelengths[z_indices], corrected_spectrum, label='Baseline Corrected Spectrum after', color='b', linewidth=2)
+    # plt.plot(wavelengths[z_indices], corrected_spectrum, label='Baseline Corrected Spectrum', color='r', linewidth=2, linestyle='-.')
+    # plt.plot(wavelengths[z_indices], baseline, label='Estimated Baseline', color='m', linewidth=2, linestyle=':')
+    # plt.plot(wavelengths, flipped_spectrum, label='Flipped Spectrum', color='g', linestyle='--', linewidth=2)
+    plt.xlabel('Wavenumber (cm⁻¹)')
+    plt.ylabel('Intensity')
+    plt.title(f'Average Spectrum - local maximum Correction')
+    plt.legend(loc="upper left")
+    # plt.show()
+    plt.savefig(os.path.join(save_path, 'spectral visualization.png'))
+    # st()
 
     # Define your x ranges for maxima
-    x_ranges = [(1420, 1450), (1480, 1490), (1560,1600), (1670, 1680)]
+    # x_ranges = [(1420, 1450), (1490,1510), (1570, 1580)]
 
-    upper_baseline, x_peaks = local_max_baseline_with_x_ranges(wavelengths[z_indices], corrected_spectrum, x_ranges, min_x_distance=10)
-    flipped_spectrum, final_flipped = flip_between_local_maxima(wavelengths[z_indices], corrected_spectrum, x_peaks, upper_baseline)
+    # upper_baseline, x_peaks = local_max_baseline_with_x_ranges(wavelengths[z_indices], corrected_spectrum, x_ranges, min_x_distance=10)
+    # flipped_spectrum, final_flipped = flip_between_local_maxima(wavelengths[z_indices], corrected_spectrum, x_peaks, upper_baseline)
+
 
     # Cross-correlate the two spectra
-    correlation = correlate(corrected_spectrum_before, flipped_spectrum, mode='full')
-    lag = np.argmax(correlation) - (len(flipped_spectrum) - 1)
+    correlation = correlate(corrected_spectrum_before, corrected_spectrum, mode='full')
+    lag = np.argmax(correlation) - (len(corrected_spectrum) - 1)
 
     # Convert lag to shift in terms of x-axis units (e.g., wavenumber, cm⁻¹)
     x_step = wavelengths[1] - wavelengths[0]  # Assumes equal spacing in x-axis values
@@ -196,22 +162,43 @@ def main():
 
     print(f"The shift between the two spectra is approximately {x_shift:.2f} x-axis units.")
     # st()
-
+    # st()
+    sv = 60
     plt.figure(figsize=(12, 8))
     plt.plot(wavelengths[z_indices], corrected_spectrum_before, label='Baseline Corrected Spectrum - before collagen', color='b', linewidth=2)
-    plt.plot(wavelengths, flipped_spectrum, label='Flipped Spectrum', color='g', linewidth=2)
-    plt.plot(wavelengths + x_shift, flipped_spectrum, label=f'Flipped Spectrum shift back {x_shift:.2f} units', color='g', linestyle='--', linewidth=2)
+    plt.plot(wavelengths[z_indices], corrected_spectrum, label='Flipped Spectrum', color='g', linewidth=2)
+    plt.plot(wavelengths + x_shift - sv, corrected_spectrum, label=f'Flipped Spectrum shift back {x_shift:.2f} units', color='g', linestyle='--', linewidth=2)
+    
+    corrected_spectrum_before[np.where(corrected_spectrum_before==0)] = 0.00001
+    corrected_spectrum[np.where(corrected_spectrum==0)] = 0.00001
+
+    corrected_spectrum_before_zeros = np.zeros((corrected_spectrum_before.shape[0]*2))
+    corrected_spectrum_zeros = np.zeros((corrected_spectrum_before.shape[0]*2))
+
+
+    corrected_spectrum_before_zeros[:corrected_spectrum_before.shape[0]] = corrected_spectrum_before
+    corrected_spectrum_zeros[int(lag-sv/x_step):int(lag-sv/x_step + corrected_spectrum.shape[0])] = corrected_spectrum
+
+    corrected_spectrum_before_zeros_copy = np.copy(corrected_spectrum_before_zeros)
+    corrected_spectrum_zeros_copy = np.copy(corrected_spectrum_zeros)
+
+    corrected_spectrum_before_zeros_copy[np.where(corrected_spectrum_before_zeros==0)]=0
+    corrected_spectrum_zeros_copy[np.where(corrected_spectrum_zeros==0)]=0
+
+    diff_ = corrected_spectrum_before_zeros_copy - corrected_spectrum_zeros_copy
+
+    plt.plot(wavelengths[z_indices], diff_[:corrected_spectrum_before.shape[0]], label='Diff Spectrum', color='r', linewidth=2)
+
+
     plt.xlabel('Wavenumber (cm⁻¹)')
     plt.ylabel('Intensity')
     plt.legend(loc="upper left")
     # plt.show()
     # st()
-
     plt.savefig(os.path.join(save_path, f'How much Spectrum Shifted.png'))
 
-
-
-
+    output_filename = 'spectral_data_1.mat' 
+    save_spectrum_to_mat(diff_[:corrected_spectrum_before.shape[0]], output_filename, save_path)
 
 if __name__ == '__main__':
     main()
