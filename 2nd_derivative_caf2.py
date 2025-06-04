@@ -8,7 +8,7 @@ from pdb import set_trace as st
 
 
 def main():
-    input_folder = r"../res/after_cleaning/AuPilllars_10nmAl2O3_Cleaning_05122025/1-100/1"
+    input_folder = r"../res/AuPillars_Al2O3_12102024/1/new_way/99-1"
     output_folder = input_folder
     os.makedirs(output_folder, exist_ok=True)
     csv_file = os.path.join(output_folder, "detected_peaks.csv")
@@ -20,7 +20,7 @@ def main():
     # Initialize CSV data
     csv_data = []
 
-    def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0015):
+    def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0001):
         indices = np.where((wavelengths >= start) & (wavelengths <= end))[0]
         second_derivative = savgol_filter(spectrum, window_length=window, polyorder=polyorder, deriv=2)
         minima_indices, _ = find_peaks(-second_derivative, prominence=prominence)
