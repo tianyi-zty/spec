@@ -13,11 +13,11 @@ def main():
         # Plot the average spectrum with standard deviation
         plt.figure(figsize=(12, 8))
 
-        path = r'../res/Agcube/04292025_0.1mgml_colgel_ployonsubstrate/HMR_4B_1/subspectrum/'
-        filename = '04292025_0.1mgml_colgel_ployonsubstrate/HMR_4B_1'
+        path = r'../res/AuPillars_50nmAl2O3_2_05222025/10'
+        # filename = '04292025_0.1mgml_colgel_ployonsubstrate/HMR_4B_1'
 
         for file in os.listdir(path):
-            if file.endswith(".mat"):
+            if file.endswith(".mat")and not file.endswith("smooth.mat"):
                 mat_path = os.path.join(path, file)
                 # st()
                 name = file.split('.mat')[0]
@@ -28,7 +28,8 @@ def main():
                 plt.xlabel('Wavenumber (cm⁻¹)')
                 plt.ylabel('Intensity')
                 plt.legend(loc='upper left')
-                plt.title(f"Spectrum {filename}")
+                plt.title(f"Spectrum")
+                plt.grid(True)
 
         # plt.show()
         plt.savefig(os.path.join(path, 'spectrum visualization.png'))
