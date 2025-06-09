@@ -6,9 +6,16 @@ from scipy.signal import savgol_filter, find_peaks
 import matplotlib.pyplot as plt
 from pdb import set_trace as st
 
+def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0003):
+        indices = np.where((wavelengths >= start) & (wavelengths <= end))[0]
+        second_derivative = savgol_filter(spectrum, window_length=window, polyorder=polyorder, deriv=2)
+        minima_indices, _ = find_peaks(second_derivative, prominence=prominence)
+        minima_x = wavelengths[indices][minima_indices]
+        minima_y = second_derivative[minima_indices]
+        return second_derivative, minima_x, minima_y
 
 def main():
-    input_folder = r"../res/AuPillars_Al2O3_12102024/1/new_way/99-1"
+    input_folder = r"../res/after_cleaning/AuPilllars_10nmAl2O3_Cleaning_05122025/1-100/1"
     output_folder = input_folder
     os.makedirs(output_folder, exist_ok=True)
     csv_file = os.path.join(output_folder, "detected_peaks.csv")
@@ -20,7 +27,7 @@ def main():
     # Initialize CSV data
     csv_data = []
 
-    def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0001):
+    def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0015):
         indices = np.where((wavelengths >= start) & (wavelengths <= end))[0]
         second_derivative = savgol_filter(spectrum, window_length=window, polyorder=polyorder, deriv=2)
         minima_indices, _ = find_peaks(-second_derivative, prominence=prominence)
@@ -30,13 +37,13 @@ def main():
 
     # Iterate through all .mat files in the input folder
     for file in os.listdir(input_folder):
-        if file.endswith(".mat"):
+        if file.endswith("smooth.mat"):
             mat_path = os.path.join(input_folder, file)
             try:
                 # Load spectrum data
                 data = loadmat(mat_path)
                 # st()
-                spectra = data['corrected_spectrum'].flatten()
+                spectra = data['spectrum'].flatten()
                 # st()
                 ############## need to dnamically adjust the wavelengths array based on the spectrum size################
                 spectrum_size = len(spectra)
@@ -57,9 +64,9 @@ def main():
                     plt.annotate(f'{x:.0f}', xy=(x, y), xytext=(x, y - 0.0002),
                                 fontsize=12, ha='center', arrowprops=dict(arrowstyle='->', color='blue', lw=0.5))
                 # plt.xlabel("Wavenumber (cm⁻¹)")
-                # plt.ylabel("Second Derivative")
-                plt.legend(loc="upper left")
-                plt.axis('off')
+                plt.ylabel("Second Derivative")
+                # plt.legend(loc="upper left")
+                # plt.axis('off')
                 # plt.title(f"Second Derivative of {file}")
                 # Save the plot
                 plot_filename = f"Second_Derivative_with_coordinates_{file.replace('.mat', '')}.png"

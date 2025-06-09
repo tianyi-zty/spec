@@ -48,27 +48,23 @@ def main():
         os.makedirs(save_path, exist_ok=True)
         
         plt.figure(figsize=(12, 8))
-        filename = '8'
-        for fn in chipname:
-            print('chipname:',fn)
-            # Plot the average spectrum with standard deviation
-            
-            path = f'../res/after_cleaning/peptide1/{fn}/{filename}'
-            
-            for file in os.listdir(path):
-                if file.endswith("1.mat"):
-                    mat_path = os.path.join(path, file)
-                    # st()
-                    name = file.split('.mat')[0]
-                    wavelengths = np.linspace(950, 1800, 426)
-                    data_after = loadmat(mat_path)
-                    spectra_after = np.reshape(data_after['spectrum'], (426))
-                    plt.plot(wavelengths, spectra_after, label=f'{fn}',linewidth=2) 
-                    plt.xlabel('Wavenumber (cm⁻¹)')
-                    plt.ylabel('Intensity')
-                    plt.ylim((0,1.2))
-                    plt.legend(loc='upper left')
-                    plt.title(f"Spectrum mask1 {filename}")
+
+        path = r'../res/Agcube/04292025_0.1mgml_colgel_ployonsubstrate/HMR_4B_1/subspectrum/'
+        filename = '04292025_0.1mgml_colgel_ployonsubstrate/HMR_4B_1'
+
+        for file in os.listdir(path):
+            if file.endswith(".mat"):
+                mat_path = os.path.join(path, file)
+                # st()
+                name = file.split('.mat')[0]
+                wavelengths = np.linspace(950, 1800, 426)
+                data_after = loadmat(mat_path)
+                spectra_after = np.reshape(data_after['spectrum'], (426))
+                plt.plot(wavelengths, spectra_after, label=f'{name}',linewidth=2) 
+                plt.xlabel('Wavenumber (cm⁻¹)')
+                plt.ylabel('Intensity')
+                plt.legend(loc='upper left')
+                plt.title(f"Spectrum {filename}")
 
             # plt.show()
             plt.savefig(os.path.join(save_path, f'spectrum visualization_{filename}.png'))
