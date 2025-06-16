@@ -86,12 +86,12 @@ def plot_results(spec, components, component_names, component_colors, output, fi
             max_y = ax.get_ylim()[1]
             ax.annotate(f'{center:.0f}', xy=(center, max_y), 
                         xytext=(5, 5), textcoords='offset points',
-                        arrowprops=dict(arrowstyle='->', color='gray'), fontsize=18,
+                        arrowprops=dict(arrowstyle='->', color='gray'), fontsize=20,
                         ha='left', va='center')
 
-    ax.legend(loc="upper left", fontsize=18)
-    ax.set_xlabel('Wavenumber (cm⁻¹)', fontsize=20)
-    ax.set_ylabel('Intensity', fontsize=20)
+    ax.legend(loc="upper left", fontsize=20)
+    ax.set_xlabel('Wavenumber (cm⁻¹)', fontsize=28)
+    ax.set_ylabel('Intensity', fontsize=28)
     # ax.set_xticklabels([])
     # ax.set_yticklabels([])
     # ax.set_title(f'Spectrum Fitting Results - {file_name}', fontsize=18)
@@ -119,7 +119,7 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
         for root, _, files in os.walk(input_folder):
             for file_name in files:
-                if file_name.endswith(f'mask1.mat'):
+                if file_name.endswith(f'smooth.mat'):
                     file_path = os.path.join(root, file_name)
 
                     # Load the .mat file
@@ -185,8 +185,8 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                         #                     (1.0, 0.7333333333333333, 0.47058823529411764), 
                         #                     (0.17254901960784313, 0.6274509803921569, 0.17254901960784313), 
                         #                     (0.596078431372549, 0.8745098039215686, 0.5411764705882353))
-                        # component_names = ["nucleic acids","amide III and phosphate vibration of nucleic acids","methyl groups of proteins","acyl chain of lipid","Amide II","Amide I","lipids"] #kidney oct
-                        # component_colors = plt.cm.tab20.colors[:len(components)]
+                        component_names = ["C-O bending","Phosphate band/Collagen","C-O bands from glycomaterials and proteins","Amide III","phosphate I/Amide III","PO2 /Amide III","Amide III band components of protein","CH2 wagging/collagen","Symmetric CH3 bending modes of the methyl groups of proteins","Asymmetric CH3 bending modes of the methyl groups of proteins","Amide II","b-sheet Amide I","α-helix Amide I"] #collagen
+                        component_colors = plt.cm.tab20.colors[:len(components)]
 
                         # component_names = [ "Glycogen","nucleic acids","Glycogen","amide III and phosphate vibration of nucleic acids","methyl groups of proteins","acyl chain of lipid","Amide II", "Amide I", "lipids"] #liver oct
                         # component_colors = ((1.0, 0.596078431372549, 0.5882352941176471),(0.12156862745098039, 0.4666666666666667, 0.7058823529411765),(0.5803921568627451, 0.403921568627451, 0.7411764705882353),
@@ -228,12 +228,12 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
 if __name__ == '__main__':
     # Define paths
-    path = '../res/caf2_06132025/bgcorrect/8020/LMT_4'
-    input_folder = path 
+    path = '../res/Caf2_06132025/1000/rinse/'
+    input_folder = path + '/spectrum'
     output_csv = path + '/result/subspectrum_fitting_results.csv'
     summary_csv = path + '/result/summary_statistics.csv'
     save_plots_folder = path + '/plots'
-    json_file = 'model_specification_caf2_col.json'
+    json_file = 'model_specification_caf2.json'
     os.makedirs(input_folder, exist_ok=True)
     os.makedirs(path+'/result', exist_ok=True)
     os.makedirs(save_plots_folder, exist_ok=True)

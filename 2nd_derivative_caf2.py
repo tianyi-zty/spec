@@ -6,7 +6,7 @@ from scipy.signal import savgol_filter, find_peaks
 import matplotlib.pyplot as plt
 from pdb import set_trace as st
 
-def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0002):
+def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0003):
         indices = np.where((wavelengths >= start) & (wavelengths <= end))[0]
         second_derivative = savgol_filter(spectrum, window_length=window, polyorder=polyorder, deriv=2)
         minima_indices, _ = find_peaks(-second_derivative, prominence=prominence)
@@ -15,21 +15,21 @@ def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, 
         return second_derivative, minima_x, minima_y
 
 def main():
-    input_folder = r"../res/caf2_06132025/bgcorrect/1000/LMT_4"
+    input_folder = r"../res/AuPillars_50nmAl2O3_2_05222025/9"
     output_folder = input_folder+"/second_derivative"
     os.makedirs(output_folder, exist_ok=True)
     csv_file = os.path.join(output_folder, "detected_peaks.csv")
 
-    # Wavelength range (cm⁻¹)
-    wavelength_start = 950
-    wavelength_end = 1800
-    wavelengths = np.linspace(950, 1800, 426)  # Assuming this range for all subspectra
-    # Initialize CSV data
-    csv_data = []
+            # Wavelength range (cm⁻¹)
+            wavelength_start = 950
+            wavelength_end = 1800
+            wavelengths = np.linspace(950, 1800, 426)  # Assuming this range for all subspectra
+            # Initialize CSV data
+            csv_data = []
 
     # Iterate through all .mat files in the input folder
     for file in os.listdir(input_folder):
-        if file.endswith(".mat"):
+        if file.endswith("smooth.mat"):
             mat_path = os.path.join(input_folder, file)
             try:
                 # Load spectrum data
@@ -53,7 +53,7 @@ def main():
                 plt.plot(wavelengths, second_derivative,label="Second Derivative", color="k", linewidth=2)
                 plt.scatter(minima_x, minima_y, color="red", label="Local Minima")
                 for x, y in zip(minima_x, minima_y):
-                    plt.annotate(f'{x:.0f}', xy=(x, y), xytext=(x, y - 0.00002),
+                    plt.annotate(f'{x:.0f}', xy=(x, y), xytext=(x, y - 0.0002),
                                 fontsize=12, ha='center', arrowprops=dict(arrowstyle='->', color='blue', lw=0.5))
                 # plt.xlabel("Wavenumber (cm⁻¹)")
                 plt.ylabel("Second Derivative")
@@ -71,10 +71,10 @@ def main():
             except Exception as e:
                 print(f"Error processing {file}: {e}")
 
-    # Save detected peaks to CSV
-    df = pd.DataFrame(csv_data)
-    df.to_csv(csv_file, index=False)
-    print(f"Processed all spectra. Results saved to {csv_file}")
+            # Save detected peaks to CSV
+            df = pd.DataFrame(csv_data)
+            df.to_csv(csv_file, index=False)
+            print(f"Processed all spectra. Results saved to {csv_file}")
 
 
 if __name__ == '__main__':

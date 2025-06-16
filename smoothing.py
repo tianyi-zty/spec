@@ -86,37 +86,37 @@ def main():
         # Plot the average spectrum with standard deviation
         plt.figure(figsize=(12, 8))
 
-        path = r'../res/caf2_06132025/bgcorrect/1000/LMT_3/'
+        path = r'../res/AuPillars_50nmAl2O3_2_05222025/1'
 
-        for file in os.listdir(path):
-            if file.endswith(".mat") and not file.endswith("smooth.mat"):
-                mat_path = os.path.join(path, file)
-                # st()
-                name = file.split('.mat')[0]
-                wavelengths = np.linspace(950, 1800, 426)
-                data_after = loadmat(mat_path)
-                spectra_after = np.reshape(data_after['spectrum'], (426))
-                # Apply Gaussian smoothing
-                sigma = 3  # you can adjust this value
-                smoothed_spectrum = gaussian_filter1d(spectra_after, sigma=sigma)
-                # Save the subspectrum
-                subspectrum_filename = f"{name}_gaussian_3_smooth.mat"
-                savemat(os.path.join(path, subspectrum_filename), {'spectrum': smoothed_spectrum})
-                # # Apply a ALS baseline correction
-                # lam = 1e6  # Adjust as needed
-                # p = 0.01   # Adjust as needed
-                # baseline_before, corrected_smoothed_spectrum = als_baseline_correction(smoothed_spectrum, lam=lam, p=p)
-                plt.plot(wavelengths, smoothed_spectrum, label=f'{name}_gaussian_3_smooth', linewidth=2)
-                # plt.plot(wavelengths, spectra_after, label=f'{name}',linewidth=2) 
-                plt.xlabel('Wavenumber (cm⁻¹)')
-                plt.ylabel('Intensity')
-                plt.legend(loc='upper left')
-                plt.title(f"Spectrum")
-                plt.grid(True)
+            for file in os.listdir(path):
+                if file.endswith(".mat") and not file.endswith("smooth.mat"):
+                    mat_path = os.path.join(path, file)
+                    # st()
+                    name = file.split('.mat')[0]
+                    wavelengths = np.linspace(950, 1800, 426)
+                    data_after = loadmat(mat_path)
+                    spectra_after = np.reshape(data_after['spectrum'], (426))
+                    # Apply Gaussian smoothing
+                    sigma = 3  # you can adjust this value
+                    smoothed_spectrum = gaussian_filter1d(spectra_after, sigma=sigma)
+                    # Save the subspectrum
+                    subspectrum_filename = f"{name}_gaussian_3_smooth.mat"
+                    savemat(os.path.join(path, subspectrum_filename), {'spectrum': smoothed_spectrum})
+                    # # Apply a ALS baseline correction
+                    # lam = 1e6  # Adjust as needed
+                    # p = 0.01   # Adjust as needed
+                    # baseline_before, corrected_smoothed_spectrum = als_baseline_correction(smoothed_spectrum, lam=lam, p=p)
+                    plt.plot(wavelengths, smoothed_spectrum, label=f'{name}_gaussian_3_smooth', linewidth=2)
+                    # plt.plot(wavelengths, spectra_after, label=f'{name}',linewidth=2) 
+                    plt.xlabel('Wavenumber (cm⁻¹)')
+                    plt.ylabel('Intensity')
+                    plt.legend(loc='upper left')
+                    plt.title(f"Spectrum")
+                    plt.grid(True)
 
         # plt.show()
         plt.savefig(os.path.join(path, 'spectrum visualization after smooth.png'))
-        # st()
+        st()
             # Save
 
 

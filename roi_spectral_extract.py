@@ -31,10 +31,11 @@ def save_spectrum_to_mat(spectrum, filename, save_path):
 
 
 def main():
-    filename = f'1'
-    before_collagen = r'../data/AuPillars_50nmAl2O3_5_05232025/before/LMR_3.mat'
-    after_collagen = r'../data/AuPillars_50nmAl2O3_5_05232025/after_1/LMR_1.mat'
-    save_path = f'../res/AuPillars_50nmAl2O3_5_05232025/{filename}'
+    filename = f'5'
+    before_collagen = r'../data/AuPillars_50nmAl2O3_4_05232025/before/LMR_2.mat'
+    collagen_mask = r'../data/AuPillars_50nmAl2O3_4_05232025/MASK/LMT_2.mat'
+    after_collagen = r'../data/AuPillars_50nmAl2O3_4_05232025/rinse/LMR_4.mat'
+    save_path = f'../res/AuPillars_50nmAl2O3_4_05232025/rinse/{filename}'
     os.makedirs(save_path, exist_ok=True)
 
     wavelengths = np.linspace(950, 1800, 426)
@@ -42,20 +43,25 @@ def main():
     spectra_before = np.reshape(data_before['r'], (480, 480, 426))
     data_after = loadmat(after_collagen)
     spectra_after = np.reshape(data_after['r'], (480, 480, 426))
+    mask = loadmat(collagen_mask)
+    spectra_mask = np.reshape(mask['r'], (480, 480, 11))
 
-    x_start_1, x_end_1 = 294,430
-    y_start_1, y_end_1 = 192,309
+    x_start_1, x_end_1 = 64,211
+    y_start_1, y_end_1 = 60,151
     region_before = spectra_before[x_start_1:x_end_1, y_start_1:y_end_1, :]
-    x_start_2, x_end_2 = 238,410
-    y_start_2, y_end_2 = 166,330
+    x_start_2, x_end_2 = 76,227
+    y_start_2, y_end_2 = 133,304
     region_after = spectra_after[x_start_2:x_end_2, y_start_2:y_end_2, :]
 
-    n=5
-    fig, ((ax1, ax2, ax3), (ax4, ax5, ax6)) = plt.subplots(2, 3, figsize=(9, 6))  # Create a 2x2 grid of subplots
+    # 1650-330;1550-280;1450-230;1240-130
+    n=130
+    fig, ((ax1, ax2, ax3, ax4), (ax5, ax6, ax7, ax8)) = plt.subplots(2, 4, figsize=(9, 6))  # Create a 2x2 grid of subplots
     ax1.imshow(spectra_before[:,:,n].T)
     ax1.set_title('spectra_before')
-    # ax2.imshow(region_before[:,:,n].T)
-    # ax2.set_title('extracted_region_before')
+    ax2.imshow(region_before[:,:,n].T)
+    ax2.set_title('extracted_region_before')
+    ax3.imshow(spectra_mask[:,:,5].T)
+    ax3.set_title('mask')
     ax4.imshow(spectra_after[:,:,n].T)
     ax4.set_title('spectra_after')
     ax5.imshow(region_after[:,:,n].T)
@@ -79,12 +85,12 @@ def main():
     binary_mask_region0 = (regions == 0).astype(np.uint8)
     binary_mask_region1 = (regions == 1).astype(np.uint8)
     binary_mask_region2 = (regions == 2).astype(np.uint8)
-    ax6.imshow(binary_mask_region1, cmap='gray')
-    ax6.set_title('Binary Mask - Region 1')
-    ax3.imshow(binary_mask_region2, cmap='gray')
-    ax3.set_title('Binary Mask - Region 2')
-    ax2.imshow(binary_mask_region0, cmap='gray')
-    ax2.set_title('Binary Mask - Region 0')
+    ax6.imshow(binary_mask_region0, cmap='gray')
+    ax6.set_title('Binary Mask - Region 0')
+    ax7.imshow(binary_mask_region1, cmap='gray')
+    ax7.set_title('Binary Mask - Region 1')
+    ax8.imshow(binary_mask_region2, cmap='gray')
+    ax8.set_title('Binary Mask - Region 2')
     plt.tight_layout()
     plt.savefig(os.path.join(save_path, f'{filename}_spatial_image.png'))
     plt.show()
@@ -97,6 +103,11 @@ def main():
     mean_spectrum_after_roi = np.mean(binary_mask_region1.T[:, :, np.newaxis]*region_after, axis=(0, 1))
     mean_spectrum_after_roi_1 = np.mean(binary_mask_region2.T[:, :, np.newaxis]*region_after, axis=(0, 1))
     # st()
+    std_spectrum_before = np.std(region_before, axis=(0, 1))
+    std_spectrum_after = np.std(binary_mask_region0.T[:, :, np.newaxis]*region_after, axis=(0, 1))
+    std_spectrum_after_roi = np.std(binary_mask_region1.T[:, :, np.newaxis]*region_after, axis=(0, 1))
+    std_spectrum_after_roi_1 = np.std(binary_mask_region2.T[:, :, np.newaxis]*region_after, axis=(0, 1))
+
     # Calculate 10^(-mean_spectrum_after)
     transformed_spectrum_before = 10 ** (-mean_spectrum_before)
     transformed_spectrum_after = 10 ** (-mean_spectrum_after)
@@ -126,7 +137,22 @@ def main():
     ax4.set_title('after_mask2')
     plt.tight_layout()
     plt.subplots_adjust(hspace=0.5)
-    plt.savefig(os.path.join(save_path, f'{filename}_spectrums.png'))
+    plt.savefig(os.path.join(save_path, f'{filename}_transmission_spectrums.png'))
+    plt.show()
+    plt.close()
+
+    fig, (ax1, ax2, ax3, ax4) = plt.subplots(4, 1, figsize=(6,8))
+    ax1.plot(wavelengths, mean_spectrum_before, label='before', color='g')
+    ax1.set_title('before')
+    ax2.plot(wavelengths, mean_spectrum_after, label='after_mask0', color='r')
+    ax2.set_title('after_mask0')
+    ax3.plot(wavelengths, mean_spectrum_after_roi, label='after_mask1', color='b')
+    ax3.set_title('after_mask1')
+    ax4.plot(wavelengths, mean_spectrum_after_roi_1, label='after_mask2', color='k')
+    ax4.set_title('after_mask2')
+    plt.tight_layout()
+    plt.subplots_adjust(hspace=0.5)
+    plt.savefig(os.path.join(save_path, f'{filename}_absorbance_spectrums.png'))
     # plt.show()
     plt.close()
 

@@ -31,10 +31,10 @@ def process_block(block_after, wavelengths, save_path, block_id):
 
 def main():
 
-    filename_list = ['HMT_1','HMT_2','HMT_3','HMT_4','HMT_5','HMT_6','HMT_7','HMT_8','HMT_9','HMT_10']
+    filename_list = ['LMT_1','LMT_2','LMT_3'] #'HMT_3','HMT_4','HMT_5','HMT_6','HMT_7','HMT_8','HMT_9','HMT_10'
     for filename in filename_list:
-        after_collagen = r'W:/3. Students/Tianyi/Caf2_03132025_rat_ffpe/liver_ffpe/'+f'{filename}'+'.mat'
-        save_path = f'../res/Caf2_03072025_rat/morepeaks/liver_ffpe/average/'
+        after_collagen = r'/Volumes/TIANYI/Sperodata/caf2_06132025/8020/rinse/'+f'{filename}'+'.mat'
+        save_path = f'../res/Caf2_06132025/8020/rinse/'
         os.makedirs(save_path, exist_ok=True)
         os.makedirs(save_path+'/spectrum', exist_ok=True)
         os.makedirs(save_path+'/figures', exist_ok=True)
