@@ -6,69 +6,132 @@ import numpy as np
 from matplotlib import pyplot as plt
 from pdb import set_trace as st
 
+def als_baseline_correction(y, lam=1e6, p=0.01, n_iter=10):
+    """
+    Perform Asymmetric Least Squares (ALS) baseline correction for a given spectrum.
+    
+    Parameters:
+        y (array-like): The y-axis values (e.g., intensity).
+        lam (float): Smoothing factor (higher values create smoother baselines).
+        p (float): Asymmetry parameter (0 < p < 1; smaller values give more weight to negative deviations).
+        n_iter (int): Number of iterations to perform.
 
+    Returns:
+        baseline (array-like): The estimated baseline.
+        corrected_y (array-like): The baseline-corrected y values.
+    """
+    y = np.asarray(y)  # Ensure y is a NumPy array
+    L = len(y)  # Length of the spectrum
+
+    # Second-order difference matrix of size (L-2, L)
+    D = np.diff(np.eye(L), 2)
+    
+    # Compute D.T @ D and pad to size (L, L)
+    DTD = D.T @ D
+    DTD_padded = np.zeros((L, L))
+    DTD_padded[:DTD.shape[0], :DTD.shape[1]] = DTD  # Pad with zeros to (L, L)
+
+    # Initialize weights
+    W = np.ones(L)  # Weights vector of shape (L,)
+    
+    for i in range(n_iter):
+        # Create the diagonal weight matrix of shape (L, L)
+        W_matrix = np.diag(W)
+        
+        # Add smoothness term (lam * DTD_padded) to weight matrix
+        smooth_term = lam * DTD_padded
+        
+        # # Validate shapes (for debugging purposes)
+        # print(f"Iteration {i+1}:")
+        # print(f"  W_matrix shape: {W_matrix.shape}")
+        # print(f"  D.T @ D shape (padded): {smooth_term.shape}")
+        # print(f"  y shape: {y.shape}")
+        
+        # Compute the solution Z for the baseline
+        Z = np.linalg.inv(W_matrix + smooth_term) @ (W_matrix @ y)
+        
+        # Update weights: smaller weights for points above the baseline
+        W = p * (y > Z) + (1 - p) * (y <= Z)
+    
+    # The estimated baseline
+    baseline = Z
+    
+    # Correct the spectrum
+    corrected_y = y - baseline
+    
+    return baseline, corrected_y
 
 
 def main():
-        
-        ####plot spectrum for single chip at different resonance
-        # chipname = 'AuPillars_50nmAl2O3_1_05222025'
-        # save_path = f'../res/after_cleaning/peptide1/{chipname}/figures/'
-        # os.makedirs(save_path, exist_ok=True)
-        
-        # filename = [1,2,3,4,5,6,7,8]
-        # for fn in filename:
-        #     print('filename:',fn)
-        #     # Plot the average spectrum with standard deviation
-        #     plt.figure(figsize=(12, 8))
-        #     path = f'../res/after_cleaning/peptide1/{chipname}/{fn}/'
-            
-        #     for file in os.listdir(path):
-        #         if file.endswith(".mat"):
-        #             mat_path = os.path.join(path, file)
-        #             # st()
-        #             name = file.split('.mat')[0]
-        #             wavelengths = np.linspace(950, 1800, 426)
-        #             data_after = loadmat(mat_path)
-        #             spectra_after = np.reshape(data_after['spectrum'], (426))
-        #             plt.plot(wavelengths, spectra_after, label=f'{name}',linewidth=2) 
-        #             plt.xlabel('Wavenumber (cm⁻¹)')
-        #             plt.ylabel('Intensity')
-        #             plt.ylim((0,1.2))
-        #             plt.legend(loc='upper left')
-        #             plt.title(f"Spectrum {filename}")
-
-        #     # plt.show()
-        #     plt.savefig(os.path.join(save_path, f'spectrum visualization_{fn}.png'))
-        #     # Save
-
-        ####plot spectrum for single resonance for different chips(dif concentration)
-        chipname = ['AuPilllars_10nmAl2O3_Cleaning_05122025','AuPillars_50nmAl2O3_1_05222025','AuPillars_50nmAl2O3_2_05222025','AuPillars_50nmAl2O3_3_05222025','AuPillars_50nmAl2O3_4_05232025','AuPillars_50nmAl2O3_6_05232025']
-        save_path = f'../res/after_cleaning/peptide1/figures/'
-        os.makedirs(save_path, exist_ok=True)
-        
+        # Plot the average spectrum with standard deviation
         plt.figure(figsize=(12, 8))
 
-        path = r'../res/Agcube/04292025_0.1mgml_colgel_ployonsubstrate/HMR_4B_1/subspectrum/'
-        filename = '04292025_0.1mgml_colgel_ployonsubstrate/HMR_4B_1'
+        path = r'../res/caf2_06132025/bgcorrect/1000/LMT_3'
+        col_data = loadmat(os.path.join(path, "resonance_LMT_3_after_mask1.mat"))
+        # base = loadmat(os.path.join(path, "resonance_LMT_1_after_mask0_gaussian_3_smooth.mat"))
+        spectra_col = np.reshape(col_data['spectrum'], (426))
+        # spectra_base= np.reshape(base['spectrum'], (426))
+        # col_no_bg = spectra_col - spectra_base
+        baseline,spectra_col_als = als_baseline_correction(spectra_col)
+        
+        path_1 = r'../res/caf2_06132025/bgcorrect/1000/LMT_4'
+        col_data_1 = loadmat(os.path.join(path_1, "resonance_LMT_4_after_mask1.mat"))
+        # base_1 = loadmat(os.path.join(path_1, "resonance_LMT_2_after_mask0_gaussian_3_smooth.mat"))
+        spectra_col_1 = np.reshape(col_data_1['spectrum'], (426))
+        # spectra_base_1 = np.reshape(base_1['spectrum'], (426))
+        # col_no_bg_1 = spectra_col_1 - spectra_base_1
+        baseline_1,spectra_col_als_1 = als_baseline_correction(spectra_col_1)
 
-        for file in os.listdir(path):
-            if file.endswith(".mat"):
-                mat_path = os.path.join(path, file)
-                # st()
-                name = file.split('.mat')[0]
-                wavelengths = np.linspace(950, 1800, 426)
-                data_after = loadmat(mat_path)
-                spectra_after = np.reshape(data_after['spectrum'], (426))
-                plt.plot(wavelengths, spectra_after, label=f'{name}',linewidth=2) 
-                plt.xlabel('Wavenumber (cm⁻¹)')
-                plt.ylabel('Intensity')
-                plt.legend(loc='upper left')
-                plt.title(f"Spectrum {filename}")
+        path_2 = r'../res/caf2_06132025/bgcorrect/8020/LMT_4'
+        col_data_2 = loadmat(os.path.join(path_2, "resonance_LMT_4_after_mask1.mat"))
+        # base_2 = loadmat(os.path.join(path_2, "resonance_LMT_2_after_mask0_gaussian_3_smooth.mat"))
+        spectra_col_2 = np.reshape(col_data_2['spectrum'], (426))
+        # spectra_base_2 = np.reshape(base_2['spectrum'], (426))
+        # col_no_bg_2 = spectra_col_2 - spectra_base_2
+        baseline_2, spectra_col_als_2 = als_baseline_correction(spectra_col_2)
 
-            # plt.show()
-            plt.savefig(os.path.join(save_path, f'spectrum visualization_{filename}.png'))
+        path_3 = r'../res/caf2_06132025/bgcorrect/8020/LMT_5'
+        col_data_3 = loadmat(os.path.join(path_3, "resonance_LMT_5_after_mask1.mat"))
+        # base_3 = loadmat(os.path.join(path_3, "resonance_LMT_1_after_mask0_gaussian_3_smooth.mat"))
+        spectra_col_3 = np.reshape(col_data_3['spectrum'], (426))
+        # spectra_base_3 = np.reshape(base_3['spectrum'], (426))
+        # col_no_bg_3 = spectra_col_3 - spectra_base_3
+        baseline_3, spectra_col_als_3 = als_baseline_correction(spectra_col_3)
+
+        wavelengths = np.linspace(950, 1800, 426)
+        plt.plot(wavelengths, spectra_col_als, label='1000LMT_3',linewidth=2) 
+        plt.plot(wavelengths, spectra_col_als_1, label='1000LMT_4',linewidth=2) 
+        plt.plot(wavelengths, spectra_col_als_2, label='8020LMT_4',linewidth=2) 
+        plt.plot(wavelengths, spectra_col_als_3, label='8020LMT_5',linewidth=2) 
+        plt.xlabel('Wavenumber (cm⁻¹)')
+        plt.ylabel('Intensity')
+        plt.legend(loc='upper left')
+        plt.title(f"Spectrum")
+        plt.grid(True)
+
+        plt.show()
+        # plt.savefig(os.path.join(path, 'spectrum visualization.png'))
+
+
+        # for file in os.listdir(path):
+        #     if file.endswith(".mat")and not file.endswith(".mat"):
+        #         mat_path = os.path.join(path, file)
+        #         # st()
+        #         name = file.split('.mat')[0]
+        #         wavelengths = np.linspace(950, 1800, 426)
+        #         data_after = loadmat(mat_path)
+        #         spectra_after = np.reshape(data_after['spectrum'], (426))
+        #         plt.plot(wavelengths, spectra_after, label=f'{name}',linewidth=2) 
+        #         plt.xlabel('Wavenumber (cm⁻¹)')
+        #         plt.ylabel('Intensity')
+        #         plt.legend(loc='upper left')
+        #         plt.title(f"Spectrum")
+        #         plt.grid(True)
+
+        # # plt.show()
+        # plt.savefig(os.path.join(path, 'spectrum visualization.png'))
             # Save
+
 
 if __name__ == '__main__':
     main()

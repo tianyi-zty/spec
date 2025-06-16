@@ -86,7 +86,7 @@ def main():
         # Plot the average spectrum with standard deviation
         plt.figure(figsize=(12, 8))
 
-        path = r'../res/AuPillars_50nmAl2O3_2_05222025/1'
+        path = r'../res/caf2_06132025/bgcorrect/1000/LMT_3/'
 
         for file in os.listdir(path):
             if file.endswith(".mat") and not file.endswith("smooth.mat"):
@@ -116,7 +116,7 @@ def main():
 
         # plt.show()
         plt.savefig(os.path.join(path, 'spectrum visualization after smooth.png'))
-        st()
+        # st()
             # Save
 
 
