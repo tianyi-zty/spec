@@ -66,7 +66,7 @@ def plot_results(spec, components, component_names, component_colors, output, fi
     """
     Plot the spectrum fitting results and save the plot.
     """
-    fig, ax = plt.subplots(figsize=(10, 8))
+    fig, ax = plt.subplots(figsize=(20, 16))
     ax.plot(spec['x'], spec['y'] - min(spec['y']), 'o', label='Data', markersize=4)
     
     # Plot each component
@@ -74,8 +74,8 @@ def plot_results(spec, components, component_names, component_colors, output, fi
         component_y = components.get(f'm{i}_', None)
         if component_y is not None:
             integral_value = simpson(component_y, x=spec['x'])
-            # ax.plot(spec['x'], component_y, label=f'{name} (∫={integral_value:.0f})', color=component_colors[i])
-            ax.plot(spec['x'], component_y, label=f'{name}', color=component_colors[i])
+            ax.plot(spec['x'], component_y, label=f'{name} (∫={integral_value:.0f})', color=component_colors[i])
+            # ax.plot(spec['x'], component_y, label=f'{name}', color=component_colors[i])
             ax.fill_between(spec['x'], component_y, color=component_colors[i], alpha=0.3)
     
     # Add dashed vertical lines for each model center
@@ -86,12 +86,12 @@ def plot_results(spec, components, component_names, component_colors, output, fi
             max_y = ax.get_ylim()[1]
             ax.annotate(f'{center:.0f}', xy=(center, max_y), 
                         xytext=(5, 5), textcoords='offset points',
-                        arrowprops=dict(arrowstyle='->', color='gray'), fontsize=18,
+                        arrowprops=dict(arrowstyle='->', color='gray'), fontsize=20,
                         ha='left', va='center')
 
-    ax.legend(loc="upper left", fontsize=14)
-    ax.set_xlabel('Wavenumber (cm⁻¹)', fontsize=20)
-    ax.set_ylabel('Intensity', fontsize=20)
+    ax.legend(loc="upper left", fontsize=20)
+    ax.set_xlabel('Wavenumber (cm⁻¹)', fontsize=28)
+    ax.set_ylabel('Intensity', fontsize=28)
     # ax.set_xticklabels([])
     # ax.set_yticklabels([])
     # ax.set_title(f'Spectrum Fitting Results - {file_name}', fontsize=18)
@@ -119,7 +119,7 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
         for root, _, files in os.walk(input_folder):
             for file_name in files:
-                if file_name.endswith(f'.mat'):
+                if file_name.endswith(f'smooth.mat'):
                     file_path = os.path.join(root, file_name)
 
                     # Load the .mat file
@@ -177,7 +177,7 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
                         #                     (1.0, 0.7333333333333333, 0.47058823529411764), 
                         #                     (0.17254901960784313, 0.6274509803921569, 0.17254901960784313), 
                         #                     (0.596078431372549, 0.8745098039215686, 0.5411764705882353))
-                        component_names = ["nucleic acids","amide III and phosphate vibration of nucleic acids","methyl groups of proteins","acyl chain of lipid","Amide II","Amide I","lipids"] #kidney oct
+                        component_names = ["C-O bending","Phosphate band/Collagen","C-O bands from glycomaterials and proteins","Amide III","phosphate I/Amide III","PO2 /Amide III","Amide III band components of protein","CH2 wagging/collagen","Symmetric CH3 bending modes of the methyl groups of proteins","Asymmetric CH3 bending modes of the methyl groups of proteins","Amide II","b-sheet Amide I","α-helix Amide I"] #collagen
                         component_colors = plt.cm.tab20.colors[:len(components)]
 
                         # component_names = [ "Glycogen","nucleic acids","Glycogen","amide III and phosphate vibration of nucleic acids","methyl groups of proteins","acyl chain of lipid","Amide II", "Amide I", "lipids"] #liver oct
@@ -220,12 +220,12 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
 if __name__ == '__main__':
     # Define paths
-    path = '../res/Caf2_03072025_rat/kidney_oct/average'
+    path = '../res/Caf2_06132025/1000/rinse/'
     input_folder = path + '/spectrum'
     output_csv = path + '/result/subspectrum_fitting_results.csv'
     summary_csv = path + '/result/summary_statistics.csv'
     save_plots_folder = path + '/plots'
-    json_file = 'model_specification_kidneyoct.json'
+    json_file = 'model_specification_caf2.json'
     os.makedirs(input_folder, exist_ok=True)
     os.makedirs(path+'/result', exist_ok=True)
     os.makedirs(save_plots_folder, exist_ok=True)
