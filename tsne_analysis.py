@@ -38,26 +38,47 @@ def load_npy_data(folder):
                 # st()
     return data
 
+def load_npy_data(folder, max_samples=1000):
+    files = sorted([f for f in os.listdir(folder) if f.endswith('.npy')])
+    np.random.seed(42)
+    files = np.random.choice(files, size=min(max_samples, len(files)), replace=False)
+
+    data = []
+    for file in files:
+        arr = np.load(os.path.join(folder, file))
+        if np.any(arr):  # skip all-zero arrays
+            data.append(arr.flatten())
+    return data
+ 
 def main():
 
     # --- Step 1: Define your two folders ---
-    folder_group1 = "../res/Caf2_06232025_tnse/original/1000/LMT_1"  
-    folder_group2 = "../res/Caf2_06232025_tnse/original/1000/LMT_3" 
-    folder_group3 = "../res/Caf2_06232025_tnse/original/1000-polyfiber/LMT_1" 
-    folder_group4 = "../res/Caf2_06232025_tnse/original/1000-polyfiber/LMT_2" 
-    folder_group5 = "../res/caf2_06132025/tnse/original/1000/LMT_3" 
-    folder_group6 = "../res/caf2_06132025/tnse/original/1000/LMT_4" 
+    folder_group1 = "../res/Caf2_06232025_tnse/original/1000/LMT_3"  
+    folder_group2 = "../res/Caf2_06232025_tnse/original/1000/LMT_4" 
+    folder_group3 = "../res/Caf2_06232025_tnse/original/9010/LMT_2" 
+    folder_group4 = "../res/Caf2_06232025_tnse/original/9010/LMT_3" 
+    folder_group5 = "../res/Caf2_06232025_tnse/original/8020/LMT_1" 
+    folder_group6 = "../res/Caf2_06232025_tnse/original/8020/LMT_2" 
+    folder_group7 = "../res/Caf2_06232025_tnse/original/7030/LMT_1" 
+    folder_group8 = "../res/Caf2_06232025_tnse/original/7030/LMT_2" 
+    folder_group9 = "../res/Caf2_06232025_tnse/original/6040/LMT_1" 
+    folder_group10 = "../res/Caf2_06232025_tnse/original/6040/LMT_2" 
     
 
-    save_path =  "../res/1000/result/" 
+    save_path =  "../res/Caf2_06232025_tnse/result_ori/" 
     os.makedirs(save_path, exist_ok=True)
 
-    data1 = load_npy_data(folder_group1)
-    data2 = load_npy_data(folder_group2)
-    data3 = load_npy_data(folder_group3)
-    data4 = load_npy_data(folder_group4)
-    data5 = load_npy_data(folder_group5)
-    data6 = load_npy_data(folder_group6)
+    data1 = load_npy_data(folder_group1, max_samples=1000)
+    data2 = load_npy_data(folder_group2, max_samples=1000)
+    data3 = load_npy_data(folder_group3, max_samples=1000)
+    data4 = load_npy_data(folder_group4, max_samples=1000)
+    data5 = load_npy_data(folder_group5, max_samples=1000)
+    data6 = load_npy_data(folder_group6, max_samples=1000)
+    data7 = load_npy_data(folder_group7, max_samples=1000)
+    data8 = load_npy_data(folder_group8, max_samples=1000)
+    data9 = load_npy_data(folder_group9, max_samples=1000)
+    data10 = load_npy_data(folder_group10, max_samples=1000)
+
 
     for i, d in enumerate([data1, data2, data3, data4, data5, data6]):
         print(f"Group {i}: {len(d)} samples")
@@ -68,21 +89,27 @@ def main():
     normalized_data4 = normalize_spectra_zscore(data4)
     normalized_data5 = normalize_spectra_zscore(data5)
     normalized_data6 = normalize_spectra_zscore(data6)
+    normalized_data7 = normalize_spectra_zscore(data7)
+    normalized_data8 = normalize_spectra_zscore(data8)
+    normalized_data9 = normalize_spectra_zscore(data9)
+    normalized_data10 = normalize_spectra_zscore(data10)
 
     # --- Step 3: Combine data and create labels ---
-    X = np.concatenate((normalized_data1, normalized_data2, normalized_data3, normalized_data4, normalized_data5, normalized_data6), axis=0)
-    y = np.array([0]*len(normalized_data1) + [1]*len(normalized_data2) + [2]*len(normalized_data3)+[3]*len(normalized_data4) + [4]*len(normalized_data5) + [5]*len(normalized_data6))  # 0 = group1, 1 = group2
+    X = np.concatenate((normalized_data1, normalized_data2, normalized_data3, normalized_data4, normalized_data5, 
+                        normalized_data6, normalized_data7, normalized_data8, normalized_data9, normalized_data10), axis=0)
+    y = np.array([0]*len(normalized_data1) + [1]*len(normalized_data2) + [2]*len(normalized_data3)+[3]*len(normalized_data4) +
+                  [4]*len(normalized_data5) + [5]*len(normalized_data6)+[6]*len(normalized_data7) + [7]*len(normalized_data8) + 
+                  [8]*len(normalized_data9)+ [9]*len(normalized_data10))  # 0 = group1, 1 = group2
 
     X_small, y_small = shuffle(X, y, random_state=42)
-    X_small = X_small[:5000]
-    y_small = y_small[:5000]
+    X_small = X_small[:2000]
+    y_small = y_small[:2000]
     # st()
-
 
     # Reduce to 50 components or fewer before t-SNE
     X_pca = PCA(n_components=50).fit_transform(X_small)
     # Run t-SNE
-    tsne = TSNE(n_components=2, perplexity=20, random_state=42)
+    tsne = TSNE(n_components=2, perplexity=30, random_state=42)
     X_tsne = tsne.fit_transform(X_pca)
     # X_umap = umap.UMAP(n_neighbors=15, min_dist=0.1, random_state=42).fit_transform(X_pca)
 
@@ -122,10 +149,10 @@ def main():
 
     # # # --- Step 5: Plot ---
     plt.figure(figsize=(10, 8))
-    colors = ['royalblue', 'darkorange', 'crimson', 'seagreen', 'mediumvioletred', 'olive' ]
-    labels = ['1000LMT_1', '1000LMT_3', '1000-polyfiberLMT_1', '1000-polyfiberLMT_2','0613_1000LMT_3', '0613_1000LMT_4']
+    colors = ['royalblue', 'darkorange', 'crimson', 'seagreen', 'mediumvioletred', 'olive','dodgerblue','indigo','firebrick','peru' ]
+    labels = ['1000LMT_3', '1000LMT_4', '9010LMT_2', '9010LMT_3','8020LMT_1', '8020LMT_2', '7030LMT_1', '7030LMT_2','6040LMT_1', '6040LMT_2']
 
-    for group_id in [0, 1, 2, 3, 4, 5]:  # or [0, 1, 2] if you want all 3
+    for group_id in [0, 1, 2, 3, 4, 5,6,7,8,9]:  # or [0, 1, 2] if you want all 3
         plt.scatter(X_tsne[y_small == group_id, 0],
                     X_tsne[y_small == group_id, 1],
                     label=labels[group_id],
