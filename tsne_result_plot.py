@@ -96,11 +96,11 @@ def plot_avg_std_with_top_features(X, y, labels, top_feature_indices, top_import
 # Main Analysis Pipeline #
 # ---------------------- #
 def main():
-    foldername_list = ['1000', '9010', '8020', '7030', '6040']
-    filename_list = ['LMT_2', 'LMT_3']
+    foldername_list = ['1000', '9010', '8020', '7030', '6040'] #'1000B','1000', , '9010', '8020', '7030', '6040'
+    filename_list = ['LMT_1','LMT_3'] # 'LMT_2','LMT_3',
     
-    base_path = "../res/Caf2_06262025_tnse/original_amide1/"
-    save_path = "../res/Caf2_06262025_tnse/result_ori/original_23_amide1_refine_umap/"
+    base_path = "../res/Caf2_07032025_amide1/"
+    save_path = "../res/Caf2_07032025_amide1/result/"
     os.makedirs(save_path, exist_ok=True)
 
     all_data = []
@@ -143,7 +143,7 @@ def main():
     clf.fit(X_small, y_small)
     importance = np.mean(np.abs(clf.coef_), axis=0)
     wavenumbers = np.linspace(950, 1800, len(importance))
-    top_indices = np.argsort(importance)[-20:]
+    top_indices = np.argsort(importance)[-40:]
     top_wavenumbers = wavenumbers[top_indices]
     top_importance = importance[top_indices]
 
@@ -209,9 +209,12 @@ def main():
     # Avg ± STD Spectrum Plot #
     # ------------------------ #
     zoom_ranges = [
-        (1550, 1570),
-        (1650, 1670),
-        (1670, 1690)
+        (1030, 1050),
+        (1220, 1240),
+        (1440, 1470),
+        (1520, 1570),
+        (1640, 1700),
+        (1730, 1740)
     ]
     plot_avg_std_with_top_features(X_small, y_small, label_names, top_indices, top_importance,
                                    save_path, title="Avg STD Spectrum with Top Features",

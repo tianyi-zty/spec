@@ -5,10 +5,8 @@ from matplotlib import pyplot as plt
 import os
 
 
-# File path to your CSV file
-wv1=950
 # filename = f'{wv1}-{wv1+200}'
-path = r'../res/Caf2_03072025_rat/morepeaks/liver_oct/average/result/'
+path = r'../res/rat/liver_ffpe/second_derivative/'
 file_path = path + 'detected_peaks.csv'
 os.makedirs(path, exist_ok=True)
 

@@ -54,28 +54,30 @@ def normalize_spectra_zscore(X):
 # ---------------------- #
 
 def main():
-    foldername_list = ['1000', '9010', '8020', '7030', '6040'] #'1000B','1000', , '9010', '8020', '7030', '6040'
-    filename_list = [ 'LMT_2','LMT_3'] #'LMT_3',, 'LMT_4''LMT_1','LMT_2',
+    foldername_list = ['1000', '9010','8020', '7030', '6040'] #'1000B','1000', , '9010', '8020', '7030', '6040'
+    filename_list = ['LMT_1','LMT_4'] # 'LMT_2','LMT_3',
     
-    base_path = "../res/Caf2_06262025_tnse/original_amide1/"
-    save_path = "../res/Caf2_06262025_tnse/result_ori/original_23_amide1_refine_umap/"
-    representative_save_path = os.path.join(save_path, "representative_spectra")
+    base_path = "../res/Caf2_07032025_amide1/"
+    save_path = "../res/Caf2_07032025_amide1/result/"
+    # representative_save_path = os.path.join(save_path, "representative_spectra")
     os.makedirs(save_path, exist_ok=True)
-    os.makedirs(representative_save_path, exist_ok=True)
+    # os.makedirs(representative_save_path, exist_ok=True)
 
     all_data = []
     all_labels = []
     label_names = []
     label_index = 0
 
+
     for foldername in foldername_list:
         for filename in filename_list:
             folder_path = os.path.join(base_path, foldername, filename)
             if not os.path.isdir(folder_path):
                 continue
-            data = load_npy_data(folder_path, max_samples=1000)
+            data = load_npy_data(folder_path, max_samples=5000)
             if len(data) == 0:
                 continue
+
             norm_data = normalize_spectra_zscore(data)
             all_data.append(norm_data)
             all_labels += [label_index] * len(norm_data)
@@ -174,7 +176,7 @@ def main():
 
 
     # ---------- Step 1: Build dynamic output folder names ----------
-    output_base = "../res/Caf2_06262025_tnse/result_ori/clustered_tsne"
+    output_base = "../res/Caf2_07032025_amide1/clustered_tsne"
     output_dirs = {}
     label_names = []
     label_index = 0
@@ -214,23 +216,23 @@ def main():
     label_map = {col: row for row, col in zip(col_ind, row_ind)}
     mapped_tsne_labels = np.array([label_map[lbl] for lbl in tsne_labels])
 
-    # ---------- Step 3: Save correctly clustered spectra ----------
-    count = defaultdict(int)
-    N = len(y_small)
+    # # ---------- Step 3: Save correctly clustered spectra ----------
+    # count = defaultdict(int)
+    # N = len(y_small)
 
-    for i in range(N):
-        true_label = y_small[i]
-        predicted_label = mapped_tsne_labels[i]
-        if true_label == predicted_label and true_label in output_dirs:
-            folder = output_dirs[true_label]
-            filename = f"spectrum_{true_label}_{count[true_label]:05d}.npy"
-            np.save(os.path.join(folder, filename), X_small[i])
-            count[true_label] += 1
+    # for i in range(N):
+    #     true_label = y_small[i]
+    #     predicted_label = mapped_tsne_labels[i]
+    #     if true_label == predicted_label and true_label in output_dirs:
+    #         folder = output_dirs[true_label]
+    #         filename = f"spectrum_{true_label}_{count[true_label]:05d}.npy"
+    #         np.save(os.path.join(folder, filename), X_small[i])
+    #         count[true_label] += 1
 
-    # ---------- Step 4: Print summary ----------
-    print("✅ Saved spectra per correctly clustered group:")
-    for label, c in count.items():
-        print(f"  {label_names[label]}: {c} spectra")
+    # # ---------- Step 4: Print summary ----------
+    # print("✅ Saved spectra per correctly clustered group:")
+    # for label, c in count.items():
+    #     print(f"  {label_names[label]}: {c} spectra")
 
 
 if __name__ == '__main__':
