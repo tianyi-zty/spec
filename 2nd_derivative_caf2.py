@@ -6,7 +6,7 @@ from scipy.signal import savgol_filter, find_peaks
 import matplotlib.pyplot as plt
 from pdb import set_trace as st
 
-def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0003):
+def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0001):
         indices = np.where((wavelengths >= start) & (wavelengths <= end))[0]
         second_derivative = savgol_filter(spectrum, window_length=window, polyorder=polyorder, deriv=2)
         minima_indices, _ = find_peaks(-second_derivative, prominence=prominence)
@@ -17,8 +17,8 @@ def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, 
 def main():
     foldername_list = ['kidney_oct/','liver_oct/','kidney_ffpe/','liver_ffpe/']
     for foldername in foldername_list:
-        input_folder = r'../res/rat/'+f'{foldername}'
-        output_folder = input_folder+"/second_derivative"
+        input_folder = r'/Volumes/TIANYI/rat/'+f'{foldername}'
+        output_folder = r'/Volumes/TIANYI/rat/second_derivative_1026/'+f'{foldername}'
         os.makedirs(output_folder, exist_ok=True)
         csv_file = os.path.join(output_folder, "detected_peaks.csv")
 
@@ -31,7 +31,7 @@ def main():
 
         # Iterate through all .mat files in the input folder
         for file in os.listdir(input_folder):
-            if file.endswith("mask1.mat"):
+            if file.endswith("_mask1.mat"):
                 mat_path = os.path.join(input_folder, file)
                 try:
                     # Load spectrum data
@@ -73,10 +73,10 @@ def main():
                 except Exception as e:
                     print(f"Error processing {file}: {e}")
 
-                # Save detected peaks to CSV
-                df = pd.DataFrame(csv_data)
-                df.to_csv(csv_file, index=False)
-                print(f"Processed all spectra. Results saved to {csv_file}")
+                # # Save detected peaks to CSV
+                # df = pd.DataFrame(csv_data)
+                # df.to_csv(csv_file, index=False)
+                # print(f"Processed all spectra. Results saved to {csv_file}")
 
 
 if __name__ == '__main__':

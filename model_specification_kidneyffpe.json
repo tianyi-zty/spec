@@ -20,15 +20,23 @@
             }
         },
         {
+            "_comment": "Amide II - beta sheet",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 10, "min": 1, "max": 50}, 
+                "center": {"value": 1546, "min": 1546, "max": 1586}, 
+                "sigma": {"value": 10, "min": 0, "max": 20}
+            }
+        },
+        {
             "_comment": "Amide II",
             "type": "GaussianModel", 
             "params": {
-                "amplitude": {"value": 10, "min": 1, "max": 25}, 
-                "center": {"value": 1530, "min": 1546, "max": 1586}, 
-                "sigma": {"value": 10, "min": 0, "max": 30}
+                "amplitude": {"value":5, "min": 1, "max": 20}, 
+                "center": {"value": 1586, "min": 1584, "max": 1590}, 
+                "sigma": {"value": 5, "min": 0, "max": 10}
             }
         },
-        
         {
             "_comment": "Amide I",
             "type": "GaussianModel", 

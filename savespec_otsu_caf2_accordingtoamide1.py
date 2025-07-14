@@ -37,14 +37,14 @@ def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, 
         return second_derivative, minima_x, minima_y
 
 def main():
-    foldername_list = ['1000'] # '1000','9010', '8020','7030' 
-    filename_list = ['LMT_1','LMT_2','LMT_3','LMT_4'] #'LMT_1','LMT_2','LMT_3','LMT_4']
+    foldername_list = ['1000','1000B','9010', '8020','7030', '6040'] # '1000','9010', '8020','7030' 
+    filename_list = ['LMT_1','LMT_2','LMT_3','LMT_4'] #'LMT_1','LMT_2','LMT_3','LMT_4'
     for foldername in foldername_list:
         for filename in filename_list:
             print('processing:', foldername, filename)
             # before_collagen = r'/Volumes/TIANYI/Sperodata/CaF2_01162025/after_sample/LMT_1.mat'
-            after_collagen = f'W:/3. Students/Tianyi/Caf2_07032025/{foldername}/{filename}'+'.mat'
-            save_path = f'../res/Caf2_07032025_amide1/{foldername}/{filename}/'
+            after_collagen = f'/Volumes/TIANYI/Sperodata/Caf2_06262025/{foldername}/{filename}'+'.mat'
+            save_path = f'/Volumes/TIANYI/Sperodata/spec_res/Caf2_06262025_amide1/{foldername}/{filename}/'
             # save_2nd = f'../res/Caf2_06232025_tnse/2nd/1000/{filename}/'
             os.makedirs(save_path, exist_ok=True)
             # os.makedirs(save_2nd, exist_ok=True)
@@ -189,10 +189,10 @@ def main():
                     amide1_band = spectrum[amide1_indices]
                     max_amide1 = np.max(amide1_band)
                     print(max_amide1)
-                    if 0.5 <= max_amide1 <= 1.0:
+                    if 0.8 <= max_amide1 :
                         valid_spectra.append(spectrum)
 
-            print(f"Found {len(valid_spectra)} spectra with Amide I max between 0.6 and 1.2.")
+            print(f"Found {len(valid_spectra)} spectra with Amide I max between 0.8 and inf.")
 
             # Randomly sample up to 10,000
             random.seed(42)

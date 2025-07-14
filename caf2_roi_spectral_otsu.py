@@ -44,12 +44,12 @@ def rubberband_baseline_correction(x, y):
 
 def main():
 
-    foldername_list = ['Caf2_03132025_rat_ffpe/kidney_ffpe/'] #Caf2_03072025_rat_oct/liver_oct  #Caf2_03132025_rat_ffpe/liver_ffpe/
-    filename_list = ['HMT_11'] #'HMT_1','HMT_5','HMT_2','HMT_3','HMT_4','HMT_7',
+    foldername_list = ['Caf2_03072025_rat_oct/kidney_oct/'] #Caf2_03072025_rat_oct/liver_oct  #Caf2_03132025_rat_ffpe/liver_ffpe/
+    filename_list = ['HMT_10','HMT_5','HMT_4','HMT_3','HMT_12','HMT_13','HMT_9']
     for foldername in foldername_list:
         for filename in filename_list:
             print('processing:', foldername, filename)
-            after_collagen = r'W:/3. Students/Tianyi/'+f'{foldername}'+f'{filename}'+'.mat'
+            after_collagen = r'/Volumes/TIANYI/Sperodata/'+f'{foldername}'+f'{filename}'+'.mat'
             save_path = f'../res/rat/{foldername}'
             os.makedirs(save_path, exist_ok=True)
 
@@ -105,36 +105,37 @@ def main():
             # Plot the average spectrum with standard deviation
             plt.figure(figsize=(12, 8))
             # plt.plot(wavelengths, mean_spectrum_after, label='Smoothed Average Spectrum - Mask 0', color='b', linewidth=2) 
-            plt.plot(wavelengths, mean_spectrum_after_roi, label='Smoothed Average Spectrum - Mask 1', color='b', linewidth=2) 
-            # plt.plot(wavelengths, corrected_spectrum_before, label='Smoothed RBC Spectrum - Mask 0', color='r', linewidth=2) 
-            plt.plot(wavelengths, corrected_spectrum_after, label='Smoothed RBC Spectrum - Mask 1', color='r', linewidth=2)
+            # plt.plot(wavelengths, mean_spectrum_after_roi, label='Smoothed Average Spectrum - Mask 1', color='b', linewidth=2) 
+            plt.plot(wavelengths, corrected_spectrum_before, label='Region 0', color='k', linewidth=3) 
+            plt.plot(wavelengths, corrected_spectrum_after, label='Region 1', color='r', linewidth=3)
             # plt.fill_between(wavelengths, 
             #                 mean_spectrum_after - std_spectrum_after, 
             #                 mean_spectrum_after + std_spectrum_after, 
             #                 color='b', alpha=0.3, label='Standard Deviation')
-            plt.fill_between(wavelengths, 
-                            mean_spectrum_after_roi - std_spectrum_after_roi, 
-                            mean_spectrum_after_roi + std_spectrum_after_roi, 
-                            color='b', alpha=0.3, label='Standard Deviation')
             # plt.fill_between(wavelengths, 
-            #                 corrected_spectrum_before - std_spectrum_after, 
-            #                 corrected_spectrum_before + std_spectrum_after, 
-            #                 color='r', alpha=0.3, label='Standard Deviation')
+            #                 mean_spectrum_after_roi - std_spectrum_after_roi, 
+            #                 mean_spectrum_after_roi + std_spectrum_after_roi, 
+            #                 color='b', alpha=0.3, label='Standard Deviation')
+            plt.fill_between(wavelengths, 
+                            corrected_spectrum_before - std_spectrum_after, 
+                            corrected_spectrum_before + std_spectrum_after, 
+                            color='k', alpha=0.3, label='Standard Deviation')
             plt.fill_between(wavelengths, 
                             corrected_spectrum_after - std_spectrum_after_roi, 
                             corrected_spectrum_after + std_spectrum_after_roi, 
                             color='r', alpha=0.3, label='Standard Deviation') 
             plt.xlabel('Wavenumber (cm⁻¹)')
             plt.ylabel('Intensity')
-            plt.legend()
-            plt.grid(True)
+            plt.legend(loc='upper left', fontsize=14)
+            # plt.grid(True)
             plt.savefig(os.path.join(save_path, f'average_spectrum_{filename}.png'))
+            # plt.show()
 
         
 
-            # Save the subspectrum
-            # subspectrum_filename = f"{filename}_after_mask0.mat"
-            # savemat(os.path.join(save_path, subspectrum_filename), {'spectrum': corrected_spectrum_before})
+            # # Save the subspectrum
+            # # subspectrum_filename = f"{filename}_after_mask0.mat"
+            # # savemat(os.path.join(save_path, subspectrum_filename), {'spectrum': corrected_spectrum_before})
             subspectrum_filename_1 = f"{filename}_after_mask1.mat"
             savemat(os.path.join(save_path, subspectrum_filename_1), {'spectrum': corrected_spectrum_after})
             print(f'Subspectrum saved!')

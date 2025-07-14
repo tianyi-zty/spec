@@ -43,13 +43,13 @@ def main():
     extracted_region_after_1 = spectra_after_1[z_indices]
     extracted_region_after_2 = spectra_after_2[z_indices]
     # st()
-    sv=0
+
     # Plot the average spectrum with standard deviation
     plt.figure(figsize=(12, 8))
     plt.plot(wavelengths[z_indices], extracted_region_before, label='Spectrum collagen1:peptide 1', color='r', linewidth=2)
-    plt.plot(wavelengths[z_indices]-sv, extracted_region_after, label='Spectrum  2', color='b', linewidth=2)
-    plt.plot(wavelengths[z_indices]-sv, extracted_region_after_1, label='Spectrum 4', color='g', linewidth=2)
-    plt.plot(wavelengths[z_indices]-sv, extracted_region_after_2, label='Spectrum 6', color='k', linewidth=2)
+    plt.plot(wavelengths[z_indices], extracted_region_after, label='Spectrum  2', color='b', linewidth=2)
+    plt.plot(wavelengths[z_indices], extracted_region_after_1, label='Spectrum 4', color='g', linewidth=2)
+    plt.plot(wavelengths[z_indices], extracted_region_after_2, label='Spectrum 6', color='k', linewidth=2)
     # Labeling the plot
     plt.xlabel('Wavenumber (cm⁻¹)')
     plt.ylabel('Intensity')
