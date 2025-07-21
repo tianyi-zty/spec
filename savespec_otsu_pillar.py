@@ -18,15 +18,15 @@ def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, 
 
 def main():
     #change foldername also root path
-    foldername = 'afterCollagen60Peptide40'
-    filename_before = 'LMR_1'
-    filename_after = 'LMR_1'
-    region = 1
-    print(f'Processing before:{filename_before}/after:{filename_after} at amide {region} region')
-    root_path = '/Volumes/TIANYI/Sperodata/06122025_AUPILLAR_ETCHED_MEM/6'
+    foldername = 'afterCol60Pep40'
+    filename_before = 'LMR1'
+    filename_after = 'LMR1'
+    region = '950-1200'
+    print(f'Processing before:{filename_before}/after:{filename_after} at {region} region')
+    root_path = '/Volumes/TIANYI/Sperodata/07162025_AUPILLAR_ETCHED_MEM/7'
     before_path = os.path.join(root_path, 'before', f'{filename_before}.mat')
     after_path = os.path.join(root_path, foldername, f'{filename_after}.mat')
-    save_path = f'/Volumes/TIANYI/spec_res/06122025_AUPILLAR_ETCHED_MEM/{region}/{foldername}/{filename_after}/'
+    save_path = f'/Volumes/TIANYI/spec_res/07162025_AUPILLAR_ETCHED_MEM/{region}/{foldername}/{filename_after}/'
     second_deriv_dir = os.path.join(save_path, "second_derivative_spec")
     save_path_filtered_spec = os.path.join(save_path, "filtered_spec")
     os.makedirs(second_deriv_dir, exist_ok=True)
@@ -38,16 +38,18 @@ def main():
     spectra_after = np.reshape(loadmat(after_path)['r'], (480, 480, 426))
     wavelengths = np.linspace(950, 1800, 426)
 
-    # Define wavelength subset indices (1400–1700 cm⁻¹)
-    subset_start = 1400
-    subset_end = 1700
+    # Define wavelength subset indices (1150–1350 cm⁻¹)
+    subset_start = 950
+    subset_end = 1200
     subset_indices = np.where((wavelengths >= subset_start) & (wavelengths <= subset_end))[0]
 
     # ROI selection
-    a=88
-    b=52
-    c=64
-    d=82
+    #before
+    a=117
+    b=40
+    #after
+    c=120
+    d=65
     x_start, x_end = a,a+100
     y_start, y_end = b,b+100
     x_start_1, x_end_1 = c,c+100
@@ -55,32 +57,33 @@ def main():
     region_before = spectra_before[x_start:x_end, y_start:y_end, :]
     region_after = spectra_after[x_start_1:x_end_1, y_start_1:y_end_1, :]
 
+    n=90
     # Save ROI inspection image
     fig, axes = plt.subplots(2, 2, figsize=(8, 8))
     ax1, ax2, ax3, ax4 = axes.flatten()
-    ax1.imshow(spectra_before[:, :, 330].T)
+    ax1.imshow(spectra_before[:, :, n].T)
     ax1.set_title('spectra_before')
-    ax2.imshow(spectra_after[:, :, 330].T)
+    ax2.imshow(spectra_after[:, :, n].T)
     ax2.set_title('spectra_after')
-    ax3.imshow(region_before[:, :, 330].T)
+    ax3.imshow(region_before[:, :, n].T)
     ax3.set_title('extracted_region_before')
-    ax4.imshow(region_after[:, :, 330].T)
+    ax4.imshow(region_after[:, :, n].T)
     ax4.set_title('extracted_region_after')
     plt.tight_layout()
     plt.savefig(os.path.join(save_path, 'cropped_image_example.png'))
-    # plt.show()
+    plt.show()
     plt.close()
-    # st()
+    st()
 
-    # Apply Otsu threshold to 330th band of region_after
-    thresholds = threshold_multiotsu(region_after[:, :, 330].T, classes=3)
-    regions = np.digitize(region_after[:, :, 330].T, bins=thresholds)
+    # Apply Otsu threshold to 330/276 band of region_after
+    thresholds = threshold_multiotsu(region_after[:, :, n].T, classes=3)
+    regions = np.digitize(region_after[:, :, n].T, bins=thresholds)
     binary_mask_region0 = (regions == 0).astype(np.uint8)
     binary_mask_region1 = (regions == 1).astype(np.uint8)
     binary_mask_region2 = (regions == 2).astype(np.uint8)
     fig, axes = plt.subplots(1, 2, figsize=(10, 8))
     ax1, ax2 = axes.flatten()
-    ax1.imshow(region_after[:, :, 330].T)
+    ax1.imshow(region_after[:, :, n].T)
     ax1.set_title('region_after')
     ax2.imshow(binary_mask_region2)
     ax2.set_title('binary_mask_region2')
@@ -130,7 +133,7 @@ def main():
     selected_spectra = []
     for idx, spectrum in enumerate(valid_spectra):
         second_derivative, minima_x, minima_y = process_spectrum(
-            spectrum, wavelengths, 1500, 1650, prominence=0.0003
+            spectrum, wavelengths, subset_start, subset_end, prominence=0.0003
         )
         if len(minima_x) > 2:
             selected_spectra.append(spectrum)
@@ -149,7 +152,7 @@ def main():
             # plt.savefig(os.path.join(second_deriv_dir, f"second_derivative_{idx}.png"))
             # plt.close()
 
-    print(f"Found {len(selected_spectra)} spectra with peak between 1500–1650 cm⁻¹.")
+    print(f"Found {len(selected_spectra)} spectra with peak between {subset_start}-{subset_end} cm⁻¹.")
     print(f"Saved plots in: {second_deriv_dir}")
 
     # Randomly save up to 2000 spectra

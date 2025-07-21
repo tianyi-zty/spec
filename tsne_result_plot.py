@@ -2,6 +2,7 @@ import numpy as np
 import os
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
+from pdb import set_trace as st
 from sklearn.decomposition import PCA
 from sklearn.utils import shuffle
 from sklearn.linear_model import LogisticRegression
@@ -97,10 +98,10 @@ def plot_avg_std_with_top_features(X, y, labels, top_feature_indices, top_import
 # ---------------------- #
 def main():
     foldername_list = ['1000', '9010', '8020', '7030', '6040'] #'1000B','1000', , '9010', '8020', '7030', '6040'
-    filename_list = ['LMT_1','LMT_3'] # 'LMT_2','LMT_3',
+    filename_list = ['LMT_2','LMT_3'] # 'LMT_2','LMT_3',
     
-    base_path = "../res/Caf2_07032025_amide1/"
-    save_path = "../res/Caf2_07032025_amide1/result/"
+    base_path = "/Volumes/TIANYI/spec_res/Caf2_07182025_amide1/"
+    save_path = "/Volumes/TIANYI/spec_res/Caf2_07182025_amide1/result/"
     os.makedirs(save_path, exist_ok=True)
 
     all_data = []
@@ -113,7 +114,7 @@ def main():
             folder_path = os.path.join(base_path, foldername, filename)
             if not os.path.isdir(folder_path):
                 continue
-            data = load_npy_data(folder_path, max_samples=1000)
+            data = load_npy_data(folder_path, max_samples=2000)
             if len(data) == 0:
                 continue
             norm_data = normalize_spectra_zscore(data)
@@ -143,7 +144,7 @@ def main():
     clf.fit(X_small, y_small)
     importance = np.mean(np.abs(clf.coef_), axis=0)
     wavenumbers = np.linspace(950, 1800, len(importance))
-    top_indices = np.argsort(importance)[-40:]
+    top_indices = np.argsort(importance)[-80:]
     top_wavenumbers = wavenumbers[top_indices]
     top_importance = importance[top_indices]
 

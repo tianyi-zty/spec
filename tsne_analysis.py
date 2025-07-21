@@ -65,19 +65,19 @@ def plot_tsne(X_tsne, y, labels, save_path):
 # --- Main Pipeline ---
 def main():
     folders = [
-        "afterCollagen100Peptide0",
-        "afterCollagen90Peptide10",
-        "afterCollagen80Peptide20",
-        "afterCollagen70Peptide30",
-        "afterCollagen60Peptide40"
+        "afterCol100Pep0",
+        "afterCol90Pep10",
+        "afterCol80Pep20",
+        "afterCol70Pep30",
+        "afterCol60Pep40"
     ]
-    root_path = "/Volumes/TIANYI/spec_res/06122025_AUPILLAR_ETCHED_MEM/1"
-    save_path = os.path.join(root_path, "tsne_result")
+    root_path = "/Volumes/TIANYI/spec_res/07162025_AUPILLAR_ETCHED_MEM/950-1200"
+    save_path = os.path.join(root_path, "tsne_result") #_second_derivative
     os.makedirs(save_path, exist_ok=True)
 
     data, labels = [], []
     for i, folder in enumerate(folders):
-        full_path = os.path.join(root_path, folder, "LMR_1")
+        full_path = os.path.join(root_path, folder, "LMR1/filtered_spec") #second_derivative_spec filtered_spec
         spectra = load_npy_data(full_path, max_samples=1000)
         data.extend(spectra)
         labels.extend([i] * len(spectra))
@@ -98,7 +98,7 @@ def main():
     clf = LogisticRegression(penalty='l2', solver='liblinear')
     clf.fit(X_small, y_small)
     importance = np.mean(np.abs(clf.coef_), axis=0)
-    wavenumbers = np.linspace(1400, 1700, len(importance))
+    wavenumbers = np.linspace(950, 1200, len(importance))
     plot_feature_importance(importance, wavenumbers, save_path)
 
     # Plot t-SNE
