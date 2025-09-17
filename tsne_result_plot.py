@@ -98,10 +98,10 @@ def plot_avg_std_with_top_features(X, y, labels, top_feature_indices, top_import
 # ---------------------- #
 def main():
     foldername_list = ['1000', '9010', '8020', '7030', '6040'] #'1000B','1000', , '9010', '8020', '7030', '6040'
-    filename_list = ['LMT_2','LMT_3'] # 'LMT_2','LMT_3',
+    filename_list = ['LMT_1'] # 'LMT_2','LMT_3',
     
-    base_path = "/Volumes/TIANYI/spec_res/Caf2_07182025_amide1/"
-    save_path = "/Volumes/TIANYI/spec_res/Caf2_07182025_amide1/result/"
+    base_path = "D:/spec_res/Caf2_07182025_amide1/"
+    save_path = "D:/spec_res/Caf2_07182025_amide1/result/"
     os.makedirs(save_path, exist_ok=True)
 
     all_data = []
@@ -114,7 +114,7 @@ def main():
             folder_path = os.path.join(base_path, foldername, filename)
             if not os.path.isdir(folder_path):
                 continue
-            data = load_npy_data(folder_path, max_samples=2000)
+            data = load_npy_data(folder_path, max_samples=500)
             if len(data) == 0:
                 continue
             norm_data = normalize_spectra_zscore(data)
@@ -127,15 +127,15 @@ def main():
     X = np.concatenate(all_data)
     y = np.array(all_labels)
     X_small, y_small = shuffle(X, y, random_state=42)
-    X_small = X_small[:5000]
-    y_small = y_small[:5000]
+    X_small = X_small[:1000]
+    y_small = y_small[:1000]
 
-    # -------------------- #
-    # PCA + t-SNE + UMAP  #
-    # -------------------- #
-    X_pca = PCA(n_components=50).fit_transform(X_small)
-    X_tsne = TSNE(n_components=2, perplexity=200, random_state=42).fit_transform(X_pca)
-    X_umap = umap.UMAP(n_neighbors=15, min_dist=0.1, random_state=42).fit_transform(X_pca)
+    # # -------------------- #
+    # # PCA + t-SNE + UMAP  #
+    # # -------------------- #
+    # X_pca = PCA(n_components=50).fit_transform(X_small)
+    # X_tsne = TSNE(n_components=2, perplexity=200, random_state=42).fit_transform(X_pca)
+    # X_umap = umap.UMAP(n_neighbors=15, min_dist=0.1, random_state=42).fit_transform(X_pca)
 
     # --------------------------- #
     # Feature Importance (LogReg) #
@@ -181,41 +181,41 @@ def main():
         plt.show()
         plt.close()
 
-    plot_embedding(X_tsne, 't-SNE', 't-SNE')
-    plot_embedding(X_umap, 'UMAP', 'UMAP')
+    # plot_embedding(X_tsne, 't-SNE', 't-SNE')
+    # plot_embedding(X_umap, 'UMAP', 'UMAP')
 
-    # ------------------------------ #
-    # Confusion Matrix + Clustering #
-    # ------------------------------ #
-    n_clusters = len(np.unique(y_small))
-    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(X_tsne)
-    tsne_labels = kmeans.labels_
-    conf_mat = confusion_matrix(y_small, tsne_labels)
-    row_ind, col_ind = linear_sum_assignment(-conf_mat)
-    label_map = {col: row for row, col in zip(col_ind, row_ind)}
-    mapped_tsne_labels = np.array([label_map[lbl] for lbl in tsne_labels])
+    # # ------------------------------ #
+    # # Confusion Matrix + Clustering #
+    # # ------------------------------ #
+    # n_clusters = len(np.unique(y_small))
+    # kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(X_tsne)
+    # tsne_labels = kmeans.labels_
+    # conf_mat = confusion_matrix(y_small, tsne_labels)
+    # row_ind, col_ind = linear_sum_assignment(-conf_mat)
+    # label_map = {col: row for row, col in zip(col_ind, row_ind)}
+    # mapped_tsne_labels = np.array([label_map[lbl] for lbl in tsne_labels])
 
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(conf_mat, annot=True, fmt='d', cmap='Blues',
-                xticklabels=[f"Cluster {i}" for i in range(n_clusters)],
-                yticklabels=[label_names[i] for i in range(n_clusters)])
-    plt.xlabel("KMeans Cluster Label")
-    plt.ylabel("True Label")
-    plt.title("Confusion Matrix (t-SNE KMeans vs. True Labels)")
-    plt.tight_layout()
-    plt.savefig(os.path.join(save_path, "Confusion_Matrix_tsne.png"))
-    plt.close()
+    # plt.figure(figsize=(8, 6))
+    # sns.heatmap(conf_mat, annot=True, fmt='d', cmap='Blues',
+    #             xticklabels=[f"Cluster {i}" for i in range(n_clusters)],
+    #             yticklabels=[label_names[i] for i in range(n_clusters)])
+    # plt.xlabel("KMeans Cluster Label")
+    # plt.ylabel("True Label")
+    # plt.title("Confusion Matrix (t-SNE KMeans vs. True Labels)")
+    # plt.tight_layout()
+    # plt.savefig(os.path.join(save_path, "Confusion_Matrix_tsne.png"))
+    # plt.close()
 
     # ------------------------ #
     # Avg ± STD Spectrum Plot #
     # ------------------------ #
     zoom_ranges = [
-        (1030, 1050),
-        (1220, 1240),
-        (1440, 1470),
-        (1520, 1570),
-        (1640, 1700),
-        (1730, 1740)
+        (1210,1264),
+        (1536,1570),
+        (1630,1700)
+        # (1520, 1570),
+        # (1640, 1700),
+        # (1730, 1740)
     ]
     plot_avg_std_with_top_features(X_small, y_small, label_names, top_indices, top_importance,
                                    save_path, title="Avg STD Spectrum with Top Features",

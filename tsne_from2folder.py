@@ -74,20 +74,27 @@ def plot_feature_importance(importance, wavenumbers, save_path):
 # --- Main Pipeline ---
 def main():
     folders = [
-        "afterCol100Pep0",
-        "afterCol90Pep10",
-        "afterCol80Pep20",
-        "afterCol70Pep30",
-        "afterCol60Pep40"
+        "1000",
+        "9010",
+        "8020",
+        "7030",
+        "6040"
     ]
-
+    # folders = [
+    #     "afterCol100Pep0",
+    #     "afterCol90Pep10",
+    #     "afterCol80Pep20",
+    #     "afterCol70Pep30",
+    #     "afterCol60Pep40"
+    # ]
     # Two different root paths
     root_paths = [
-        "/Volumes/TIANYI/spec_res/06122025_AUPILLAR_ETCHED_MEM/950-1200",
-        "/Volumes/TIANYI/spec_res/07162025_AUPILLAR_ETCHED_MEM/950-1200"
+        # "../res/Caf2_06262025_tnse/original_amide1",
+        "../res/Caf2_07032025_amide1",
+        "../res/Caf2_07182025_amide1"
     ]
 
-    save_path = "/Volumes/TIANYI/spec_res/tsne_result_combined"
+    save_path = "../res/tsne_caf2_combined/0626-0703-0718-LMT3"
     os.makedirs(save_path, exist_ok=True)
 
     data, labels = [], []
@@ -96,8 +103,8 @@ def main():
 
     for root_path in root_paths:
         for folder in folders:
-            full_path = os.path.join(root_path, folder, "LMR_1/second_derivative_spec")
-            spectra = load_npy_data(full_path, max_samples=2000)
+            full_path = os.path.join(root_path, folder, "LMT_2")
+            spectra = load_npy_data(full_path, max_samples=1000)
             data.extend(spectra)
             labels.extend([label_counter] * len(spectra))
             # st()
@@ -110,8 +117,8 @@ def main():
     X = normalize_spectra_zscore(data)
     y = np.array(labels)
     X_small, y_small = shuffle(X, y, random_state=42)
-    X_small = X_small[:4000]
-    y_small = y_small[:4000]
+    X_small = X_small[:5000]
+    y_small = y_small[:5000]
 
     # Dimensionality Reduction
     X_pca = PCA(n_components=50).fit_transform(X_small)
@@ -122,7 +129,7 @@ def main():
     clf = LogisticRegression(penalty='l2', solver='liblinear')
     clf.fit(X_small, y_small)
     importance = np.mean(np.abs(clf.coef_), axis=0)
-    wavenumbers = np.linspace(950, 1200, len(importance))  # Adjust if needed based on actual range
+    wavenumbers = np.linspace(950, 1800, len(importance))  # Adjust if needed based on actual range
     plot_feature_importance(importance, wavenumbers, save_path)
 
     def plot_embedding(embedding, name, coords_label):
@@ -131,17 +138,18 @@ def main():
 
         # Step 1: Build base group → color index map
         base_groups = sorted(set([lbl.split('_')[-1] for lbl in label_names]))
-        base_color_map = {base: 2 * i for i, base in enumerate(base_groups)}
+        base_color_map = {base: 3 * i for i, base in enumerate(base_groups)}
 
         for i, label in enumerate(np.unique(y_small)):
             full_label = label_names[label]  # e.g., "950-1200_afterCol100Pep0"
-            folder_prefix = full_label.split('_')[0]  # e.g., "950-1200"
+            folder_prefix = full_label.split('_amide1')[0]  # e.g., "950-1200"
             base_label = full_label.split('_')[-1]    # e.g., "afterCol100Pep0"
 
             base_color_index = base_color_map[base_label]
+            # st()
 
             # Decide color: even index for one folder, odd for the other
-            if folder_prefix == '950-1200':  # or whichever is your "first"
+            if folder_prefix == 'res_Caf2_07182025':  # or whichever is your "first"
                 color_index = base_color_index
             else:
                 color_index = base_color_index + 1

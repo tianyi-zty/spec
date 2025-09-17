@@ -17,8 +17,8 @@ from scipy.optimize import linear_sum_assignment
 import seaborn as sns
 from sklearn.discriminant_analysis import LinearDiscriminantAnalysis as LDA
 from mpl_toolkits.mplot3d import Axes3D
-
-
+from scipy.io import loadmat
+import glob
 
 
 # ---------------------- #
@@ -45,8 +45,8 @@ def load_npy_data(folder, max_samples=1000):
 
 def normalize_spectra_zscore(X):
     """Apply z-score normalization per spectrum."""
-    X_mean = X.mean(axis=1, keepdims=True)
-    X_std = X.std(axis=1, keepdims=True)
+    X_mean = X.mean(axis=0, keepdims=True)
+    X_std = X.std(axis=0, keepdims=True)
     return (X - X_mean) / (X_std + 1e-8)
 
 # ---------------------- #
@@ -54,11 +54,11 @@ def normalize_spectra_zscore(X):
 # ---------------------- #
 
 def main():
-    foldername_list = ['1000', '9010','8020', '7030', '6040'] #'1000B','1000', , '9010', '8020', '7030', '6040'
-    filename_list = ['LMT_2','LMT_3'] # 'LMT_2','LMT_3',
+    foldername_list = ['liver_ffpe', 'kidney_ffpe','liver_ff', 'kidney_ff'] #'1000B', '1000', '9010', '8020', '7030', '6040'
+    filename_list = ['HMT_1','HMT_2','HMT_3','HMT_4','HMT_5','HMT_6','HMT_7'] # 'LMT_2','LMT_3',
     
-    base_path = "/Volumes/TIANYI/Sperodata/Caf2_06262025/"
-    save_path = "../res/Caf2_06262025/result/"
+    base_path = "D:/spec_res/rat"
+    save_path = "D:/spec_res/rat/result/"
     # representative_save_path = os.path.join(save_path, "representative_spectra")
     os.makedirs(save_path, exist_ok=True)
     # os.makedirs(representative_save_path, exist_ok=True)
@@ -74,24 +74,36 @@ def main():
             folder_path = os.path.join(base_path, foldername, filename)
             if not os.path.isdir(folder_path):
                 continue
-            data = load_npy_data(folder_path, max_samples=5000)
-            if len(data) == 0:
-                continue
-
-            norm_data = normalize_spectra_zscore(data)
+            data = load_npy_data(folder_path, max_samples=1000)
+    #         data = loadmat(os.path.join(folder_path, "*.mat"))
+    #         if len(data) == 0:
+    #             continue
+    #         st()
+    # for foldername in foldername_list:
+    #     folder_path = os.path.join(base_path, foldername)
+    #     mat_files = glob.glob(os.path.join(folder_path, "*.mat"))
+    #     for mat_file in mat_files:
+    #         data = loadmat(mat_file)
+    #         # Do something with `data` here
+    #         print(f"Loaded {mat_file}")
+    #         # st()
+    #         spectra = data['spectrum'].flatten()
+            # st()
+            # norm_data = normalize_spectra_zscore(data)
+            norm_data = data
             all_data.append(norm_data)
             all_labels += [label_index] * len(norm_data)
-            label_names.append(f"{foldername}_{filename}")
-            print(f"Loaded {len(norm_data)} data from {foldername}/{filename} as label {label_index}")
+            label_names.append(f"{foldername}")
+            print(f"Loaded {len(norm_data)} data from {foldername} as label {label_index}")
             label_index += 1
 
     # Combine and shuffle
     X = np.concatenate(all_data)
     y = np.array(all_labels)
     X_small, y_small = shuffle(X, y, random_state=42)
-    X_small = X_small[:5000]
-    y_small = y_small[:5000]
-
+    X_small = X_small[:2000] #.reshape((5000, -1))
+    y_small = y_small[:2000]
+    # st()
     # -------------------- #
     # PCA + t-SNE + UMAP  #
     # -------------------- #
@@ -129,24 +141,64 @@ def main():
     # --------------------- #
     # t-SNE and UMAP Plots #
     # --------------------- #
-    def plot_embedding(embedding, name, coords_label):
+    # def plot_embedding(embedding, name, coords_label):
+    #     plt.figure(figsize=(10, 8))
+    #     cmap = plt.get_cmap('tab20')
+    #     for i, label in enumerate(np.unique(y_small)):
+    #         plt.scatter(embedding[y_small == label, 0], embedding[y_small == label, 1],
+    #                     label=label_names[label], alpha=0.5, s=30, color=cmap(i))
+    #     plt.title(f"{name} Projection")
+    #     plt.xlabel(f"{coords_label} 1")
+    #     plt.ylabel(f"{coords_label} 2")
+    #     plt.legend()
+    #     plt.grid(True)
+    #     plt.tight_layout()
+    #     plt.savefig(os.path.join(save_path, f'{name}_zscore.png'))
+    #     plt.show()
+    #     plt.close()
+    def plot_embedding(embedding, name, coords_label, foldername_list, filename_list):
         plt.figure(figsize=(10, 8))
-        cmap = plt.get_cmap('tab20')
-        for i, label in enumerate(np.unique(y_small)):
-            plt.scatter(embedding[y_small == label, 0], embedding[y_small == label, 1],
-                        label=label_names[label], alpha=0.5, s=30, color=cmap(i))
+
+        # Define color map for each folder
+        folder_colors = {
+            'liver_ffpe': 'orange',
+            'kidney_ffpe': 'blue',
+            'liver_ff': 'green',
+            'kidney_ff': 'purple'
+        }
+
+        # Define alpha map for each filename
+        filename_alphas = {f'HMT_{i}': 1.0 - (i - 1) * (0.8 / 6) for i in range(1, 8)}  # HMT_1 → 1.0, HMT_7 → 0.2
+
+        # Reconstruct metadata per point
+        start_idx = 0
+        for folder_idx, foldername in enumerate(foldername_list):
+            for file_idx, filename in enumerate(filename_list):
+                label = folder_idx * len(filename_list) + file_idx
+                alpha = filename_alphas.get(filename, 0.5)
+                color = folder_colors.get(foldername, 'gray')
+                indices = np.where(y_small == label)[0]
+                if len(indices) == 0:
+                    continue
+                plt.scatter(embedding[indices, 0], embedding[indices, 1],
+                            label=f'{foldername}_{filename}',
+                            alpha=alpha, s=30, color=color)
+
         plt.title(f"{name} Projection")
         plt.xlabel(f"{coords_label} 1")
         plt.ylabel(f"{coords_label} 2")
-        plt.legend()
+        plt.legend(fontsize=8, bbox_to_anchor=(1.05, 1), loc='upper left')
         plt.grid(True)
         plt.tight_layout()
         plt.savefig(os.path.join(save_path, f'{name}_zscore.png'))
         plt.show()
         plt.close()
 
+
     # plot_embedding(X_tsne, 't-SNE', 't-SNE')
-    plot_embedding(X_umap, 'UMAP', 'UMAP')
+    # plot_embedding(X_umap, 'UMAP', 'UMAP')
+    plot_embedding(X_umap, 'UMAP', 'UMAP', foldername_list, filename_list)
+    plot_embedding(X_tsne, 't-SNE', 't-SNE', foldername_list, filename_list)
     # plot_embedding(X_lda, 'LDA', 'LDA')
 
     # fig = plt.figure(figsize=(10, 8))
@@ -175,64 +227,64 @@ def main():
 
 
 
-    # ---------- Step 1: Build dynamic output folder names ----------
-    output_base = "../res/Caf2_06262025/clustered_tsne"
-    output_dirs = {}
-    label_names = []
-    label_index = 0
+    # # ---------- Step 1: Build dynamic output folder names ----------
+    # output_base = "../res/Caf2_06262025/clustered_tsne"
+    # output_dirs = {}
+    # label_names = []
+    # label_index = 0
 
-    for foldername in foldername_list:
-        for filename in filename_list:
-            label_name = f"{foldername}_{filename}"
-            label_names.append(label_name)
-            out_path = os.path.join(output_base, label_name)
-            output_dirs[label_index] = out_path
-            os.makedirs(out_path, exist_ok=True)
-            label_index += 1
+    # for foldername in foldername_list:
+    #     for filename in filename_list:
+    #         label_name = f"{foldername}_{filename}"
+    #         label_names.append(label_name)
+    #         out_path = os.path.join(output_base, label_name)
+    #         output_dirs[label_index] = out_path
+    #         os.makedirs(out_path, exist_ok=True)
+    #         label_index += 1
 
-    # ---------- Step 2: KMeans clustering on t-SNE and align clusters ----------
-    n_clusters = len(np.unique(y_small))
-    kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(X_tsne)
-    tsne_labels = kmeans.labels_
+    # # ---------- Step 2: KMeans clustering on t-SNE and align clusters ----------
+    # n_clusters = len(np.unique(y_small))
+    # kmeans = KMeans(n_clusters=n_clusters, random_state=0).fit(X_tsne)
+    # tsne_labels = kmeans.labels_
 
-    # Hungarian alignment
-    conf_mat = confusion_matrix(y_small, tsne_labels)
-    print("🔍 Confusion matrix (rows=true, cols=clusters):\n", conf_mat)
-    # ---------- Step 2.5: Plot and save confusion matrix ----------
-    plt.figure(figsize=(8, 6))
-    sns.heatmap(conf_mat, annot=True, fmt='d', cmap='Blues',
-                xticklabels=[f"Cluster {i}" for i in range(n_clusters)],
-                yticklabels=[label_names[i] for i in range(n_clusters)])
-    plt.xlabel("KMeans Cluster Label")
-    plt.ylabel("True Label")
-    plt.title("Confusion Matrix (t-SNE KMeans vs. True Labels)")
-    plt.tight_layout()
+    # # Hungarian alignment
+    # conf_mat = confusion_matrix(y_small, tsne_labels)
+    # print("🔍 Confusion matrix (rows=true, cols=clusters):\n", conf_mat)
+    # # ---------- Step 2.5: Plot and save confusion matrix ----------
+    # plt.figure(figsize=(8, 6))
+    # sns.heatmap(conf_mat, annot=True, fmt='d', cmap='Blues',
+    #             xticklabels=[f"Cluster {i}" for i in range(n_clusters)],
+    #             yticklabels=[label_names[i] for i in range(n_clusters)])
+    # plt.xlabel("KMeans Cluster Label")
+    # plt.ylabel("True Label")
+    # plt.title("Confusion Matrix (t-SNE KMeans vs. True Labels)")
+    # plt.tight_layout()
 
-    confmat_path = os.path.join(save_path, "Confusion_Matrix_tsne.png")
-    plt.savefig(confmat_path)
-    plt.close()
-    print(f"📊 Confusion matrix saved to {confmat_path}")
-    row_ind, col_ind = linear_sum_assignment(-conf_mat)
-    label_map = {col: row for row, col in zip(col_ind, row_ind)}
-    mapped_tsne_labels = np.array([label_map[lbl] for lbl in tsne_labels])
+    # confmat_path = os.path.join(save_path, "Confusion_Matrix_tsne.png")
+    # plt.savefig(confmat_path)
+    # plt.close()
+    # print(f"📊 Confusion matrix saved to {confmat_path}")
+    # row_ind, col_ind = linear_sum_assignment(-conf_mat)
+    # label_map = {col: row for row, col in zip(col_ind, row_ind)}
+    # mapped_tsne_labels = np.array([label_map[lbl] for lbl in tsne_labels])
 
-    # ---------- Step 3: Save correctly clustered spectra ----------
-    count = defaultdict(int)
-    N = len(y_small)
+    # # ---------- Step 3: Save correctly clustered spectra ----------
+    # count = defaultdict(int)
+    # N = len(y_small)
 
-    for i in range(N):
-        true_label = y_small[i]
-        predicted_label = mapped_tsne_labels[i]
-        if true_label == predicted_label and true_label in output_dirs:
-            folder = output_dirs[true_label]
-            filename = f"spectrum_{true_label}_{count[true_label]:05d}.npy"
-            np.save(os.path.join(folder, filename), X_small[i])
-            count[true_label] += 1
+    # for i in range(N):
+    #     true_label = y_small[i]
+    #     predicted_label = mapped_tsne_labels[i]
+    #     if true_label == predicted_label and true_label in output_dirs:
+    #         folder = output_dirs[true_label]
+    #         filename = f"spectrum_{true_label}_{count[true_label]:05d}.npy"
+    #         np.save(os.path.join(folder, filename), X_small[i])
+    #         count[true_label] += 1
 
-    # ---------- Step 4: Print summary ----------
-    print("✅ Saved spectra per correctly clustered group:")
-    for label, c in count.items():
-        print(f"  {label_names[label]}: {c} spectra")
+    # # ---------- Step 4: Print summary ----------
+    # print("✅ Saved spectra per correctly clustered group:")
+    # for label, c in count.items():
+    #     print(f"  {label_names[label]}: {c} spectra")
 
 
 if __name__ == '__main__':

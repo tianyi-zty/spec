@@ -6,7 +6,7 @@ from scipy.signal import savgol_filter, find_peaks
 import matplotlib.pyplot as plt
 from pdb import set_trace as st
 
-def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.0001):
+def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, prominence=0.001):
         indices = np.where((wavelengths >= start) & (wavelengths <= end))[0]
         second_derivative = savgol_filter(spectrum, window_length=window, polyorder=polyorder, deriv=2)
         minima_indices, _ = find_peaks(-second_derivative, prominence=prominence)
@@ -15,10 +15,10 @@ def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, 
         return second_derivative, minima_x, minima_y
 
 def main():
-    foldername_list = ['kidney_oct/','liver_oct/','kidney_ffpe/','liver_ffpe/']
+    foldername_list = ['1000/LMT_1/','9010/LMT_1/','8020/LMT_1/','7030/LMT_1/','6040/LMT_1/',] #['kidney_oct/','liver_oct/','kidney_ffpe/','liver_ffpe/']
     for foldername in foldername_list:
-        input_folder = r'/Volumes/TIANYI/rat/'+f'{foldername}'
-        output_folder = r'/Volumes/TIANYI/rat/second_derivative_1026/'+f'{foldername}'
+        input_folder = r'../res/Caf2_09092025/'+f'{foldername}'
+        output_folder = r'../res/Caf2_09092025/second_derivative/'+f'{foldername}'
         os.makedirs(output_folder, exist_ok=True)
         csv_file = os.path.join(output_folder, "detected_peaks.csv")
 
@@ -31,13 +31,16 @@ def main():
 
         # Iterate through all .mat files in the input folder
         for file in os.listdir(input_folder):
-            if file.endswith("_mask1.mat"):
+            if file.endswith("14.mat"):
                 mat_path = os.path.join(input_folder, file)
+                # st()
                 try:
                     # Load spectrum data
                     data = loadmat(mat_path)
+                    # data = np.load(mat_path)
                     # st()
                     spectra = data['spectrum'].flatten()
+                    # spectra = data
                     # st()
                     ############## need to dnamically adjust the wavelengths array based on the spectrum size################
                     spectrum_size = len(spectra)
@@ -73,10 +76,10 @@ def main():
                 except Exception as e:
                     print(f"Error processing {file}: {e}")
 
-                # # Save detected peaks to CSV
-                # df = pd.DataFrame(csv_data)
-                # df.to_csv(csv_file, index=False)
-                # print(f"Processed all spectra. Results saved to {csv_file}")
+                # Save detected peaks to CSV
+                df = pd.DataFrame(csv_data)
+                df.to_csv(csv_file, index=False)
+                print(f"Processed all spectra. Results saved to {csv_file}")
 
 
 if __name__ == '__main__':

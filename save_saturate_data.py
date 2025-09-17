@@ -26,7 +26,7 @@ def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, 
 
 
 def main():
-    foldername_list = ['1000'] #'1000', '9010', 
+    foldername_list = ['6040'] #'1000', '9010', 
     filename_list = ['LMT_SATURATED']
 
     for foldername in foldername_list:
@@ -54,7 +54,7 @@ def main():
             binary_mask_region2 = (regions == 2).astype(np.uint8)
 
             # Apply mask (Region 2 only)
-            data = binary_mask_region2.T[:, :, np.newaxis] * region_after
+            data = binary_mask_region1.T[:, :, np.newaxis] * region_after
             # combined_mask = (binary_mask_region1 + binary_mask_region2).T[:, :, np.newaxis]
             # data = combined_mask * region_after
 
@@ -83,7 +83,7 @@ def main():
 
             for spectrum in valid_spectra:
                 max_amide3 = np.max(spectrum[amide3_mask])
-                if 0.8 <= max_amide3 <= 2:
+                if 0.5 <= max_amide3 <= 2:
                     filtered_spectra.append(spectrum)
 
             print(f"Found {len(filtered_spectra)} spectra matching Amide III band intensity criteria.")

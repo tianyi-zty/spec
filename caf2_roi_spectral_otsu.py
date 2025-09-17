@@ -44,13 +44,13 @@ def rubberband_baseline_correction(x, y):
 
 def main():
 
-    foldername_list = ['Caf2_03072025_rat_oct/kidney_oct/'] #Caf2_03072025_rat_oct/liver_oct  #Caf2_03132025_rat_ffpe/liver_ffpe/
-    filename_list = ['HMT_10','HMT_5','HMT_4','HMT_3','HMT_12','HMT_13','HMT_9']
+    foldername_list = ['1000/'] #,'9010/','8020/','7030/','6040/'
+    filename_list = ['LMT_1','LMT_2','LMT_3']
     for foldername in foldername_list:
         for filename in filename_list:
             print('processing:', foldername, filename)
-            after_collagen = r'/Volumes/TIANYI/Sperodata/'+f'{foldername}'+f'{filename}'+'.mat'
-            save_path = f'../res/rat/{foldername}'
+            after_collagen = r'W:/3. Students/Tianyi/Caf2_09022025/'+f'{foldername}'+f'{filename}'+'.mat'
+            save_path = f'C:/pyws/SPEC/res/Caf2_09022025/{foldername}'
             os.makedirs(save_path, exist_ok=True)
 
 
@@ -61,20 +61,23 @@ def main():
             mean_spectrum = np.mean(spectra_after, axis=(0, 1))
             std_spectrum = np.std(spectra_after, axis=(0, 1))
 
-            fig, ((ax1, ax2, ax3)) = plt.subplots(1, 3, figsize=(9, 6))  # Create a 2x2 grid of subplots
+            fig, ((ax1, ax2, ax3, ax4)) = plt.subplots(1, 4, figsize=(9, 6))  # Create a 2x2 grid of subplots
             ax1.imshow(spectra_after[:,:,330].T)
             ax1.set_title(f'{filename}_spectra')
-            thresholds = threshold_multiotsu(spectra_after[:, :, 330].T, classes=2)
-            print(thresholds) 
+            thresholds = threshold_multiotsu(spectra_after[:, :, 330].T, classes=3)
+            # print(thresholds) 
             # thresholds = np.array([0.05, 0.1, 0.8])
             regions = np.digitize(spectra_after[:, :, 330].T, bins=thresholds)
             # st()
             binary_mask_region0 = (regions == 0).astype(np.uint8)
             binary_mask_region1 = (regions == 1).astype(np.uint8)
+            binary_mask_region2 = (regions == 2).astype(np.uint8)
             ax2.imshow(binary_mask_region1, cmap='gray')
             ax2.set_title('Binary Mask - Region 1')
             ax3.imshow(binary_mask_region0, cmap='gray')
             ax3.set_title('Binary Mask - Region 0')
+            ax4.imshow(binary_mask_region0, cmap='gray')
+            ax4.set_title('Binary Mask - Region 0')
             plt.tight_layout()
             plt.savefig(os.path.join(save_path, f'{filename}_spatial_image.png'))
             # plt.show()
