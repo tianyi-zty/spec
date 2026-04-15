@@ -1,39 +1,66 @@
 {
     "models": [
-        
+
         {
-            "_comment": "methyl groups of proteins",
+            "_comment": "Proteins",
             "type": "GaussianModel", 
             "params": {
-                "amplitude":{"value": 1, "min": 0, "max": 2},
-                "center": {"value": 1402, "min": 1400, "max": 1404},
-                "sigma": {"value": 1, "min": 0, "max": 10}
+                "amplitude": {"value": 2, "min": 0, "max": 8},  
+                "center": {"value": 1448, "min": 1446, "max": 1452},
+                "sigma": {"value": 5, "min": 0, "max": 10}
             }
         },
         {
-            "_comment": "acyl chain of lipid",
+            "_comment": "Lipids",
             "type": "GaussianModel", 
             "params": {
-                "amplitude": {"value": 3, "min": 0, "max": 10},  
+                "amplitude": {"value": 2, "min": 0, "max": 6},  
                 "center": {"value": 1464, "min": 1462, "max": 1464},
-                "sigma": {"value": 5, "min": 0, "max": 30}
-            }
-        },
-        {
-            "_comment": "Amide II - beta sheet",
-            "type": "GaussianModel", 
-            "params": {
-                "amplitude": {"value": 10, "min": 1, "max": 50}, 
-                "center": {"value": 1546, "min": 1546, "max": 1586}, 
-                "sigma": {"value": 10, "min": 0, "max": 20}
+                "sigma": {"value": 5, "min": 0, "max": 10}
             }
         },
         {
             "_comment": "Amide II",
             "type": "GaussianModel", 
             "params": {
-                "amplitude": {"value":5, "min": 1, "max": 20}, 
+                "amplitude": {"value": 2, "min": 1, "max": 3}, 
+                "center": {"value": 1518, "min": 1516, "max": 1522}, 
+                "sigma": {"value": 3, "min": 0, "max": 10}
+            }
+        },
+        {
+            "_comment": "Amide II",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 2, "min": 1, "max": 10}, 
+                "center": {"value": 1530, "min": 1528, "max": 1532}, 
+                "sigma": {"value": 5, "min": 0, "max": 20}
+            }
+        },
+        {
+            "_comment": "Amide II",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 1, "min": 1, "max": 5}, 
+                "center": {"value": 1546, "min": 1544, "max": 1550}, 
+                "sigma": {"value": 3, "min": 0, "max": 10}
+            }
+        },
+        {
+            "_comment": "Amide II",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value": 1, "min": 1, "max": 5}, 
                 "center": {"value": 1586, "min": 1584, "max": 1590}, 
+                "sigma": {"value": 1, "min": 0, "max": 15}
+            }
+        },
+        {
+            "_comment": "Amide I",
+            "type": "GaussianModel", 
+            "params": {
+                "amplitude": {"value":10, "min": 1, "max": 20}, 
+                "center": {"value": 1638, "min": 1636, "max": 1640}, 
                 "sigma": {"value": 5, "min": 0, "max": 10}
             }
         },
@@ -41,18 +68,9 @@
             "_comment": "Amide I",
             "type": "GaussianModel", 
             "params": {
-                "amplitude": {"value":20, "min": 1, "max": 40}, 
-                "center": {"value": 1658, "min": 1658, "max": 1660}, 
-                "sigma": {"value": 10, "min": 0, "max": 30}
-            }
-        },
-        {
-            "_comment": "lipids",
-            "type": "GaussianModel", 
-            "params": {
-                "amplitude": {"value": 2, "min": 1, "max": 5},  
-                "center": {"value": 1744, "min": 1744, "max": 1748},
-                "sigma": {"value": 5, "min": 1, "max": 20}
+                "amplitude": {"value":5, "min": 1, "max": 20}, 
+                "center": {"value": 1656, "min": 1656, "max": 1660}, 
+                "sigma": {"value": 10, "min": 0, "max": 20}
             }
         }
         

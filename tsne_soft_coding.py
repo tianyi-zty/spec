@@ -54,11 +54,11 @@ def normalize_spectra_zscore(X):
 # ---------------------- #
 
 def main():
-    foldername_list = ['liver_ffpe', 'kidney_ffpe','liver_ff', 'kidney_ff'] #'1000B', '1000', '9010', '8020', '7030', '6040'
-    filename_list = ['HMT_1','HMT_2','HMT_3','HMT_4','HMT_5','HMT_6','HMT_7'] # 'LMT_2','LMT_3',
+    foldername_list = ['1000','8020'] #'1000B', '1000', '9010', '8020', '7030', '6040'
+    filename_list = ['LMT_1','LMT_2','LMT_3'] # ,'HMT_3','HMT_4','HMT_5','HMT_6','HMT_7'
     
-    base_path = "D:/spec_res/rat"
-    save_path = "D:/spec_res/rat/result/"
+    base_path = "../res/03232026_col1+4/CAF2/2nd"
+    save_path = "../res/03232026_col1+4/CAF2/2nd/result-/"
     # representative_save_path = os.path.join(save_path, "representative_spectra")
     os.makedirs(save_path, exist_ok=True)
     # os.makedirs(representative_save_path, exist_ok=True)
@@ -74,7 +74,7 @@ def main():
             folder_path = os.path.join(base_path, foldername, filename)
             if not os.path.isdir(folder_path):
                 continue
-            data = load_npy_data(folder_path, max_samples=1000)
+            data = load_npy_data(folder_path, max_samples=512)
     #         data = loadmat(os.path.join(folder_path, "*.mat"))
     #         if len(data) == 0:
     #             continue
@@ -93,7 +93,8 @@ def main():
             norm_data = data
             all_data.append(norm_data)
             all_labels += [label_index] * len(norm_data)
-            label_names.append(f"{foldername}")
+            # label_names.append(f"{foldername}")
+            label_names.append(f"{foldername}_{filename}")
             print(f"Loaded {len(norm_data)} data from {foldername} as label {label_index}")
             label_index += 1
 
@@ -101,8 +102,8 @@ def main():
     X = np.concatenate(all_data)
     y = np.array(all_labels)
     X_small, y_small = shuffle(X, y, random_state=42)
-    X_small = X_small[:2000] #.reshape((5000, -1))
-    y_small = y_small[:2000]
+    X_small = X_small[:1000] #.reshape((5000, -1))
+    y_small = y_small[:1000]
     # st()
     # -------------------- #
     # PCA + t-SNE + UMAP  #
@@ -116,7 +117,14 @@ def main():
     # --------------------------- #
     # Feature Importance (LogReg) #
     # --------------------------- #
-    clf = LogisticRegression(penalty='l2', solver='liblinear')
+    # clf = LogisticRegression(penalty='l2', solver='liblinear')
+    # clf.fit(X_small, y_small)
+    # importance = np.mean(np.abs(clf.coef_), axis=0)
+    clf = LogisticRegression(
+        solver='lbfgs',
+        max_iter=2000,
+        random_state=42
+    )
     clf.fit(X_small, y_small)
     importance = np.mean(np.abs(clf.coef_), axis=0)
     wavenumbers = np.linspace(950, 1800, len(importance))
@@ -124,19 +132,19 @@ def main():
     top_wavenumbers = wavenumbers[top_indices]
     top_importance = importance[top_indices]
 
-    plt.figure(figsize=(24, 15))
-    plt.plot(wavenumbers, importance, color='darkred', linewidth=1.5)
-    plt.title("Feature Importance by Wavenumber (Logistic Regression)")
-    plt.xlabel("Wavenumber (cm$^{-1}$)")
-    plt.ylabel("Importance (|Weight|)")
-    plt.grid(True)
-    for x, y_val in zip(top_wavenumbers, top_importance):
-        plt.annotate(f'{x:.0f}', xy=(x, y_val), xytext=(x, y_val + 0.01),
-                     fontsize=10, ha='center',
-                     arrowprops=dict(arrowstyle='->', color='blue', lw=0.8))
-    plt.tight_layout()
-    plt.savefig(os.path.join(save_path, 'Feature_Importance.png'))
-    plt.close()
+    # plt.figure(figsize=(24, 15))
+    # plt.plot(wavenumbers, importance, color='darkred', linewidth=1.5)
+    # plt.title("Feature Importance by Wavenumber (Logistic Regression)")
+    # plt.xlabel("Wavenumber (cm$^{-1}$)")
+    # plt.ylabel("Importance (|Weight|)")
+    # plt.grid(True)
+    # for x, y_val in zip(top_wavenumbers, top_importance):
+    #     plt.annotate(f'{x:.0f}', xy=(x, y_val), xytext=(x, y_val + 0.01),
+    #                  fontsize=10, ha='center',
+    #                  arrowprops=dict(arrowstyle='->', color='blue', lw=0.8))
+    # plt.tight_layout()
+    # plt.savefig(os.path.join(save_path, 'Feature_Importance.png'))
+    # plt.close()
 
     # --------------------- #
     # t-SNE and UMAP Plots #
@@ -161,14 +169,18 @@ def main():
 
         # Define color map for each folder
         folder_colors = {
-            'liver_ffpe': 'orange',
-            'kidney_ffpe': 'blue',
-            'liver_ff': 'green',
-            'kidney_ff': 'purple'
+            '1000': 'tab:blue',
+            '9109': 'tab:orange',
+            '9505': 'tab:green',
         }
 
         # Define alpha map for each filename
-        filename_alphas = {f'HMT_{i}': 1.0 - (i - 1) * (0.8 / 6) for i in range(1, 8)}  # HMT_1 → 1.0, HMT_7 → 0.2
+        # filename_alphas = {f'HMT_{i}': 1.0 - (i - 1) * (0.8 / 6) for i in range(1, 8)}  # HMT_1 → 1.0, HMT_7 → 0.2
+        filename_alphas = {
+            'LMT_1': 1.0,
+            'LMT_2': 0.7,
+            'LMT_3': 0.4,
+        }
 
         # Reconstruct metadata per point
         start_idx = 0

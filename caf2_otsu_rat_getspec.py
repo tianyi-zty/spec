@@ -44,12 +44,12 @@ def rubberband_baseline_correction(x, y):
 
 def main():
 
-    foldername_list = ['Caf2_03132025_rat_ffpe/liver_ffpe/'] #Caf2_03072025_rat_oct/liver_oct  #Caf2_03132025_rat_ffpe/liver_ffpe/
-    filename_list = ['HMT_10','HMT_5','HMT_4','HMT_3','HMT_2','HMT_7','HMT_9'] #'HMT_10','HMT_5','HMT_4','HMT_3',
+    foldername_list = ['liver_ffpe/'] #Caf2_03072025_rat_oct/liver_oct  #Caf2_03132025_rat_ffpe/liver_ffpe/
+    filename_list = ['HMT_1','HMT_2','HMT_3','HMT_4','HMT_5','HMT_6'] #'HMT_10','HMT_5','HMT_4','HMT_3','HMT_5','HMT_4','HMT_3','HMT_2','HMT_7',
     for foldername in foldername_list:
         for filename in filename_list:
             print('processing:', foldername, filename)
-            after_collagen = r'D:/Sperodata/'+f'{foldername}'+f'{filename}'+'.mat'
+            after_collagen = r'D:/Sperodata/Caf2_03132025_rat_ffpe/'+f'{foldername}'+f'{filename}'+'.mat'
             save_path = f'D:/spec_res/rat/{foldername}'
             os.makedirs(save_path, exist_ok=True)
 
@@ -83,9 +83,6 @@ def main():
             # plt.show()
             # st()
             data = binary_mask_region2.T[:, :, np.newaxis]*spectra_after
-
-            # Apply mask to get spectra only from region 2 (high intensity)
-            data = binary_mask_region2.T[:, :, np.newaxis] * spectra_after  # shape (480, 480, 426)
 
             # Reshape to list of all pixels: (N_pixels, N_wavenumbers)
             flattened_data = data.reshape(-1, data.shape[2])  # (480*480, 426)

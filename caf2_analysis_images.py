@@ -30,20 +30,21 @@ def process_block(block_after, wavelengths, save_path, block_id):
     plt.close()
 
 def main():
-
-    filename_list = ['LMT_1','LMT_2','LMT_3'] #'HMT_3','HMT_4','HMT_5','HMT_6','HMT_7','HMT_8','HMT_9','HMT_10'
+    foldername_list = ['1000']  # '1000','9010','8020','7030'
+    filename_list = ['LMT_1']
+    # filename_list = ['LMT_1','LMT_2','LMT_3'] #'HMT_3','HMT_4','HMT_5','HMT_6','HMT_7','HMT_8','HMT_9','HMT_10'
     for filename in filename_list:
-        after_collagen = r'/Volumes/TIANYI/Sperodata/caf2_06132025/8020/rinse/'+f'{filename}'+'.mat'
-        save_path = f'../res/Caf2_06132025/8020/rinse/'
-        os.makedirs(save_path, exist_ok=True)
-        os.makedirs(save_path+'/spectrum', exist_ok=True)
-        os.makedirs(save_path+'/figures', exist_ok=True)
+        after_collagen = f'/Volumes/TIANYI/Sperodata/Caf2_09022025/1000/{filename}.mat'
+        save_path = f'../res/Caf2_09092025_tsnefilter/1000/{filename}/'
+        # os.makedirs(save_path, exist_ok=True)
+        # os.makedirs(save_path+'/spectrum', exist_ok=True)
+        # os.makedirs(save_path+'/figures', exist_ok=True)
 
         wavelengths = np.linspace(950, 1800, 426)
         data_after = loadmat(after_collagen)
         spectra_after = np.reshape(data_after['r'], (480, 480, 426))
         # spectra_after = spectra_after/np.max(spectra_after)
-        spectra_after = (spectra_after - np.min(spectra_after)) / (np.max(spectra_after) - np.min(spectra_after))
+        # spectra_after = (spectra_after - np.min(spectra_after)) / (np.max(spectra_after) - np.min(spectra_after))
 
         # st()
 
@@ -51,10 +52,12 @@ def main():
         ax.imshow(spectra_after[:,:,330])
         ax.set_title('spectra')
         plt.tight_layout()
-        # plt.show()
+        plt.show()
+        st()
+        
         plt.savefig(os.path.join(save_path+'/figures', 'spectra image visualization'+f'{filename}'+'.png'))
         plt.close()
-        # st()
+        st()
 
         mean_spectrum = np.mean(spectra_after, axis=(0, 1))
         std_spectrum = np.std(spectra_after, axis=(0, 1))

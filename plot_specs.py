@@ -58,15 +58,6 @@ def rubberband_baseline_correction(x, y):
 # # Final absorbance spectrum (sum + baseline)
 # total_abs = abs_lipids + abs_proteins + abs_nucleic + abs_carb + baseline
 wavelengths = np.linspace(950, 1800, 426)
-# path_2 = r'../res/rat/kidney_ffpe/'
-# col_data_2 = loadmat(os.path.join(path_2, "HMT_5_after_mask1.mat"))
-# spectra_col_2 = np.reshape(col_data_2['spectrum'], (426))
-# baseline_2, spectra_col_als_2 = rubberband_baseline_correction(wavelengths,spectra_col_2)
-
-# path_4 = r'../res/rat/kidney_ff/'
-# col_data_4 = loadmat(os.path.join(path_4, "HMT_5_after_mask1.mat"))
-# spectra_col_4 = np.reshape(col_data_4['spectrum'], (426))
-# baseline_1,spectra_col_als_4 = rubberband_baseline_correction(wavelengths,spectra_col_4)
 path_3 = r'C:/pyws/SPEC/res/02192026-aca'
 # spectra_col = np.load(os.path.join(path_3, "COL4-1_after_mask1.mat"))
 col_data = loadmat(os.path.join(path_3, "02Maca-1_after_mask1.mat"))
@@ -90,15 +81,6 @@ print(f"COL1 Amide I peak (pre-norm): {col1_peak:.4f}")
 
 # Plotting
 plt.figure(figsize=(10, 6))
-
-# # Colored background for each biomolecule region
-# plt.axvspan(1720, 1755, color='purple', alpha=0.1, label='Lipids')
-# plt.axvspan(1610, 1690, color='green', alpha=0.1, label='Proteins')
-# plt.axvspan(1500, 1600, color='green', alpha=0.1)
-# plt.axvspan(1215, 1245, color='blue', alpha=0.1, label='Nucleic Acids')
-# plt.axvspan(1065, 1095, color='blue', alpha=0.1)
-# plt.axvspan(1020, 1120, color='orange', alpha=0.1, label='Carbohydrates')
-
 # Plot final spectrum
 plt.plot(wavelengths, spectra_col_als, color='red', linewidth=3, label='0.02M AcA')
 plt.plot(wavelengths, spectra_col_als_4+0.003, color='blue', linewidth=3, label='0.5M AcA')

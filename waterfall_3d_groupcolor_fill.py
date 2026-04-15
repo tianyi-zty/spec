@@ -52,7 +52,7 @@ def plot_3d_waterfall(X, y, labels, save_path,
 
     # tab20 调色板
     tab20 = plt.get_cmap('tab20').colors
-    group_colors_order = ['1000', '9010', '8020', '7030', '6040']
+    group_colors_order = ['1000']
     group_colors = {gk: tab20[i*2] for i, gk in enumerate(group_colors_order)}
     # i*4 取 tab20 的 0,4,8,12,16 五个主要颜色
 
@@ -77,7 +77,7 @@ def plot_3d_waterfall(X, y, labels, save_path,
         avg = np.mean(group_data, axis=0)
 
         gk = group_key_from_labelname(labels[lab])
-        base_color = group_colors.get(gk, tab20[0])  # 默认蓝色
+        base_color = group_colors.get(gk, 'black')  # 默认蓝色
 
         # 组内第 i 条线，透明度从深到浅
         pos_in_group = group_to_label_indices[gk].index(lab)
@@ -107,9 +107,9 @@ def plot_3d_waterfall(X, y, labels, save_path,
     ax.view_init(elev=30, azim=-60)
     ax.grid(False)
     # x 轴刻度字体变小
-    ax.tick_params(axis='x', labelsize=8)  # 改 8 为你想要的字号
-    ax.tick_params(axis='y', labelsize=8) # y轴刻度字体
-    ax.tick_params(axis='z', labelsize=8) # z轴刻度字体
+    ax.tick_params(axis='x', labelsize=10)  # 改 8 为你想要的字号
+    ax.tick_params(axis='y', labelsize=10) # y轴刻度字体
+    ax.tick_params(axis='z', labelsize=10) # z轴刻度字体
 
     try:
         ax.set_box_aspect((x_aspect, y_aspect, 1.0))
@@ -127,12 +127,12 @@ def plot_3d_waterfall(X, y, labels, save_path,
 # ---------------------- #
 if __name__ == "__main__":
 
-    foldername_list = ['1000', '9010', '8020', '7030', '6040']
-    filename_list = ['LMT_2', 'LMT_3']
-    folder_map = {'LMT_2': '1', 'LMT_3': '2'}
+    foldername_list = ['1000']
+    filename_list = ['LMT_1']
+    folder_map = {'LMT_1': '1'}
 
-    base_path = "../../spec_res/Caf2_07182025_amide1/"
-    out_path = "../../spec_res/Caf2_07182025_amide1/result-1/3d_waterfall.png"
+    base_path = "C:/pyws/SPEC/res/Caf2_11102025/"
+    out_path = "C:/pyws/SPEC/res/Caf2_11102025/3d_waterfall.png"
 
     all_data, all_labels, label_names = [], [], []
     label_index = 0

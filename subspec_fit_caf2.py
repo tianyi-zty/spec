@@ -6,12 +6,11 @@ from scipy.integrate import simpson
 from lmfit import models
 import json
 import matplotlib.pyplot as plt
-from pdb import set_trace as st
 from scipy.signal import savgol_filter
 from matplotlib.ticker import FuncFormatter
 
 
-def generate_model_from_specification(json_file, spec, threshold=10):
+def generate_model_from_specification(json_file, spec, threshold=6):
     """
     Generate and fit models from JSON specifications to the provided spectrum.
     """
@@ -27,7 +26,7 @@ def generate_model_from_specification(json_file, spec, threshold=10):
         model_type = basis_func['type']
         params_dict = basis_func['params']
         prefix = f'm{i}_'
-        
+
         model = getattr(models, model_type)(prefix=prefix)
 
         for param, options in params_dict.items():
@@ -37,7 +36,7 @@ def generate_model_from_specification(json_file, spec, threshold=10):
                 model.set_param_hint(param, max=options['max'])
             if 'value' in options:
                 model.set_param_hint(param, value=options['value'])
-        
+
         if 'amplitude' in params_dict:
             model.set_param_hint('amplitude', min=0)
 
@@ -48,73 +47,97 @@ def generate_model_from_specification(json_file, spec, threshold=10):
 
         result = model.fit(y, init_params, x=x)
         reduced_chi_squared = result.chisqr / result.nfree
-        # print(reduced_chi_squared)
-        
+
         if reduced_chi_squared < threshold:
-            if composite_model is None:
-                composite_model = model
-            else:
-                composite_model += model
-            if params is None:
-                params = result.params
-            else:
-                params.update(result.params)
+            composite_model = model if composite_model is None else composite_model + model
+            params = result.params if params is None else params.update(result.params)
 
     return composite_model, params
 
+def clean_axes(ax=None):
+    if ax is None:
+        ax = plt.gca()
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(True)
+    ax.spines['bottom'].set_visible(True)
+    ax.yaxis.set_ticks_position('left')
+    ax.xaxis.set_ticks_position('bottom')
 
 def plot_results(spec, components, component_names, component_colors, output, file_name, save_path):
     """
     Plot the spectrum fitting results and save the plot.
     """
-    fig, ax = plt.subplots(figsize=(24, 16))
-    ax.plot(spec['x'], spec['y'] - min(spec['y']), 'o', label='Data', markersize=10)
-    
+    fig, ax = plt.subplots(figsize=(36, 16))
+
+    ax.plot(
+        spec['x'],
+        spec['y'] - min(spec['y']),
+        'o',
+        label='Data',
+        markersize=10
+    )
+
     # Plot each component
     for i, name in enumerate(component_names):
         component_y = components.get(f'm{i}_', None)
         if component_y is not None:
             integral_value = simpson(component_y, x=spec['x'])
-            ax.plot(spec['x'], component_y, label=f'{name} (∫={integral_value:.0f})', color=component_colors[i])
-            # ax.plot(spec['x'], component_y, label=f'{name}', color=component_colors[i])
-            ax.fill_between(spec['x'], component_y, color=component_colors[i], alpha=0.3)
-    
-    # Add dashed vertical lines for each model center
-    for i, name in enumerate(component_names):
-        center = output.best_values.get(f'm{i}_center', None)
-        if center is not None:
-            ax.axvline(x=center, linestyle='--', color='gray', alpha=0.5)
-            max_y = ax.get_ylim()[1]
-            # ax.annotate(f'{center:.0f}', xy=(center, max_y), 
-            #             xytext=(5, 5), textcoords='offset points',
-            #             arrowprops=dict(arrowstyle='->', color='gray'), fontsize=20,
-            #             ha='left', va='center')
-    ax.set_ylim([-0.02,1.6])
-    ax.legend(loc="upper left", fontsize=24)
+            ax.plot(
+                spec['x'],
+                component_y,
+                label=f'{name}',
+                color=component_colors[i]
+            )
+            ax.fill_between(
+                spec['x'],
+                component_y,
+                color=component_colors[i],
+                alpha=0.3
+            )
+
+    # Axes formatting
+    ax.set_ylim([-0.02, 0.7])
     ax.set_xlabel('Wavenumber (cm⁻¹)', fontsize=28)
     ax.set_ylabel('Intensity', fontsize=28)
-    formatter = FuncFormatter(lambda val,pos:f'{val:.1f}')
-    ax.yaxis.set_major_formatter(formatter)
-    ax.set_xticklabels(ax.get_xticks(),fontsize=24)
-    ax.set_yticklabels([f'{tick:.1f}' for tick in ax.get_yticks()],fontsize=24)
-    # ax.set_title(f'Spectrum Fitting Results - {file_name}', fontsize=18)
 
-    # Save the plot
-    plt.tight_layout()
-    # plt.legend(loc='upper left', fontsize=24)
+    formatter = FuncFormatter(lambda val, pos: f'{val:.1f}')
+    ax.yaxis.set_major_formatter(formatter)
+
+    ax.tick_params(axis='x', labelsize=40)
+    ax.tick_params(axis='y', labelsize=40)
+
+    # Legend on the right side (outside)
+    ax.legend(
+        loc='center left',
+        bbox_to_anchor=(1.02, 0.5),
+        fontsize=24,
+        frameon=False
+    )
+
+    # Adjust layout to make room for legend
+    plt.tight_layout() #rect=[0, 0, 0.82, 1]
+    clean_axes()
+    # Save plot
     plot_file = os.path.join(save_path, f"{file_name}_fitting.png")
-    # st()
-    plt.savefig(plot_file)
+    plt.savefig(plot_file, dpi=300)
     plt.close(fig)
 
-############################## change here wavelength range#####################################
-def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_folder, wavelength_start=950, wavelength_end=1800):
+
+def process_folder(
+    input_folder,
+    output_csv,
+    summary_csv,
+    json_file,
+    save_plots_folder,
+    wavelength_start=950,
+    wavelength_end=1800
+):
     """
-    Process all .mat files in a folder, perform subspectrum fitting,
+    Process all .npy files in a folder, perform subspectrum fitting,
     plot results, and save statistics to a CSV.
     """
     os.makedirs(save_plots_folder, exist_ok=True)
-
     component_integrals = []
 
     with open(output_csv, mode='w', newline='') as file:
@@ -123,145 +146,115 @@ def process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_
 
         for root, _, files in os.walk(input_folder):
             for file_name in files:
-                if file_name.endswith(f'13.mat'):
+                if file_name.endswith('.npy'):
                     file_path = os.path.join(root, file_name)
-
-                    # Load the .mat file
-                    data = loadmat(file_path)
-                    spectra = data['spectrum'].flatten()
-                    # data = np.load(file_path)
-                    # spectra = data
-
-                    # smoothing spectrum
+                    print(f"Processing: {file_path}")
+                    spectra = np.load(file_path)
                     spectra = savgol_filter(spectra, window_length=11, polyorder=3)
 
-                    # Define the spectrum
                     spec = {
                         'x': np.linspace(wavelength_start, wavelength_end, spectra.shape[0]),
                         'y': spectra
                     }
-                    
-                    try:
-                        # Perform model fitting
-                        model, params = generate_model_from_specification(json_file, spec, threshold=0.5)
-                        # st()
-                        output = model.fit(spec['y'] - min(spec['y']), params, x=spec['x'])
-                        # st()
-                        components = output.eval_components(x=spec['x'])
 
-                        # Extract and save results
+                    try:
+                        model, params = generate_model_from_specification(
+                            json_file, spec, threshold=0.5
+                        )
+
+                        output = model.fit(
+                            spec['y'] - min(spec['y']),
+                            params,
+                            x=spec['x']
+                        )
+
+                        components = output.eval_components(x=spec['x'])
                         best_values = output.best_values
-                        # st()
-                        # print(best_values)
-                        integrals_for_file = []
+
                         for i, basis_func in enumerate(json.load(open(json_file))['models']):
                             prefix = f'm{i}_'
                             center_value = best_values.get(prefix + 'center', None)
                             amplitude = best_values.get(prefix + 'amplitude', None)
                             sigma = best_values.get(prefix + 'sigma', None)
-                            component_y = components.get(f'm{i}_', None)
+
+                            component_y = components.get(prefix, None)
                             integral_value = simpson(component_y, x=spec['x']) if component_y is not None else 0
 
                             if len(component_integrals) <= i:
                                 component_integrals.append([])
                             component_integrals[i].append(integral_value)
 
-                            writer.writerow([file_name, center_value, amplitude, sigma, integral_value])
-                            integrals_for_file.append(integral_value)
-                        print(f'Done processing: {file_name}.')
-                        # st()
-                        # # # Plot and save the results
-                        
-                        # component_names = ["PO4?","C-O bending","Phosphate band/Collagen","C-O of carbonhydrates","C-O stretching band of collagen (type I)",
-                        #                    "phosphate I/Amide III","PO2 /Amide III",
-                        #                    "Amide III band components of protein","CH2 wagging/collagen","Symmetric CH3 bending modes of the methyl groups of proteins",
-                        #                    "Asymmetric CH3 bending modes of the methyl groups of proteins","In-plane CH bending vibration from the phenyl rings/Amide II",
-                        #                    "Amide II","Ring C-C stretch of phenyl (2)/Amide II","b-sheet Amide I","α-helix Amide I","β-turn Amide I"] #collagen
-                        # component_colors = plt.cm.tab20.colors[:len(components)]
+                            writer.writerow([
+                                file_name,
+                                center_value,
+                                amplitude,
+                                sigma,
+                                integral_value
+                            ])
 
-                        # component_names = ['methyl groups of proteins','acyl chain of lipid',"Amide II - beta sheet",
-                        #                     'Amide II','Amide I','lipids']#kidney ffpe
-                        # component_colors = ((1.0, 0.4980392156862745, 0.054901960784313725),
-                        #                     (1.0, 0.7333333333333333, 0.47058823529411764), 
-                        #                     (0.5803921568627451, 0.403921568627451, 0.7411764705882353),
-                        #                     (0.17254901960784313, 0.6274509803921569, 0.17254901960784313), 
-                        #                     (0.596078431372549, 0.8745098039215686, 0.5411764705882353), 
-                        #                     (0.8392156862745098, 0.15294117647058825, 0.1568627450980392))
-                        
-                        # component_names = ['amide III and phosphate vibration of nucleic acids', 'methyl groups of proteins',
-                        #                     'acyl chain of lipid', "Amide II - beta sheet",'Amide II','Amide I', "lipids"]#liver ffpe
-                        # component_colors = ((0.6823529411764706, 0.7803921568627451, 0.9098039215686274),
-                        #                     (1.0, 0.4980392156862745, 0.054901960784313725),
-                        #                     (1.0, 0.7333333333333333, 0.47058823529411764), 
-                        #                     (0.5803921568627451, 0.403921568627451, 0.7411764705882353),
-                        #                     (0.17254901960784313, 0.6274509803921569, 0.17254901960784313), 
-                        #                     (0.596078431372549, 0.8745098039215686, 0.5411764705882353),
-                        #                     (0.8392156862745098, 0.15294117647058825, 0.1568627450980392))
-                        component_names = ["Symmetric PO2 stretching","Phosphate band/Collagen","Amide III","phosphate I/Amide III",
-                                           "Amide III band components of protein","CH2 wagging/collagen",
-                                           "Symmetric CH3 bending modes of the methyl groups of proteins",
-                                           "Asymmetric CH3 bending modes of the methyl groups of proteins",
-                                           "Amide II beta-sheet","Amide II","beta-sheet Amide I","alpha-helix Amide I","Coils/turn Amide I"] #collagen
-                        component_colors = plt.cm.tab20.colors[:len(components)]
+                        component_names = [
+                            "Symmetric PO2",
+                            "Phosphate band/Collagen",
+                            "CO stretching",
+                            "Amide III",
+                            "Phosphate I/Amide III",
+                            "Amide III",
+                            "CH2 wagging/collagen",
+                            "Symmetric CH3 bending",
+                            "Asymmetric CH3 bending",
+                            "Amide II",
+                            "Amide I beta-sheet ",
+                            "Amide I alpha-helix",
+                            "Amide I beta-turn"
+                        ]
 
-                        # component_names = [ "Glycogen","nucleic acids","Glycogen","amide III and phosphate vibration of nucleic acids","amide III","collagen",
-                        #                    "methyl groups of proteins","acyl chain of lipid","Amide II - beta sheet","Amide II", "Amide I", "lipids"] #liver oct
-                        # component_colors = ((1.0, 0.596078431372549, 0.5882352941176471),
-                        #                     (0.12156862745098039, 0.4666666666666667, 0.7058823529411765),
-                        #                     (0.7, 0.5, 0.3),
-                        #                     (0.6823529411764706, 0.7803921568627451, 0.9098039215686274),
-                        #                     (1.0, 0.4980392156862745, 0.054901960784313725),
-                        #                     (0.1, 0.3, 0.5),
-                        #                     (0.3, 0.1, 0.9),
-                        #                      (1.0, 0.7333333333333333, 0.47058823529411764), 
-                        #                      (0.5803921568627451, 0.403921568627451, 0.7411764705882353),
-                        #                      (0.17254901960784313, 0.6274509803921569, 0.17254901960784313), 
-                        #                      (0.596078431372549, 0.8745098039215686, 0.5411764705882353), 
-                        #                      (0.8392156862745098, 0.15294117647058825, 0.1568627450980392))
-                        # st()
-                        # component_names = [ "nucleic acids","amide III and phosphate vibration of nucleic acids","methyl groups of proteins",
-                        #                    "acyl chain of lipid","Amide II - beta sheet","Amide II", "Amide I", "lipids"] #kidney oct
-                        # component_colors = ((0.12156862745098039, 0.4666666666666667, 0.7058823529411765),
-                        #                     (0.6823529411764706, 0.7803921568627451, 0.9098039215686274),
-                        #                     (1.0, 0.4980392156862745, 0.054901960784313725),
-                        #                      (1.0, 0.7333333333333333, 0.47058823529411764), 
-                        #                      (0.5803921568627451, 0.403921568627451, 0.7411764705882353),
-                        #                      (0.17254901960784313, 0.6274509803921569, 0.17254901960784313), 
-                        #                      (0.596078431372549, 0.8745098039215686, 0.5411764705882353), 
-                        #                      (0.8392156862745098, 0.15294117647058825, 0.1568627450980392))
+                        component_colors = plt.cm.tab20.colors[:len(component_names)]
 
-                        plot_results(spec, components, component_names, component_colors, output, file_name, save_plots_folder)
-                        # st()
+                        plot_results(
+                            spec,
+                            components,
+                            component_names,
+                            component_colors,
+                            output,
+                            file_name,
+                            save_plots_folder
+                        )
+
+                        print(f'Done processing: {file_name}')
 
                     except Exception as e:
                         print(f"Error processing file {file_name}: {e}")
 
-    # Calculate averages and standard deviations
-    averages = [np.mean(integrals) for integrals in component_integrals]
-    std_devs = [np.std(integrals) for integrals in component_integrals]
+    averages = [np.mean(vals) for vals in component_integrals]
+    std_devs = [np.std(vals) for vals in component_integrals]
 
-    # Save summary statistics
     with open(summary_csv, mode='w', newline='') as summary_file:
-        summary_writer = csv.writer(summary_file)
-        summary_writer.writerow(['Component', 'Average Integral', 'Standard Deviation'])
+        writer = csv.writer(summary_file)
+        writer.writerow(['Component', 'Average Integral', 'Standard Deviation'])
         for i, (avg, std) in enumerate(zip(averages, std_devs)):
-            summary_writer.writerow([f'Component {i + 1}', avg, std])
+            writer.writerow([f'Component {i + 1}', avg, std])
 
     print(f"Summary statistics saved to {summary_csv}")
 
 
 if __name__ == '__main__':
-    # Define paths
-    path = '../res/Caf2_09092025/1000/LMT_1/'
-    input_folder = path 
-    output_folder = '../res/Caf2_09092025/second_derivative/1000'
-    output_csv = output_folder +'/subspectrum_fitting_results.csv'
-    summary_csv = output_folder +'/summary_statistics.csv'
-    save_plots_folder = output_folder + '/plots'
-    json_file = 'model_specification_caf2_col.json'
-    # os.makedirs(input_folder, exist_ok=True)
+    path = '../res/03232026_col1+4/CAF2/org/mean_spec/'
+    input_folder = path
+    output_folder = '../res/03232026_col1+4/CAF2/org/spectrum_fitting_results'
+
     os.makedirs(output_folder, exist_ok=True)
+
+    output_csv = os.path.join(output_folder, 'subspectrum_fitting_results.csv')
+    summary_csv = os.path.join(output_folder, 'summary_statistics.csv')
+    save_plots_folder = os.path.join(output_folder, 'plots_col')
+    json_file = 'model_specification_caf2_col.json'
+
     os.makedirs(save_plots_folder, exist_ok=True)
 
-    # Run the processing
-    process_folder(input_folder, output_csv, summary_csv, json_file, save_plots_folder)
+    process_folder(
+        input_folder,
+        output_csv,
+        summary_csv,
+        json_file,
+        save_plots_folder
+    )

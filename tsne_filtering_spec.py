@@ -3,96 +3,102 @@ import os
 import matplotlib.pyplot as plt
 from sklearn.manifold import TSNE
 from sklearn.decomposition import PCA
-from sklearn.preprocessing import StandardScaler
 from sklearn.cluster import KMeans
 from scipy.io import loadmat
-# ---------------------- #
-# Data Loading Functions #
-# ---------------------- #
-
-def load_npy_data(folder):
-    """Load .npy files from a folder and randomly sample up to `max_samples`."""
-    print(f"Processing folder: {folder}")
-    files = sorted([f for f in os.listdir(folder) if f.endswith('.npy')])
-    if len(files) == 0:
-        print(f"⚠️ Nothing in this folder: {folder}")
-        return np.array([])  # Return empty array
-    
-    np.random.seed(42)
-    files = np.random.choice(files, replace=False)
-
-    data = []
-    for file in files:
-        arr = np.load(os.path.join(folder, file))
-        if np.any(arr):  # skip all-zero arrays
-            data.append(arr.flatten())
-    return np.array(data)
+from pdb import set_trace as st
+import random
 
 def normalize_spectra_zscore(X):
-    """Apply z-score normalization per spectrum."""
-    X_mean = X.mean(axis=0, keepdims=True)
-    X_std = X.std(axis=0, keepdims=True)
+    """Apply z-score normalization per spectrum (row-wise)."""
+    X_mean = X.mean(axis=1, keepdims=True)
+    X_std = X.std(axis=1, keepdims=True)
     return (X - X_mean) / (X_std + 1e-8)
 
-# ---------------------- #
-# Main Analysis Pipeline #
-# ---------------------- #
+def elbow_method(X, max_k=10, save_path=None):
+    """Run elbow method to find optimal k."""
+    inertias = []
+    K = range(1, max_k + 1)
+
+    for k in K:
+        kmeans = KMeans(n_clusters=k, random_state=42, n_init=10)
+        kmeans.fit(X)
+        inertias.append(kmeans.inertia_)
+        print(f"k={k}, inertia={inertias[-1]:.2f}")
+
+    # Plot inertia vs k
+    plt.figure(figsize=(6, 4))
+    plt.plot(K, inertias, 'bo-', linewidth=2, markersize=6)
+    plt.xlabel("Number of clusters (k)")
+    plt.ylabel("Inertia (Within-Cluster Sum of Squares)")
+    plt.title("Elbow Method for Optimal k")
+    plt.grid(True)
+
+    if save_path:
+        plt.savefig(save_path, dpi=300, bbox_inches='tight')
+        print(f"Elbow plot saved to {save_path}")
+    else:
+        plt.show()
+
+    return inertias
 
 def main():
-    foldername_list = ['1000'] # '1000','9010', '8020','7030' 
-    filename_list = ['LMT_1'] #'LMT_1','LMT_2','LMT_3','LMT_4'
+    foldername_list = ['kidney_oct']  # '1000','9010', '8020','7030'
+    filename_list = ['HMT_1']  # 'LMT_1','LMT_2','LMT_3','LMT_4'
+
     for foldername in foldername_list:
         for filename in filename_list:
             print('processing:', foldername, filename)
-            # before_collagen = r'/Volumes/TIANYI/Sperodata/CaF2_01162025/after_sample/LMT_1.mat'
-            after_collagen = f'W:/3. Students/Tianyi/Caf2_09092025/{foldername}/{filename}'+'.mat'
-            save_path = f'../res/Caf2_09092025_amide1/{foldername}/{filename}/'
+            after_collagen = f'/Volumes/TIANYI/Sperodata/Caf2_03072025_rat_oct/{foldername}/{filename}.mat'
+            save_path = f'../res/rat/{foldername}/{filename}/'
             os.makedirs(save_path, exist_ok=True)
-            # save_2nd = f'../res/Caf2_09092025_amide1/{foldername}/{filename}/'
-            # os.makedirs(save_2nd, exist_ok=True)
 
+            # Load data
             data_after = loadmat(after_collagen)
             spectra_after = np.reshape(data_after['r'], (480, 480, 426))
-            wavelengths = np.linspace(950, 1800, 426)  # Assuming this range for all subspectra
-            wavelength_start = 950
-            wavelength_end = 1800
+            wavelengths = np.linspace(950, 1800, 426)
+            # Crop region
+            # region_after = spectra_after[0:480, 0:480, :]
+            data = spectra_after
 
-            x_start, x_end = 0,480
-            y_start, y_end = 0,480
-            region_after = spectra_after[x_start:x_end, y_start:y_end, :]
-    base_path = "D:/spec_res/rat/liver_ffpe/HMT_1"  
-    save_path = "D:/spec_res/rat/result_single/"
-    os.makedirs(save_path, exist_ok=True)
+            fig, ax = plt.subplots(1, 1, figsize=(8, 8))
+            ax.imshow(data[:,:,330])
+            ax.set_title('spectra')
+            plt.tight_layout()
+            # plt.show()
+            plt.savefig(os.path.join(save_path, 'spectra image visualization'+f'{filename}'+'.png'))
+            plt.close()
+            st()
 
-    # Load data
-    X = load_npy_data(base_path)
-    if X.size == 0:
-        return
 
-    # Normalize
-    X = normalize_spectra_zscore(X)
+            # Collect valid spectra
+            valid_spectra = []
+            for i in range(data.shape[0]):
+                for j in range(data.shape[1]):
+                    spectrum = data[i, j, :]
+                    if not np.any(spectrum):
+                        continue
+                    valid_spectra.append(spectrum)
 
-    # PCA (for denoising & speeding up t-SNE)
-    X_pca = PCA(n_components=50, random_state=42).fit_transform(X)
+            valid_spectra = np.array(valid_spectra)
+            print(f"Found {valid_spectra.shape[0]} spectra in {foldername}/{filename}")
 
-    # t-SNE
-    X_tsne = TSNE(n_components=2, perplexity=30, random_state=42).fit_transform(X_pca)
+            # Normalize (optional: comment/uncomment as needed)
+            # valid_spectra_norm = normalize_spectra_zscore(valid_spectra)
+            valid_spectra_norm = valid_spectra
 
-    # KMeans clustering on t-SNE
-    n_clusters = 4   # 👈 set number of clusters you want
-    kmeans = KMeans(n_clusters=n_clusters, random_state=42).fit(X_tsne)
-    labels = kmeans.labels_
+            # PCA
+            pca_n = min(50, valid_spectra_norm.shape[0], valid_spectra_norm.shape[1])
+            pca = PCA(n_components=pca_n, random_state=42)
+            X_pca = pca.fit_transform(valid_spectra_norm)
 
-    # Plot
-    plt.figure(figsize=(10, 8))
-    scatter = plt.scatter(X_tsne[:, 0], X_tsne[:, 1], c=labels, cmap="tab10", s=20, alpha=0.7)
-    plt.colorbar(scatter, label="Cluster ID")
-    plt.title("t-SNE Clustering of Spectra")
-    plt.xlabel("t-SNE 1")
-    plt.ylabel("t-SNE 2")
-    plt.tight_layout()
-    plt.savefig(os.path.join(save_path, "tsne_clustering.png"))
-    plt.show()
+            # t-SNE
+            tsne = TSNE(n_components=2, random_state=42, perplexity=30, init='pca')
+            X_tsne = tsne.fit_transform(X_pca)
 
+            # Run Elbow method
+            elbow_method(X_tsne, max_k=5,
+                         save_path=os.path.join(save_path, "elbow_plot.png"))
+            # st()
+            
 if __name__ == "__main__":
     main()

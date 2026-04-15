@@ -37,17 +37,17 @@ def process_spectrum(spectrum, wavelengths, start, end, window=13, polyorder=2, 
         return second_derivative, minima_x, minima_y
 
 def main():
-    foldername_list = ['1000'] # '1000','9010', '8020','7030' 
-    filename_list = ['LMT_1','LMT_2','LMT_3','LMT_4'] #'LMT_1','LMT_2','LMT_3','LMT_4']
+    foldername_list = ['1000/','8020SER/','8020PSER/','6040SER/','6040PSER/'] #,'9010/',,'7030/','6040/''9109/','9505/'
+    filename_list = ['LMT_1','LMT_2'] #'LMT_1','LMT_2','LMT_3','LMT_4']
     for foldername in foldername_list:
         for filename in filename_list:
             print('processing:', foldername, filename)
             # before_collagen = r'/Volumes/TIANYI/Sperodata/CaF2_01162025/after_sample/LMT_1.mat'
-            after_collagen = f'W:/3. Students/Tianyi/Caf2_07032025/{foldername}/{filename}'+'.mat'
-            save_path = f'../res/Caf2_07032025_amide1/{foldername}/{filename}/'
-            # save_2nd = f'../res/Caf2_06232025_tnse/2nd/1000/{filename}/'
+            after_collagen = f'/Volumes/TIANYI/Sperodata/Caf2_10142025/'+f'{foldername}'+f'{filename}'+'.mat'
+            save_path = f'../res/Caf2_10142025/org/{foldername}/{filename}/'
+            save_2nd = f'../res/Caf2_10142025/2nd/{foldername}/{filename}/'
             os.makedirs(save_path, exist_ok=True)
-            # os.makedirs(save_2nd, exist_ok=True)
+            os.makedirs(save_2nd, exist_ok=True)
 
             data_after = loadmat(after_collagen)
             spectra_after = np.reshape(data_after['r'], (480, 480, 426))
@@ -99,12 +99,12 @@ def main():
             fig, ((ax1, ax2), (ax3, ax4)) = plt.subplots(2, 2, figsize=(9, 6))  # Create a 2x2 grid of subplots
             ax1.imshow(region_after[:,:,330].T)
             ax1.set_title('spectra')
-            ax2.imshow(binary_mask_region1, cmap='gray')
-            ax2.set_title('Binary Mask - Region 1')
-            ax3.imshow(binary_mask_region2, cmap='gray')
-            ax3.set_title('Binary Mask - Region 2')
-            ax4.imshow(binary_mask_region0, cmap='gray')
-            ax4.set_title('Binary Mask - Region 0')
+            ax2.imshow(binary_mask_region0, cmap='gray')
+            ax2.set_title('Binary Mask - Region 0')
+            ax3.imshow(binary_mask_region1, cmap='gray')
+            ax3.set_title('Binary Mask - Region 1')
+            ax4.imshow(binary_mask_region2, cmap='gray')
+            ax4.set_title('Binary Mask - Region 2')
             # ax5 = fig.add_subplot(2, 3, 5)
             # ax5.imshow(amide1_mask.T, cmap='gray')
             # ax5.set_title('Amide I Mask')
@@ -154,7 +154,7 @@ def main():
             # print(f"Randomly saved {n_samples} spectra.")
 
 
-            ############## Extract the Amide I region (1600–1700 cm⁻¹),Check if the maximum intensity is between 0.8 and 1.0, and Save only those spectra.
+            ############## Extract the Amide I region (1600–1700 cm⁻¹),Check if the maximum intensity is between a and b, and Save only those spectra.
             # Define Amide I band range
             amide1_start = 1600
             amide1_end = 1700
@@ -188,20 +188,25 @@ def main():
                         continue
                     amide1_band = spectrum[amide1_indices]
                     max_amide1 = np.max(amide1_band)
-                    print(max_amide1)
-                    if 0.5 <= max_amide1 <= 1.0:
+                    # print(max_amide1)
+                    if 0.6 <= max_amide1 <= 1:
                         valid_spectra.append(spectrum)
 
-            print(f"Found {len(valid_spectra)} spectra with Amide I max between 0.6 and 1.2.")
+            print(f"Found {len(valid_spectra)} spectra with Amide I max between 0.6 and 1")
 
             # Randomly sample up to 10,000
             random.seed(42)
-            n_samples = min(len(valid_spectra), 5000)
+            n_samples = min(len(valid_spectra), 512)
             selected_spectra = random.sample(valid_spectra, n_samples)
 
             # Save selected spectra
             for count, spectrum in enumerate(selected_spectra):
                 np.save(os.path.join(save_path, f"spectrum_{count}.npy"), spectrum)
+                # Process the 2nd spectrum
+                second_derivative, minima_x, minima_y = process_spectrum(
+                            spectrum, wavelengths, wavelength_start, wavelength_end
+                        )
+                np.save(os.path.join(save_2nd, f"2nd_{count}.npy"), second_derivative)
 
             print(f"✅ Randomly saved {n_samples} spectra.")
 

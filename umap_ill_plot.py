@@ -24,7 +24,7 @@ clf.fit(X_scaled, y)
 importance = np.mean(np.abs(clf.coef_), axis=0)  # average importance across classes
 
 # 5. Plot UMAP
-plt.figure(figsize=(3, 8))
+plt.figure(figsize=(5, 8))
 
 plt.subplot(2, 1, 2)
 for i in range(2):

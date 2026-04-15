@@ -1,67 +1,71 @@
+import os
+import pandas as pd
 import matplotlib.pyplot as plt
-import seaborn as sns
-from collections import Counter
-
-# Your peak data
-# peak_data = [
-#     1082.0,1154.0,1232.0,1388.0,1464.0,1546.0,1586.0,1656.0,1748.0,
-#     1084.0,1236.0,1386.0,1464.0,1546.0,1586.0,1656.0,1748.0,
-#     1232.0,1386.0,1464.0,1546.0,1586.0,1656.0,1748.0,
-#     1232.0,1386.0,1464.0,1544.0,1586.0,1656.0,
-#     1234.0,1386.0,1464.0,1546.0,1586.0,1656.0,
-#     1236.0,1386.0,1464.0,1544.0,1586.0,1656.0,
-#     1232.0,1400.0,1464.0,1546.0,1586.0,1656.0
-# ] #liver ffpe
-# peak_data = [
-#     1030.0,1082.0,1154.0,1238.0,1308.0,1398.0,1462.0,1546.0,1586.0,1656.0,1744.0,
-#     1030.0,1082.0,1154.0,1240.0,1308.0,1344.0,1400.0,1462.0,1546.0,1586.0,1658.0,1744.0,
-#     1030.0,1082.0,1154.0,1238.0,1308.0,1398.0,1462.0,1546.0,1586.0,1658.0,1744.0,
-#     1030.0,1082.0,1154.0,1240.0,1308.0,1400.0,1462.0,1546.0,1586.0,1658.0,1744.0,
-#     1030.0,1082.0,1154.0,1238.0,1308.0,1400.0,1462.0,1546.0,1586.0,1658.0,1744.0,
-#     1030.0,1082.0,1156.0,1238.0,1308.0,1400.0,1462.0,1546.0,1586.0,1658.0,1744.0,
-#     1030.0,1082.0,1154.0,1240.0,1308.0,1400.0,1462.0,1546.0,1586.0,1658.0,1744.0
-# ] #liver oct
-peak_data = [
-    1384.0,1464.0,1546.0,1586.0,1658.0,
-    1402.0,1446.0,1546.0,1586.0,1658.0,1748.0,
-    1402.0,1446.0,1546.0,1586.0,1658.0,
-    1404.0,1464.0,1548.0,1586.0,1660.0,1748.0,
-    1384.0,1446.0,1546.0,1586.0,1658.0,
-    1404.0,1446.0,1546.0,1586.0,1658.0,
-    1384.0,1446.0,1546.0,1586.0,1658.0
-] #kidney ffpe
-# peak_data = [
-#     1046.0,1082.0,1168.0,1238.0,1310.0,1400.0,1462.0,1546.0,1586.0,1658.0,1742.0,
-#     1046.0,1082.0,1238.0,1402.0,1462.0,1546.0,1586.0,1656.0,1742.0,
-#     1046.0,1082.0,1168.0,1236.0,1308.0,1402.0,1462.0,1546.0,1586.0,1658.0,1742.0,
-#     1046.0,1082.0,1168.0,1236.0,1310.0,1400.0,1462.0,1546.0,1586.0,1658.0,1742.0,
-#     1082.0,1168.0,1238.0,1310.0,1400.0,1462.0,1546.0,1586.0,1658.0,1742.0,
-#     1082.0,1236.0,1402.0,1464.0,1546.0,1586.0,1656.0,1744.0,
-#     1082.0,1232.0,1402.0,1464.0,1546.0,1586.0,1658.0,1744.0
-# ] #kidney oct
 
 
-# # Set style
-# sns.set(style="whitegrid", context="talk")
+folder_list = ['liver_ff','liver_ffpe', 'kidney_ff','kidney_ffpe'] #'liver_ff','liver_ffpe', 'kidney_ff','kidney_ffpe'
+for f in folder_list:
+    # Folder where your CSV files are stored
+    folder = f"D:/res/rat_peaks/summary/{f}/"
 
-# Create figure
-plt.figure(figsize=(12, 3))
-sns.histplot(peak_data, bins=12, kde=False, color="#808080", edgecolor="black")
+    # List of HMT CSV files
+    hmt_files = ["peak_occurrence_HMT_1.csv", "peak_occurrence_HMT_2.csv", "peak_occurrence_HMT_3.csv", "peak_occurrence_HMT_4.csv", "peak_occurrence_HMT_5.csv", "peak_occurrence_HMT_6.csv"]
 
-# Custom x-ticks
-highlight_peaks = [950, 1040, 1082, 1160, 1236, 1310, 1394, 1462, 1546, 1586, 1658, 1746, 1800]
-plt.xticks(highlight_peaks, fontsize=12)
-plt.yticks(fontsize=14)
-plt.ylim([0,10])
+    # Target wavenumbers and their window range (+/- delta)
+    target_wavenumbers = [968,1036,1082,1168,1238,1310,1400,1448,1464,1516,1546,1658,1742,1788]
+    delta = 4  # this will sum from wavenumber-delta to wavenumber+delta
+    # Colors for each file
+    # Colors for scatter points
+    colors = ['red', 'blue', 'green', 'purple', 'orange', 'brown']
 
-# Labels and title
-# plt.xlabel("Wavenumber (cm⁻¹)", fontsize=14)
-plt.ylabel("Occurrence", fontsize=16)
-# plt.title("Peak Occurrence Distribution", fontsize=18, weight='bold')
+    # Collect occurrences for all files and all wavenumbers
+    all_occurrences = {wn: [] for wn in target_wavenumbers}
 
-# # Optional: vertical lines for emphasis
-# for x in highlight_peaks:
-#     plt.axvline(x, color='gray', linestyle='--', alpha=0.3)
+    for file in hmt_files:
+        file_path = os.path.join(folder, file)
+        df = pd.read_csv(file_path)
+        
+        if 'wavenumber' not in df.columns or 'occurrence' not in df.columns:
+            df.columns = ['wavenumber', 'occurrence']
+        
+        for wn in target_wavenumbers:
+            mask = (df['wavenumber'] >= wn - delta) & (df['wavenumber'] <= wn + delta)
+            total_occurrence = df.loc[mask, 'occurrence'].sum()
+            all_occurrences[wn].append(total_occurrence)
 
-# plt.tight_layout()
-plt.show()
+    # Prepare data for plotting
+    scatter_x = []
+    scatter_y = []
+    scatter_colors = []
+
+    for i, wn in enumerate(target_wavenumbers):
+        for j, val in enumerate(all_occurrences[wn]):
+            # Add slight horizontal jitter so points don't overlap with boxplot
+            scatter_x.append(wn + (j - 2.5)*2)  # adjust spacing
+            scatter_y.append(val)
+            scatter_colors.append(colors[j])
+
+    # Create figure
+    plt.figure(figsize=(8,3))
+
+    # Box plot
+    plt.boxplot([all_occurrences[wn] for wn in target_wavenumbers],
+                positions=target_wavenumbers, widths=14, patch_artist=True,
+                boxprops=dict(facecolor='lightgray', alpha=0.7),
+                medianprops=dict(color='black'))
+
+    # Scatter plot on top
+    plt.scatter(scatter_x, scatter_y, color=scatter_colors, s=60, zorder=2)
+
+    # plt.xlabel("Wavenumber (cm⁻¹)",fontsize=14)
+    plt.ylabel("Occurrence",fontsize=12)
+    plt.xticks(fontsize=12,rotation=30)
+    plt.yticks(fontsize=14)
+    plt.ylim([-5,110])
+    # plt.legend(loc='upper left', fontsize=16)
+    # plt.title(f"{f} Occurrence ",fontsize=12)
+    plt.tight_layout()
+    plt.savefig(os.path.join(folder+f"/{f}_peaks.png"), dpi=300)
+    # plt.grid(True)
+    
+    plt.show()

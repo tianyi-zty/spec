@@ -44,13 +44,13 @@ def rubberband_baseline_correction(x, y):
 
 def main():
 
-    foldername_list = ['1000/'] #,'9010/','8020/','7030/','6040/'
-    filename_list = ['LMT_1','LMT_2','LMT_3']
+    foldername_list = ['1000/','8020SER/','8020PSER/','6040SER/','6040PSER/'] #,'9010/',,'7030/','6040/''9109/','9505/'
+    filename_list = ['LMT_1','LMT_2']
     for foldername in foldername_list:
         for filename in filename_list:
             print('processing:', foldername, filename)
-            after_collagen = r'W:/3. Students/Tianyi/Caf2_09022025/'+f'{foldername}'+f'{filename}'+'.mat'
-            save_path = f'C:/pyws/SPEC/res/Caf2_09022025/{foldername}'
+            after_collagen = r'/Volumes/TIANYI/Sperodata/Caf2_10142025/'+f'{foldername}'+f'{filename}'+'.mat'
+            save_path = f'../res/Caf2_10142025/AVG/{foldername}'
             os.makedirs(save_path, exist_ok=True)
 
 
@@ -66,18 +66,18 @@ def main():
             ax1.set_title(f'{filename}_spectra')
             thresholds = threshold_multiotsu(spectra_after[:, :, 330].T, classes=3)
             # print(thresholds) 
-            # thresholds = np.array([0.05, 0.1, 0.8])
+            # thresholds = np.array([0.02, 0.2])
             regions = np.digitize(spectra_after[:, :, 330].T, bins=thresholds)
             # st()
             binary_mask_region0 = (regions == 0).astype(np.uint8)
             binary_mask_region1 = (regions == 1).astype(np.uint8)
             binary_mask_region2 = (regions == 2).astype(np.uint8)
-            ax2.imshow(binary_mask_region1, cmap='gray')
-            ax2.set_title('Binary Mask - Region 1')
-            ax3.imshow(binary_mask_region0, cmap='gray')
-            ax3.set_title('Binary Mask - Region 0')
-            ax4.imshow(binary_mask_region0, cmap='gray')
-            ax4.set_title('Binary Mask - Region 0')
+            ax2.imshow(binary_mask_region0, cmap='gray')
+            ax2.set_title('Binary Mask - Region 0')
+            ax3.imshow(binary_mask_region1, cmap='gray')
+            ax3.set_title('Binary Mask - Region 1')
+            ax4.imshow(binary_mask_region2, cmap='gray')
+            ax4.set_title('Binary Mask - Region 2')
             plt.tight_layout()
             plt.savefig(os.path.join(save_path, f'{filename}_spatial_image.png'))
             # plt.show()
@@ -88,6 +88,8 @@ def main():
             std_spectrum_after = np.std(binary_mask_region0.T[:, :, np.newaxis]*spectra_after, axis=(0, 1))
             mean_spectrum_after_roi = np.mean(binary_mask_region1.T[:, :, np.newaxis]*spectra_after, axis=(0, 1))
             std_spectrum_after_roi = np.std(binary_mask_region1.T[:, :, np.newaxis]*spectra_after, axis=(0, 1))
+            mean_spectrum_after_roi_2 = np.mean(binary_mask_region2.T[:, :, np.newaxis]*spectra_after, axis=(0, 1))
+            std_spectrum_after_roi_2 = np.std(binary_mask_region2.T[:, :, np.newaxis]*spectra_after, axis=(0, 1))
 
             # Apply aALS baseline correction
             # lam = 1e6  # Adjust as needed
@@ -97,13 +99,16 @@ def main():
 
             baseline_before, corrected_spectrum_before = rubberband_baseline_correction(wavelengths, mean_spectrum_after)
             baseline_after, corrected_spectrum_after = rubberband_baseline_correction(wavelengths, mean_spectrum_after_roi)
+            baseline_after, corrected_spectrum_after_2 = rubberband_baseline_correction(wavelengths, mean_spectrum_after_roi_2)
 
             # Apply Gaussian smoothing
             sigma = 1  # Adjust smoothing level; try 1-3
-            mean_spectrum_after = gaussian_filter1d(mean_spectrum_after, sigma=sigma)
-            mean_spectrum_after_roi = gaussian_filter1d(mean_spectrum_after_roi, sigma=sigma)
+            # mean_spectrum_after = gaussian_filter1d(mean_spectrum_after, sigma=sigma)
+            # mean_spectrum_after_roi = gaussian_filter1d(mean_spectrum_after_roi, sigma=sigma)
+            # mean_spectrum_after_roi_2 = gaussian_filter1d(mean_spectrum_after_roi_2, sigma=sigma)
             corrected_spectrum_before = gaussian_filter1d(corrected_spectrum_before, sigma=sigma)
             corrected_spectrum_after = gaussian_filter1d(corrected_spectrum_after, sigma=sigma)
+            corrected_spectrum_after_2 = gaussian_filter1d(corrected_spectrum_after_2, sigma=sigma)
 
             # Plot the average spectrum with standard deviation
             plt.figure(figsize=(12, 8))
@@ -111,6 +116,7 @@ def main():
             # plt.plot(wavelengths, mean_spectrum_after_roi, label='Smoothed Average Spectrum - Mask 1', color='b', linewidth=2) 
             plt.plot(wavelengths, corrected_spectrum_before, label='Region 0', color='k', linewidth=3) 
             plt.plot(wavelengths, corrected_spectrum_after, label='Region 1', color='r', linewidth=3)
+            plt.plot(wavelengths, corrected_spectrum_after_2, label='Region 2', color='b', linewidth=3)
             # plt.fill_between(wavelengths, 
             #                 mean_spectrum_after - std_spectrum_after, 
             #                 mean_spectrum_after + std_spectrum_after, 
@@ -127,12 +133,18 @@ def main():
                             corrected_spectrum_after - std_spectrum_after_roi, 
                             corrected_spectrum_after + std_spectrum_after_roi, 
                             color='r', alpha=0.3, label='Standard Deviation') 
+            plt.fill_between(wavelengths, 
+                            corrected_spectrum_after_2 - std_spectrum_after_roi_2, 
+                            corrected_spectrum_after_2 + std_spectrum_after_roi_2, 
+                            color='b', alpha=0.3, label='Standard Deviation') 
             plt.xlabel('Wavenumber (cm⁻¹)')
             plt.ylabel('Intensity')
             plt.legend(loc='upper left', fontsize=14)
             # plt.grid(True)
             plt.savefig(os.path.join(save_path, f'average_spectrum_{filename}.png'))
             # plt.show()
+            # st()
+            plt.close()
 
         
 

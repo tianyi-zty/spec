@@ -1,98 +1,88 @@
 __author__ = 'Tianyi'
 
-import spectrochempy as scp
-from scipy.io import loadmat
-from pdb import set_trace as st
-from matplotlib import pyplot as plt
-from glob import glob
-import os
 import numpy as np
-from scipy.spatial import ConvexHull
-from scipy.signal import find_peaks, savgol_filter
+import matplotlib.pyplot as plt
+from scipy.signal import savgol_filter, find_peaks
+import os
+from glob import glob
+
+def clean_axes(ax=None):
+    if ax is None:
+        ax = plt.gca()
+    ax.spines['top'].set_visible(False)
+    ax.spines['right'].set_visible(False)
+    ax.spines['left'].set_visible(True)
+    ax.spines['bottom'].set_visible(False)
+    ax.yaxis.set_ticks_position('left')
+    # ax.xaxis.set_ticks_position('bottom')
+
+def process_spectrum(file_path, wavelengths, wavelength_start=950, wavelength_end=1800):
+    """
+    Load .npy spectrum, calculate second derivative, find minima, and return data for plotting.
+    """
+    # Load the .npy file
+    spectrum = np.load(file_path).flatten()
+
+    # Select wavelength range
+    z_indices = np.where((wavelengths >= wavelength_start) & (wavelengths <= wavelength_end))[0]
+    selected_wavelengths = wavelengths[z_indices]
+    selected_spectrum = spectrum[z_indices]
+
+    # Second derivative using Savitzky-Golay filter
+    second_derivative = savgol_filter(selected_spectrum, window_length=13, polyorder=2, deriv=2)
+
+    # Find local minima (peaks in inverted second derivative)
+    minima_indices, _ = find_peaks(-second_derivative, prominence=0.0003)
+    minima_x = selected_wavelengths[minima_indices]
+    minima_y = second_derivative[minima_indices]
+
+    return selected_wavelengths, second_derivative, minima_x, minima_y
 
 def main():
+    # Folder containing .npy files
+    folder_path = 'C:/pyws/SPEC/res/Caf2_09302025/mean_spec/'
+    save_path = 'C:/pyws/SPEC/res/Caf2_09302025/2ndplots/'
+    os.makedirs(save_path, exist_ok=True)
 
-    spectrum_path = '../res/AuPillars_Al2O3_12102024/ALS/3/new_way/99-1/99-1ROI Spectrum1199-1600.mat'
-    spectrum_path_1 = '../res/AuPillars_Al2O3_12102024/ALS/3/new_way/95-5/95-5ROI Spectrum1199-1600.mat'
-    save_path = '../res/AuPillars_Al2O3_12102024/ALS/3/new_way/'
     # Wavelength range (cm⁻¹)
-    wavelength_start = 1200
-    wavelength_end = 1600
-    # Assume the wavelength step size (426 points between 950 and 1800)
-    wavelengths = np.linspace(950, 1800, 426)
+    wavelengths = np.linspace(950, 1800, 426)  # adjust to match your original data
 
-    # Load the .mat file
-    data = loadmat(spectrum_path)
-    spectra = data['corrected_spectrum'].flatten()
-    # Find the indices corresponding to the desired wavelength range
-    z_indices = np.where((wavelengths >= wavelength_start) & (wavelengths <= wavelength_end))[0]
-    # # Apply Savitzky-Golay filter to calculate the second-order derivative directly
-    second_derivative = savgol_filter(spectra, window_length=13, polyorder=2, deriv=2) 
-    # Identify local minima by finding peaks in the inverted second derivative
-    minima_indices, _ = find_peaks(-second_derivative, prominence=0.001)
-    # st()
-    minima_x = wavelengths[z_indices][minima_indices]
-    minima_y = second_derivative[minima_indices]
-    print('detected peaks 99-1:', minima_x)
-    # st()
-
-    # Load the .mat file
-    data_1 = loadmat(spectrum_path_1)
-    spectra_1 = data_1['corrected_spectrum'].flatten()
-    # Find the indices corresponding to the desired wavelength range
-    z_indices_1 = np.where((wavelengths >= wavelength_start) & (wavelengths <= wavelength_end))[0]
-    # # Apply Savitzky-Golay filter to calculate the second-order derivative directly
-    second_derivative_1 = savgol_filter(spectra_1, window_length=13, polyorder=2, deriv=2) 
-    # Identify local minima by finding peaks in the inverted second derivative
-    minima_indices_1, _ = find_peaks(-second_derivative_1, prominence=0.001)
-    # st()
-    minima_x_1 = wavelengths[z_indices_1][minima_indices_1]
-    minima_y_1 = second_derivative_1[minima_indices_1]
-    print('detected peaks 95-5:', minima_x_1)
-    # st()
-
-    plt.figure(figsize=(20, 14))
-    # plt.plot(wavelengths[z_indices], final_flipped, label='Final Flipped A', color='k', linewidth=2)
-    plt.plot(wavelengths[z_indices], second_derivative, label='Second Derivative of the spectrum 99-1', color='k', linestyle='--', linewidth=2)
-    plt.scatter(minima_x, minima_y, color='red', marker='o', label='Local Minima')
-
-    # Annotate each minimum with its (x, y) coordinate
-    for x, y in zip(minima_x, minima_y):
-        plt.annotate(f'({x:.0f}, {y:.4f})', 
-                    xy=(x, y), 
-                    xytext=(x, y),  # Adjust the y-coordinate for better visibility
-                    fontsize=12, 
-                    ha='center', 
-                    arrowprops=dict(arrowstyle='->', color='red', lw=0.5))
-    plt.xlabel('Wavenumber (cm⁻¹)')
-    plt.ylabel('Intensity')
-    plt.legend(loc="upper right")
-    # plt.show()
-    # st()
-    # plt.savefig(os.path.join(save_path, 'Second_Derivative_with_coordinates_99-1.png'))
-    # st()
-
-    # plt.plot(wavelengths[z_indices], final_flipped, label='Final Flipped A', color='k', linewidth=2)
-    plt.plot(wavelengths[z_indices_1], second_derivative_1, label='Second Derivative of the spectrum 95-5', color='k', linewidth=2)
-    plt.scatter(minima_x_1, minima_y_1, color='red', marker='o', label='Local Minima')
-
-    # Annotate each minimum with its (x, y) coordinate
-    for x, y in zip(minima_x_1, minima_y_1):
-        plt.annotate(f'({x:.0f}, {y:.4f})', 
-                    xy=(x, y), 
-                    xytext=(x, y),  # Adjust the y-coordinate for better visibility
-                    fontsize=12, 
-                    ha='center', 
-                    arrowprops=dict(arrowstyle='->', color='red', lw=0.5))
-    plt.xlabel('Wavenumber (cm⁻¹)')
-    plt.ylabel('Intensity')
-    plt.legend(loc="upper right")
-    # plt.show()
-    # st()
-    plt.savefig(os.path.join(save_path, 'Second_Derivative_with_coordinates.png'))
-    # st()
+    # Find all .npy files in folder
+    files = glob(os.path.join(folder_path, '*.npy'))
+    if not files:
+        print("No .npy files found in the folder!")
+        return
 
 
+    # Process each file
+    for file_path in files:
+        plt.figure(figsize=(10, 2))
+        # Use the filename (without extension) as label
+        label = os.path.splitext(os.path.basename(file_path))[0]
+
+        wl, sec_deriv, minima_x, minima_y = process_spectrum(file_path, wavelengths)
+
+        plt.plot(wl, sec_deriv, label=f'Second Derivative: {label}', linewidth=2, color='black')
+        plt.scatter(minima_x, minima_y, color='red', marker='o', label=f'Local Minima: {label}')
+
+        # Annotate minima
+        # for x, y in zip(minima_x, minima_y):
+        #     plt.annotate(f'({x:.0f}, {y:.4f})',
+        #                 xy=(x, y),
+        #                 xytext=(x, y),
+        #                 fontsize=18,
+        #                 ha='center',
+        #                 arrowprops=dict(arrowstyle='->', color='red', lw=1))
+
+        print(f'{label} detected minima:', minima_x)
+        clean_axes()
+        plt.xlabel('Wavenumber (cm⁻¹)')
+        plt.ylabel('Intensity')
+        # plt.legend(loc='upper right')
+        plt.title('Second Derivative')
+        plt.tight_layout()
+        plt.savefig(os.path.join(save_path, f'{label}_Second_Derivative.png'))
+        # plt.show()
 
 if __name__ == '__main__':
     main()
